@@ -2,7 +2,7 @@ import {
 	defaultParityFixtureId,
 	parityFixtureIds,
 	type ParityFixtureId
-} from '../../fixtures/parity/fixture-registry';
+} from '../../fixtures/parity/fixture-registry.js';
 
 const parityFixtureModules = import.meta.glob('../../fixtures/parity/markdown/*.md', {
 	query: '?raw',

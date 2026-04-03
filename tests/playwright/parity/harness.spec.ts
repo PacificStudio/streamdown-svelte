@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parityFixtureIds } from '../../../fixtures/parity/fixture-registry';
+import { parityFixtureIds } from '../../../fixtures/parity/fixture-registry.js';
 
 const referenceBaseUrl = process.env.PARITY_REFERENCE_URL ?? 'http://127.0.0.1:4173';
 const localBaseUrl = process.env.PARITY_LOCAL_URL ?? 'http://127.0.0.1:4174';

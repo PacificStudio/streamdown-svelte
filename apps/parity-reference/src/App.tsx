@@ -1,7 +1,7 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { Streamdown } from 'streamdown';
-import type { ParityFixtureId } from '../../../fixtures/parity/fixture-registry';
-import { listParityFixtures, resolveParityFixture } from '../../parity-shared/fixtures';
+import type { ParityFixtureId } from '../../../fixtures/parity/fixture-registry.js';
+import { listParityFixtures, resolveParityFixture } from '../../parity-shared/fixtures.js';
 
 const fixtureOptions = listParityFixtures();
 

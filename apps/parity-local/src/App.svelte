@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Streamdown } from 'svelte-streamdown';
 	import { onMount } from 'svelte';
-	import type { ParityFixtureId } from '../../../fixtures/parity/fixture-registry';
-	import { resolveParityFixture, listParityFixtures } from '../../parity-shared/fixtures';
+	import type { ParityFixtureId } from '../../../fixtures/parity/fixture-registry.js';
+	import { resolveParityFixture, listParityFixtures } from '../../parity-shared/fixtures.js';
 
 	const fixtureOptions = listParityFixtures();
 
