@@ -17,17 +17,16 @@ Related to #
 
 ## Regression Coverage
 
-<!-- Required for bug fixes. CI checks this section when "Bug fix" is selected. A bug-fix PR is not review-ready unless it adds or updates a durable fixture or test. -->
+<!-- Required for bug fixes. CI checks this section when "Bug fix" is selected and fails if the referenced regression fixture or test is not part of the PR diff. -->
 
 - Coverage path:
 - Coverage type:
-- If no new coverage was added, explain why this is not a bug fix:
 
 ## Validation
 
 <!-- List the commands you ran locally. -->
 
-- ``
+- `pnpm <command>`
 
 ## Checklist
 

@@ -282,7 +282,7 @@ pnpm check
 pnpm test
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the regression intake workflow, parity fixture naming convention, and bug-fix PR expectations.
+See [CONTRIBUTING.md](https://github.com/BetterAndBetterII/svelte-streamdown/blob/master/CONTRIBUTING.md) for the regression intake workflow, parity fixture naming convention, and bug-fix PR expectations.
 
 ## License
 

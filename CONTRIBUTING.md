@@ -45,7 +45,7 @@ Shared parity fixtures live in `fixtures/parity/markdown/` or `fixtures/parity/i
 - `NN` is the next available two-digit sequence in that directory.
 - `short-description` is lowercase, hyphen-separated, and describes the behavior instead of the issue number, user, or temporary workaround.
 - Keep the file name stable after review because the file name is also the public fixture ID.
-- Register every new shared parity fixture in `fixtures/parity/fixture-registry.ts` with the exact same file name.
+- Register every new shared parity fixture in `fixtures/parity/fixture-registry.ts` with the exact same file name as the key and its relative fixture path as the value.
 
 Examples:
 
@@ -54,9 +54,9 @@ Examples:
 
 ## Pull Request Expectations
 
-Bug-fix PRs must add or update a regression fixture or test. Use the PR template to point reviewers to the exact path that captures the bug.
+Bug-fix PRs must add or update a regression fixture or test. Use the PR template to point reviewers to the exact path that captures the bug and keep that same path in the PR diff.
 
-The PR metadata check in CI reads the `Regression Coverage` section. If `Bug fix` is checked, `Coverage path` and `Coverage type` must both be filled in with the durable fixture or test that captures the fix.
+The PR metadata check in CI reads the `Regression Coverage` section. If `Bug fix` is checked, `Coverage path` and `Coverage type` must both be filled in with the durable fixture or test that captures the fix, and `Coverage path` must match a changed regression asset in the PR.
 
 Reviewers should treat a missing regression asset as a blocker when:
 
