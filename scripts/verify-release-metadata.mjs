@@ -6,15 +6,15 @@ import {
 	writeReleaseArtifactMetadata
 } from './lib/release-artifacts.mjs';
 
-function main() {
+async function main() {
 	const outputDirectory = mkdtempSync(join(tmpdir(), 'svelte-streamdown-release-metadata-'));
 
 	try {
-		writeReleaseArtifactMetadata({
+		await writeReleaseArtifactMetadata({
 			outputDirectory
 		});
 
-		const verificationResult = verifyReleaseArtifactMetadata(outputDirectory);
+		const verificationResult = await verifyReleaseArtifactMetadata(outputDirectory);
 
 		console.log(
 			JSON.stringify(
@@ -39,4 +39,4 @@ function main() {
 	}
 }
 
-main();
+await main();

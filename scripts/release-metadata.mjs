@@ -3,13 +3,13 @@ import {
 	writeReleaseArtifactMetadata
 } from './lib/release-artifacts.mjs';
 
-function main() {
+async function main() {
 	const command = parseReleaseMetadataCommand(process.argv.slice(2));
-	const result = writeReleaseArtifactMetadata({
+	const result = await writeReleaseArtifactMetadata({
 		outputDirectory: command.outputDirectory
 	});
 
 	console.log(JSON.stringify(result, null, 2));
 }
 
-main();
+await main();

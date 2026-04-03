@@ -1,5 +1,6 @@
 import {
 	copyFileSync,
+	createReadStream,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -11,6 +12,7 @@ import {
 } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { finished } from 'node:stream/promises';
 import { tmpdir } from 'node:os';
 import { basename, join, relative, resolve, sep } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -111,31 +113,87 @@ function toRepoRelativePath(path) {
 	return relativePath.split(sep).join('/');
 }
 
-function computeHashes(filePath) {
-	const content = readFileSync(filePath);
+function toPortableCommandPath(path) {
+	const relativePath = relative(repoRoot, path);
+
+	if (!relativePath || relativePath.startsWith('..')) {
+		return `./${basename(path)}`;
+	}
+
+	return `./${relativePath.split(sep).join('/')}`;
+}
+
+async function computeHashes(filePath) {
+	const sha256Hash = createHash('sha256');
+	const sha512HexHash = createHash('sha512');
+	const sha512IntegrityHash = createHash('sha512');
+	const stream = createReadStream(filePath);
+
+	stream.on('data', (chunk) => {
+		sha256Hash.update(chunk);
+		sha512HexHash.update(chunk);
+		sha512IntegrityHash.update(chunk);
+	});
+
+	await finished(stream);
 
 	return {
-		sha256: createHash('sha256').update(content).digest('hex'),
-		sha512: createHash('sha512').update(content).digest('hex'),
-		integrity: `sha512-${createHash('sha512').update(content).digest('base64')}`
+		sha256: sha256Hash.digest('hex'),
+		sha512: sha512HexHash.digest('hex'),
+		integrity: `sha512-${sha512IntegrityHash.digest('base64')}`
 	};
+}
+
+function normalizeRepositoryIdentifier(rawRepository) {
+	const value = parseOptionalNonEmptyString(rawRepository);
+
+	if (!value) {
+		return null;
+	}
+
+	const normalizedValue = value.replace(/\.git$/u, '');
+	const directMatch = normalizedValue.match(
+		/^(?<owner>[A-Za-z0-9_.-]+)\/(?<repo>[A-Za-z0-9_.-]+)$/u
+	);
+
+	if (directMatch?.groups) {
+		return `${directMatch.groups.owner}/${directMatch.groups.repo}`;
+	}
+
+	const httpsMatch = normalizedValue.match(
+		/^https:\/\/github\.com\/(?<owner>[A-Za-z0-9_.-]+)\/(?<repo>[A-Za-z0-9_.-]+)$/u
+	);
+
+	if (httpsMatch?.groups) {
+		return `${httpsMatch.groups.owner}/${httpsMatch.groups.repo}`;
+	}
+
+	const sshMatch = normalizedValue.match(
+		/^git@github\.com:(?<owner>[A-Za-z0-9_.-]+)\/(?<repo>[A-Za-z0-9_.-]+)$/u
+	);
+
+	if (sshMatch?.groups) {
+		return `${sshMatch.groups.owner}/${sshMatch.groups.repo}`;
+	}
+
+	return normalizedValue;
 }
 
 function readRepositoryIdentifier(packageJson, env) {
 	const githubRepository = parseOptionalNonEmptyString(env.GITHUB_REPOSITORY);
 
 	if (githubRepository) {
-		return githubRepository;
+		return normalizeRepositoryIdentifier(githubRepository) ?? 'unknown';
 	}
 
 	const repositoryField = packageJson.repository;
 
 	if (typeof repositoryField === 'string') {
-		return repositoryField;
+		return normalizeRepositoryIdentifier(repositoryField) ?? 'unknown';
 	}
 
 	if (repositoryField && typeof repositoryField === 'object' && !Array.isArray(repositoryField)) {
-		return parseOptionalNonEmptyString(repositoryField.url) ?? 'unknown';
+		return normalizeRepositoryIdentifier(repositoryField.url) ?? 'unknown';
 	}
 
 	return 'unknown';
@@ -192,9 +250,9 @@ function createBuildMetadata(packageJson, env) {
 	};
 }
 
-function createArtifactMetadata(packageJson, tarballPath) {
+async function createArtifactMetadata(packageJson, tarballPath) {
 	const stats = statSync(tarballPath);
-	const hashes = computeHashes(tarballPath);
+	const hashes = await computeHashes(tarballPath);
 
 	return {
 		schemaVersion: 1,
@@ -217,6 +275,7 @@ function createProvenanceMetadata(buildMetadata, artifactMetadata, env, outputDi
 	const inGitHubActions = buildMetadata.build.ciProvider === 'github-actions';
 	const repository = buildMetadata.source.repository;
 	const tarballFileName = artifactMetadata.tarball.fileName;
+	const tarballCommandPath = toPortableCommandPath(join(outputDirectory, tarballFileName));
 
 	return {
 		schemaVersion: 1,
@@ -231,13 +290,13 @@ function createProvenanceMetadata(buildMetadata, artifactMetadata, env, outputDi
 			signerWorkflow: inGitHubActions ? '.github/workflows/release.yml' : null,
 			verifyCommand:
 				inGitHubActions && repository !== 'unknown'
-					? `gh attestation verify ${resolve(outputDirectory, tarballFileName)} --repo ${repository}`
+					? `gh attestation verify ${tarballCommandPath} --repo ${repository}`
 					: null,
 			attestationUrl: null
 		},
 		npmProvenance: {
 			expectedWhenTrustedPublishing: inGitHubActions,
-			publishCommand: `npm publish ${resolve(outputDirectory, tarballFileName)}`,
+			publishCommand: `npm publish ${tarballCommandPath}`,
 			requirements: {
 				publicRepository: true,
 				publicPackage: true,
@@ -258,8 +317,10 @@ function writeSha256File(outputDirectory, artifactMetadata) {
 }
 
 export function parseReleaseMetadataCommand(argv, cwd = process.cwd()) {
+	const normalizedArgv = argv[0] === '--' ? argv.slice(1) : argv;
+
 	const { values, positionals } = parseArgs({
-		args: argv,
+		args: normalizedArgv,
 		options: {
 			'output-dir': {
 				type: 'string'
@@ -280,7 +341,7 @@ export function parseReleaseMetadataCommand(argv, cwd = process.cwd()) {
 	};
 }
 
-export function writeReleaseArtifactMetadata({ outputDirectory, env = process.env }) {
+export async function writeReleaseArtifactMetadata({ outputDirectory, env = process.env }) {
 	const packageJson = readRootPackageJson();
 	const resolvedOutputDirectory = parseRequiredNonEmptyString(outputDirectory, 'outputDirectory');
 
@@ -300,7 +361,7 @@ export function writeReleaseArtifactMetadata({ outputDirectory, env = process.en
 		copyFileSync(packedTarball, copiedTarballPath);
 
 		const buildMetadata = createBuildMetadata(packageJson, env);
-		const artifactMetadata = createArtifactMetadata(packageJson, copiedTarballPath);
+		const artifactMetadata = await createArtifactMetadata(packageJson, copiedTarballPath);
 		const provenanceMetadata = createProvenanceMetadata(
 			buildMetadata,
 			artifactMetadata,
@@ -330,7 +391,7 @@ export function writeReleaseArtifactMetadata({ outputDirectory, env = process.en
 				packageName: packageJson.name,
 				packageVersion: packageJson.version,
 				commitSha: buildMetadata.source.commitSha,
-				tarball: toRepoRelativePath(copiedTarballPath),
+				tarball: toPortableCommandPath(copiedTarballPath),
 				sha256: artifactMetadata.tarball.sha256,
 				runUrl: buildMetadata.source.runUrl
 			}
@@ -343,7 +404,7 @@ export function writeReleaseArtifactMetadata({ outputDirectory, env = process.en
 	}
 }
 
-export function verifyReleaseArtifactMetadata(outputDirectory, env = process.env) {
+export async function verifyReleaseArtifactMetadata(outputDirectory, env = process.env) {
 	const resolvedOutputDirectory = parseRequiredNonEmptyString(outputDirectory, 'outputDirectory');
 	const packageJson = readRootPackageJson();
 	const tarballFiles = readdirSync(resolvedOutputDirectory).filter((entry) =>
@@ -377,7 +438,7 @@ export function verifyReleaseArtifactMetadata(outputDirectory, env = process.env
 	const artifactMetadata = readJson(artifactMetadataPath);
 	const provenanceMetadata = readJson(provenanceMetadataPath);
 	const sha256File = readFileSync(sha256Path, 'utf8').trim();
-	const computedHashes = computeHashes(tarballPath);
+	const computedHashes = await computeHashes(tarballPath);
 	const expectedCommitSha = readGitCommitSha(env);
 
 	if (buildMetadata.package?.name !== packageJson.name) {
