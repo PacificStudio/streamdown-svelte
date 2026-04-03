@@ -15,57 +15,69 @@ vi.mock('mermaid', () => ({
 }));
 
 describeInBrowser('ported streamdown translations', () => {
-	testInBrowser('applies custom translations across code, table, mermaid, and image fallbacks', async () => {
-		const screen = render(Streamdown, {
-			content: [
-				'```javascript',
-				'console.log("hello");',
-				'```',
-				'',
-				'```mermaid',
-				'graph TD; A-->B',
-				'```',
-				'',
-				'| Name | Value |',
-				'| ---- | ----- |',
-				'| Foo | Bar |',
-				'',
-				'![Broken image](https://example.com/image.png)'
-			].join('\n'),
-			components: {
-				code: Code,
-				mermaid: Mermaid
-			},
-			translations: {
-				copyCode: 'Kopieren',
-				downloadFile: 'Datei herunterladen',
-				copyTable: 'Tabelle kopieren',
-				downloadTable: 'Tabelle herunterladen',
-				downloadTableAsCsv: 'Tabelle als CSV herunterladen',
-				copyTableAsMarkdown: 'Tabelle als Markdown kopieren',
-				downloadDiagram: 'Diagramm herunterladen',
-				viewFullscreen: 'Vollbild anzeigen',
-				exitFullscreen: 'Vollbild verlassen',
-				imageNotAvailable: 'Bild nicht verfügbar'
-			}
-		});
+	testInBrowser(
+		'applies custom translations across code, table, mermaid, and image fallbacks',
+		async () => {
+			const screen = render(Streamdown, {
+				content: [
+					'```javascript',
+					'console.log("hello");',
+					'```',
+					'',
+					'```mermaid',
+					'graph TD; A-->B',
+					'```',
+					'',
+					'| Name | Value |',
+					'| ---- | ----- |',
+					'| Foo | Bar |',
+					'',
+					'![Broken image](https://example.com/image.png)'
+				].join('\n'),
+				components: {
+					code: Code,
+					mermaid: Mermaid
+				},
+				translations: {
+					copyCode: 'Kopieren',
+					downloadFile: 'Datei herunterladen',
+					copyTable: 'Tabelle kopieren',
+					downloadTable: 'Tabelle herunterladen',
+					downloadTableAsCsv: 'Tabelle als CSV herunterladen',
+					copyTableAsMarkdown: 'Tabelle als Markdown kopieren',
+					downloadDiagram: 'Diagramm herunterladen',
+					viewFullscreen: 'Vollbild anzeigen',
+					exitFullscreen: 'Vollbild verlassen',
+					imageNotAvailable: 'Bild nicht verfügbar'
+				}
+			});
 
-		await vi.waitFor(() => {
-			expect(screen.container.querySelector('button[title="Kopieren"]')).toBeTruthy();
-			expect(screen.container.querySelector('button[title="Datei herunterladen"]')).toBeTruthy();
-			expect(screen.container.querySelector('button[title="Tabelle kopieren"]')).toBeTruthy();
-			expect(screen.container.querySelector('button[title="Tabelle herunterladen"]')).toBeTruthy();
-			expect(screen.container.querySelector('button[title="Diagramm herunterladen"]')).toBeTruthy();
-			expect(screen.container.querySelector('button[title="Vollbild anzeigen"]')).toBeTruthy();
-		});
+			await vi.waitFor(() => {
+				expect(screen.container.querySelector('button[title="Kopieren"]')).toBeTruthy();
+				expect(screen.container.querySelector('button[title="Datei herunterladen"]')).toBeTruthy();
+				expect(screen.container.querySelector('button[title="Tabelle kopieren"]')).toBeTruthy();
+				expect(
+					screen.container.querySelector('button[title="Tabelle herunterladen"]')
+				).toBeTruthy();
+				expect(
+					screen.container.querySelector('button[title="Diagramm herunterladen"]')
+				).toBeTruthy();
+				expect(screen.container.querySelector('button[title="Vollbild anzeigen"]')).toBeTruthy();
+			});
 
-		const image = screen.container.querySelector('img[alt="Broken image"]');
-		expect(image).toBeTruthy();
-		image?.dispatchEvent(new Event('error'));
+			await vi.waitFor(() => {
+				const image = screen.container.querySelector('img[alt="Broken image"]');
+				const fallback = screen.container.querySelector('[data-streamdown-image-fallback]');
+				expect(image || fallback).toBeTruthy();
+			});
 
-		await vi.waitFor(() => {
-			const fallback = screen.container.querySelector('[data-streamdown-image-fallback]');
-			expect(fallback?.textContent).toContain('Bild nicht verfügbar');
-		});
-	});
+			const image = screen.container.querySelector('img[alt="Broken image"]');
+			image?.dispatchEvent(new Event('error'));
+
+			await vi.waitFor(() => {
+				const fallback = screen.container.querySelector('[data-streamdown-image-fallback]');
+				expect(fallback?.textContent).toContain('Bild nicht verfügbar');
+			});
+		}
+	);
 });

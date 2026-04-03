@@ -25,6 +25,7 @@ vite.config.ts.timestamp-*
 apps/**/.vite/
 test-results/
 tests/**/__screenshots__/
+coverage/
 
 references/
 .symphony-runtime-source/
