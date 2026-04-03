@@ -6,6 +6,7 @@
 	import type { StreamdownToken } from '$lib/marked/index.js';
 	import Slot from './Slot.svelte';
 	import { useStreamdown } from '$lib/context.svelte.js';
+	import { renderHtmlToken } from '$lib/security/html.js';
 	import FootnoteRef from './FootnoteRef.svelte';
 	import Citation from './Citation.svelte';
 	import TableDownload from './TableDownload.svelte';
@@ -297,11 +298,14 @@
 {:else if token.type === 'text'}
 	{@render children()}
 {:else if token.type === 'html'}
-	{#if streamdown.renderHtml}
-		{@const content =
-			typeof streamdown.renderHtml === 'function' ? streamdown.renderHtml(token) : token.raw}
-		{@html content}
-	{/if}
+	{@const content = renderHtmlToken(token, {
+		allowedImagePrefixes: streamdown.allowedImagePrefixes,
+		allowedLinkPrefixes: streamdown.allowedLinkPrefixes,
+		allowedTags: streamdown.allowedTags,
+		defaultOrigin: streamdown.defaultOrigin,
+		renderHtml: streamdown.renderHtml
+	})}
+	{@html content}
 {:else if token.type === 'mdx'}
 	{@const Component = streamdown.mdxComponents?.[token.tagName]}
 	{#if Component}

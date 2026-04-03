@@ -3,6 +3,8 @@
 	import { StreamdownContext, type StreamdownProps } from './context.svelte.js';
 	import { mergeTheme, shadcnTheme } from './theme.js';
 	import { parseBlocks } from './marked/index.js';
+	import { preprocessCustomTags } from './security/preprocess-custom-tags.js';
+	import { preprocessLiteralTagContent } from './security/preprocess-literal-tag-content.js';
 	import { mergeTranslations } from './translations.js';
 
 	let {
@@ -15,6 +17,8 @@
 		defaultOrigin,
 		allowedLinkPrefixes = ['*'],
 		allowedImagePrefixes = ['*'],
+		allowedTags,
+		literalTagContent,
 		theme,
 		mermaidConfig = {},
 		katexConfig,
@@ -52,6 +56,22 @@
 		mermaidConfig?.theme ? mermaidConfig.theme : darkMode.current ? 'dark' : 'default'
 	);
 
+	const allowedTagNames = $derived(allowedTags ? Object.keys(allowedTags) : []);
+
+	const preprocessedContent = $derived.by(() => {
+		let result = content;
+
+		if (literalTagContent && literalTagContent.length > 0) {
+			result = preprocessLiteralTagContent(result, literalTagContent);
+		}
+
+		if (allowedTagNames.length > 0) {
+			result = preprocessCustomTags(result, allowedTagNames);
+		}
+
+		return result;
+	});
+
 	streamdown = new StreamdownContext({
 		get element() {
 			return element;
@@ -70,6 +90,12 @@
 		},
 		get allowedImagePrefixes() {
 			return allowedImagePrefixes;
+		},
+		get allowedTags() {
+			return allowedTags;
+		},
+		get literalTagContent() {
+			return literalTagContent;
 		},
 		get shikiTheme() {
 			return shikiTheme || shikiThemedTheme;
@@ -155,12 +181,14 @@
 
 	const id = $props.id();
 
-	const blocks = $derived(isStatic ? content : parseBlocks(content, streamdown.extensions));
+	const blocks = $derived(
+		isStatic ? [preprocessedContent] : parseBlocks(preprocessedContent, streamdown.extensions)
+	);
 </script>
 
 <div bind:this={element} class={className}>
 	{#if isStatic}
-		<Block static={isStatic} block={content} />
+		<Block static={isStatic} block={preprocessedContent} />
 	{:else}
 		{#each blocks as block, index (`${id}-block-${index}`)}
 			<Block static={isStatic} {block} />

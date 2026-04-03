@@ -6,6 +6,7 @@ import { getContext, onMount, setContext } from 'svelte';
 import type { LanguageInfo } from './utils/bundledLanguages.js';
 import type { ThemeRegistration } from 'shiki';
 import type { StreamdownTranslations } from './translations.js';
+import type { AllowedTags } from './security/types.js';
 
 export interface StreamdownContext
 	extends Omit<
@@ -192,6 +193,8 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	defaultOrigin?: string;
 	allowedLinkPrefixes?: string[];
 	allowedImagePrefixes?: string[];
+	allowedTags?: AllowedTags;
+	literalTagContent?: string[];
 
 	// Theme
 	theme?: DeepPartialTheme;
