@@ -2,8 +2,11 @@
 	import Block from './Block.svelte';
 	import { StreamdownContext, type StreamdownProps } from './context.svelte.js';
 	import { mergeTheme, shadcnTheme } from './theme.js';
-	import { parseBlocks } from './marked/index.js';
+	import { lex, parseBlocks, type StreamdownToken } from './marked/index.js';
 	import { mergeTranslations } from './translations.js';
+	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
+	import Footnotes from './Elements/Footnotes.svelte';
+	import type { Footnote } from './marked/marked-footnotes.js';
 
 	let {
 		content = '',
@@ -155,17 +158,38 @@
 
 	const id = $props.id();
 
-	const blocks = $derived(isStatic ? content : parseBlocks(content, streamdown.extensions));
+	type ParsedBlock = {
+		raw: string;
+		tokens: StreamdownToken[];
+	};
+
+	const parsedBlocks = $derived.by(() => {
+		streamdown.footnotes.refs.clear();
+		streamdown.footnotes.footnotes.clear();
+
+		const rawBlocks = isStatic ? [content] : parseBlocks(content, streamdown.extensions);
+
+		return rawBlocks.map((raw) => ({
+			raw,
+			tokens: lex(isStatic ? raw : completeIncompleteMarkdown(raw.trim()), streamdown.extensions)
+		})) satisfies ParsedBlock[];
+	});
+
+	const footnoteEntries = $derived.by(() => {
+		parsedBlocks;
+		return Array.from(streamdown.footnotes.footnotes.values()).map((entry) => ({
+			...entry,
+			lines: [...entry.lines],
+			tokens: [...entry.tokens]
+		})) satisfies Footnote[];
+	});
 </script>
 
 <div bind:this={element} class={className}>
-	{#if isStatic}
-		<Block static={isStatic} block={content} />
-	{:else}
-		{#each blocks as block, index (`${id}-block-${index}`)}
-			<Block static={isStatic} {block} />
-		{/each}
-	{/if}
+	{#each parsedBlocks as parsedBlock, index (`${id}-block-${index}`)}
+		<Block static={isStatic} block={parsedBlock.raw} tokens={parsedBlock.tokens} />
+	{/each}
+	<Footnotes entries={footnoteEntries} />
 </div>
 
 <style global>

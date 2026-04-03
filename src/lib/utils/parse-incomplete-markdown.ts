@@ -520,41 +520,84 @@ export class IncompleteMarkdownParser {
 				handler: ({ line }) => line
 			},
 			{
-				name: 'inlineCitation',
-				pattern: /\[/,
-				skipInBlockTypes: ['code', 'math'],
-				handler: ({ line }) => {
-					// Count unescaped opening brackets without matching closing brackets
-					let unclosedBrackets = 0;
-					for (let i = 0; i < line.length; i++) {
-						if (line[i] === '[' && (i === 0 || line[i - 1] !== '\\')) {
-							// Check if this bracket has a matching closing bracket later in the line
-							const restOfLine = line.substring(i + 1);
-							const closingIndex = restOfLine.indexOf(']');
-							if (closingIndex === -1) {
-								unclosedBrackets++;
-							}
-						}
-					}
-
-					// If there's an odd number of unclosed brackets, add closing bracket
-					if (unclosedBrackets % 2 === 1) {
-						const endOfCellOrLine = findEndOfCellOrLineContaining(line, line.length - 1);
-						return line.substring(0, endOfCellOrLine) + ']' + line.substring(endOfCellOrLine);
-					}
-
-					return line;
-				}
-			},
-			{
 				name: 'footnoteRef',
 				pattern: /\[\^[^\]\s,]*/,
 				skipInBlockTypes: ['code', 'math'],
 				handler: ({ line }) => {
-					if (!line.includes(']')) {
-						return line.replace(/\[\^[^\]\s,]*/, '[^streamdown:footnote]');
+					const footnoteMatch = line.match(/\[\^[^\]\s,]*/);
+					if (!footnoteMatch || footnoteMatch.index === undefined) {
+						return line;
 					}
-					return line;
+
+					const footnoteStart = footnoteMatch.index;
+					const footnoteEnd = footnoteStart + footnoteMatch[0].length;
+					if (line[footnoteEnd] === ']') {
+						return line;
+					}
+
+					return (
+						line.substring(0, footnoteStart) +
+						'[^streamdown:footnote]' +
+						line.substring(footnoteEnd)
+					);
+				}
+			},
+			{
+				name: 'inlineCitation',
+				pattern: /\[/,
+				skipInBlockTypes: ['code', 'math'],
+				handler: ({ line }) => {
+					let result = line;
+
+					while (true) {
+						const unmatchedBrackets: number[] = [];
+						const matchedBrackets: number[] = [];
+						for (let i = 0; i < result.length; i++) {
+							if (result[i] !== '[' || (i > 0 && result[i - 1] === '\\')) {
+								continue;
+							}
+
+							if (result[i + 1] === '^') {
+								continue;
+							}
+
+							const closingIndex = result.indexOf(']', i + 1);
+							if (closingIndex === -1) {
+								unmatchedBrackets.push(i);
+								continue;
+							}
+
+							matchedBrackets.push(i);
+						}
+
+						if (unmatchedBrackets.length === 0) {
+							return result;
+						}
+
+						const current = unmatchedBrackets[0];
+						const nextUnmatched = unmatchedBrackets[1] ?? -1;
+
+						if (result[current - 1] === '!') {
+							return result;
+						}
+
+						let insertionPoint =
+							nextUnmatched === -1
+								? findEndOfCellOrLineContaining(result, result.length - 1)
+								: nextUnmatched;
+
+						const between = nextUnmatched === -1 ? '' : result.slice(current, nextUnmatched);
+						const conjunctionMatch = between.match(/\s+and\s+$/);
+						if (conjunctionMatch && nextUnmatched !== -1) {
+							insertionPoint = current + between.length - conjunctionMatch[0].length;
+						}
+
+						result = result.slice(0, insertionPoint) + ']' + result.slice(insertionPoint);
+
+						if (matchedBrackets.length === 0 && nextUnmatched === -1) {
+							return result;
+						}
+					}
 				}
 			},
 			{

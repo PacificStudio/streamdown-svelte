@@ -8,15 +8,18 @@
 
 	let {
 		block,
-		static: isStatic = false
+		static: isStatic = false,
+		tokens: providedTokens
 	}: {
 		block: string;
 		static?: boolean;
+		tokens?: StreamdownToken[];
 	} = $props();
 
 	const streamdown = useStreamdown();
 	const tokens = $derived(
-		lex(isStatic ? block : parseIncompleteMarkdown(block.trim()), streamdown.extensions)
+		providedTokens ??
+			lex(isStatic ? block : parseIncompleteMarkdown(block.trim()), streamdown.extensions)
 	);
 	const insidePopover = getContext('POPOVER');
 </script>
