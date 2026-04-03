@@ -31,7 +31,7 @@
 					data-streamdown="list-item"
 					class={streamdown.theme.li.base}
 				>
-					<Block static={true} block={entry.content} />
+					<Block static={true} block={entry.content} tokens={entry.tokens} />
 					<a
 						href={'#footnote-ref-' + entry.label}
 						data-footnote-backref

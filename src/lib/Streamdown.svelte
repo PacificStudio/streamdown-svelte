@@ -2,11 +2,16 @@
 	import Block from './Block.svelte';
 	import { StreamdownContext, type StreamdownProps } from './context.svelte.js';
 	import { mergeTheme, shadcnTheme } from './theme.js';
-	import { lex, parseBlocks, type StreamdownToken } from './marked/index.js';
+	import {
+		lexWithFootnotes,
+		parseBlocksWithFootnotes,
+		type FootnoteState,
+		type StreamdownToken
+	} from './marked/index.js';
 	import { mergeTranslations } from './translations.js';
 	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 	import Footnotes from './Elements/Footnotes.svelte';
-	import type { Footnote } from './marked/marked-footnotes.js';
+	import type { Footnote, FootnoteRef } from './marked/marked-footnotes.js';
 
 	let {
 		content = '',
@@ -161,27 +166,72 @@
 	type ParsedBlock = {
 		raw: string;
 		tokens: StreamdownToken[];
+		footnotes: FootnoteState;
 	};
 
+	const parsedDocument = $derived.by(() => {
+		if (isStatic) {
+			const parsed = lexWithFootnotes(content, streamdown.extensions);
+			return {
+				blocks: [content],
+				footnotes: parsed.footnotes
+			};
+		}
+
+		return parseBlocksWithFootnotes(content, streamdown.extensions);
+	});
+
 	const parsedBlocks = $derived.by(() => {
-		streamdown.footnotes.refs.clear();
-		streamdown.footnotes.footnotes.clear();
+		const rawBlocks = parsedDocument.blocks;
 
-		const rawBlocks = isStatic ? [content] : parseBlocks(content, streamdown.extensions);
+		return rawBlocks.map((raw) => {
+			const parsed = lexWithFootnotes(
+				isStatic ? raw : completeIncompleteMarkdown(raw.trim()),
+				streamdown.extensions
+			);
 
-		return rawBlocks.map((raw) => ({
-			raw,
-			tokens: lex(isStatic ? raw : completeIncompleteMarkdown(raw.trim()), streamdown.extensions)
-		})) satisfies ParsedBlock[];
+			return {
+				raw,
+				tokens: parsed.tokens,
+				footnotes: parsed.footnotes
+			};
+		}) satisfies ParsedBlock[];
+	});
+
+	const footnoteState = $derived.by(() => {
+		const refs = new Map<string, FootnoteRef>(parsedDocument.footnotes.refs);
+		const footnotes = new Map<string, Footnote>(parsedDocument.footnotes.footnotes);
+
+		for (const parsedBlock of parsedBlocks) {
+			for (const [label, ref] of parsedBlock.footnotes.refs) {
+				refs.set(label, ref);
+			}
+
+			for (const [label, entry] of parsedBlock.footnotes.footnotes) {
+				footnotes.set(label, entry);
+			}
+		}
+
+		return {
+			refs,
+			footnotes
+		} satisfies FootnoteState;
 	});
 
 	const footnoteEntries = $derived.by(() => {
-		parsedBlocks;
-		return Array.from(streamdown.footnotes.footnotes.values()).map((entry) => ({
-			...entry,
-			lines: [...entry.lines],
-			tokens: [...entry.tokens]
-		})) satisfies Footnote[];
+		return Array.from(footnoteState.footnotes.values()).map((entry) => {
+			const content = entry.lines.join('\n').trim();
+			return {
+				...entry,
+				lines: [...entry.lines],
+				tokens: content.length === 0 ? [] : lexWithFootnotes(content, streamdown.extensions).tokens
+			};
+		}) satisfies Footnote[];
+	});
+
+	$effect(() => {
+		streamdown.footnotes.refs = new Map(footnoteState.refs);
+		streamdown.footnotes.footnotes = new Map(footnoteState.footnotes);
 	});
 </script>
 

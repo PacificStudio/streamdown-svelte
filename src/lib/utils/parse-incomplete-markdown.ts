@@ -523,24 +523,7 @@ export class IncompleteMarkdownParser {
 				name: 'footnoteRef',
 				pattern: /\[\^[^\]\s,]*/,
 				skipInBlockTypes: ['code', 'math'],
-				handler: ({ line }) => {
-					const footnoteMatch = line.match(/\[\^[^\]\s,]*/);
-					if (!footnoteMatch || footnoteMatch.index === undefined) {
-						return line;
-					}
-
-					const footnoteStart = footnoteMatch.index;
-					const footnoteEnd = footnoteStart + footnoteMatch[0].length;
-					if (line[footnoteEnd] === ']') {
-						return line;
-					}
-
-					return (
-						line.substring(0, footnoteStart) +
-						'[^streamdown:footnote]' +
-						line.substring(footnoteEnd)
-					);
-				}
+				handler: ({ line }) => replaceIncompleteFootnoteRefs(line)
 			},
 			{
 				name: 'inlineCitation',
@@ -1139,6 +1122,29 @@ const isWithinFootnoteRef = (text: string, position: number): boolean => {
 	}
 
 	return false;
+};
+
+const replaceIncompleteFootnoteRefs = (line: string): string => {
+	const matches = line.matchAll(/\[\^[^\]\s,]*/g);
+	let result = '';
+	let lastIndex = 0;
+	let foundMatch = false;
+
+	for (const match of matches) {
+		if (match.index === undefined) {
+			continue;
+		}
+
+		foundMatch = true;
+		const start = match.index;
+		const end = start + match[0].length;
+
+		result += line.slice(lastIndex, start);
+		result += line[end] === ']' ? match[0] : '[^streamdown:footnote]';
+		lastIndex = end;
+	}
+
+	return foundMatch ? result + line.slice(lastIndex) : line;
 };
 
 // Export the class and interfaces
