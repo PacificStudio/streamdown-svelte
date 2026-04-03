@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
+	import { getContext, setContext } from 'svelte';
 	import AnimatedText from './AnimatedText.svelte';
 	import Element from './Elements/Element.svelte';
 	import { useStreamdown } from './context.svelte.js';
@@ -8,6 +8,7 @@
 	import { renderMarkdownFragment } from './security/html.js';
 	import { detectTextDirection } from './utils/detectDirection.js';
 	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
+	import { hasIncompleteCodeFence } from './utils/code-block.js';
 
 	let {
 		block,
@@ -30,6 +31,7 @@
 			streamdown.plugins
 		)
 	);
+	const isIncompleteCodeFence = $derived(streamdown.isAnimating && !isStatic && hasIncompleteCodeFence(block));
 	const tokens = $derived(lex(markdown, streamdown.extensions));
 	const insidePopover = getContext('POPOVER');
 	const allowedTagNames = $derived(
@@ -79,6 +81,12 @@
 		}
 
 		return streamdown.dir;
+	});
+
+	setContext('STREAMDOWN_BLOCK', {
+		get isIncompleteCodeFence() {
+			return isIncompleteCodeFence;
+		}
 	});
 </script>
 

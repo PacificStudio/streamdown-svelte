@@ -44,6 +44,48 @@ describeInBrowser('ported streamdown code and table controls', () => {
 		expect(saveMock).toHaveBeenCalledWith('file.js', 'console.log("hello");', 'text/plain');
 	});
 
+	testInBrowser('supports granular code controls and disables code actions while streaming', async () => {
+		const writeText = vi.fn().mockResolvedValue(undefined);
+		Object.defineProperty(navigator, 'clipboard', {
+			value: { writeText },
+			configurable: true
+		});
+
+		saveMock.mockReset();
+
+		const hiddenDownload = render(Streamdown, {
+			content: ['```javascript', 'console.log("hello");', '```'].join('\n'),
+			controls: {
+				code: {
+					download: false
+				}
+			}
+		});
+
+		expect(hiddenDownload.container.querySelector('button[title="Copy Code"]')).toBeTruthy();
+		expect(hiddenDownload.container.querySelector('button[title="Download file"]')).toBeFalsy();
+
+		const streaming = render(Streamdown, {
+			content: ['```javascript', 'console.log("hello");'].join('\n'),
+			isAnimating: true
+		});
+
+		const copyButton = streaming.container.querySelector('button[title="Copy Code"]');
+		const downloadButton = streaming.container.querySelector('button[title="Download file"]');
+		expect(copyButton).toHaveAttribute('disabled');
+		expect(downloadButton).toHaveAttribute('disabled');
+
+		(copyButton as HTMLButtonElement).click();
+		(downloadButton as HTMLButtonElement).click();
+
+		expect(writeText).not.toHaveBeenCalled();
+		expect(saveMock).not.toHaveBeenCalled();
+		expect(streaming.container.querySelector('[data-streamdown="code-block"]')).toHaveAttribute(
+			'data-incomplete',
+			'true'
+		);
+	});
+
 	testInBrowser('opens table menus and exports markdown and csv payloads', async () => {
 		const writeText = vi.fn().mockResolvedValue(undefined);
 		Object.defineProperty(navigator, 'clipboard', {
