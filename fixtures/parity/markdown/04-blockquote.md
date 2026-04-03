@@ -1,0 +1,1 @@
+> Quote with **bold** text.
