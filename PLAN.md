@@ -96,7 +96,7 @@ Success criteria:
 
 ### Issue P0-01: Freeze Reference Version
 
-- Status: `todo`
+- Status: `done`
 - Goal: Lock the exact `streamdown` version and commit that parity will target.
 - Tasks:
 - Record the reference commit SHA from `references/streamdown`
