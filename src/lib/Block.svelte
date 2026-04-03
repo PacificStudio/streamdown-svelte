@@ -7,7 +7,8 @@
 	import { renderMarkdownFragment } from './security/html.js';
 	import { lex, type StreamdownToken } from './marked/index.js';
 	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
-	import { getContext } from 'svelte';
+	import { getContext, setContext } from 'svelte';
+	import { hasIncompleteCodeFence } from './utils/code-block.js';
 
 	let {
 		block,
@@ -26,6 +27,7 @@
 			streamdown.plugins
 		)
 	);
+	const isIncompleteCodeFence = $derived(streamdown.isAnimating && !isStatic && hasIncompleteCodeFence(block));
 	const tokens = $derived(lex(markdown, streamdown.extensions));
 	const insidePopover = getContext('POPOVER');
 
@@ -76,6 +78,12 @@
 		}
 
 		return streamdown.dir;
+	});
+
+	setContext('STREAMDOWN_BLOCK', {
+		get isIncompleteCodeFence() {
+			return isIncompleteCodeFence;
+		}
 	});
 </script>
 

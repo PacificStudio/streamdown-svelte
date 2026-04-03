@@ -267,6 +267,9 @@
 		get translations() {
 			return mergeTranslations(translations);
 		},
+		get lineNumbers() {
+			return lineNumbers;
+		},
 		get shikiLanguages() {
 			return shikiLanguages;
 		},
@@ -317,9 +320,30 @@
 			const codeControls = controls?.code ?? true;
 			const tableControls = controls?.table ?? true;
 			return {
-				code: codeControls,
+				code: codeControls !== false,
 				mermaid: normalizeMermaidControls(controls?.mermaid),
 				table: tableControls
+			};
+		},
+		get codeControls() {
+			const codeControls = controls?.code ?? true;
+			if (codeControls === false) {
+				return {
+					copy: false,
+					download: false
+				};
+			}
+
+			if (codeControls === true) {
+				return {
+					copy: true,
+					download: true
+				};
+			}
+
+			return {
+				copy: codeControls.copy ?? true,
+				download: codeControls.download ?? true
 			};
 		},
 		get children() {
