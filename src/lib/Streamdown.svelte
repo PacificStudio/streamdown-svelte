@@ -144,6 +144,13 @@
 
 		return resolveCompatAnimation(animated, isAnimating, resolvedMode);
 	});
+	const resolvedTheme = $derived.by(() => {
+		const mergedTheme = shouldMergeTheme
+			? mergeTheme(theme, baseTheme)
+			: theme || (baseTheme === 'shadcn' ? shadcnTheme : theme);
+
+		return prefixThemeClasses(prefix, mergedTheme);
+	});
 
 	const shikiThemedTheme = $derived(
 		shikiThemes
@@ -204,10 +211,7 @@
 			return snippets;
 		},
 		get theme() {
-			const mergedTheme = shouldMergeTheme
-				? mergeTheme(theme, baseTheme)
-				: theme || (baseTheme === 'shadcn' ? shadcnTheme : theme);
-			return prefixThemeClasses(prefix, mergedTheme);
+			return resolvedTheme;
 		},
 		get baseTheme() {
 			return baseTheme;
