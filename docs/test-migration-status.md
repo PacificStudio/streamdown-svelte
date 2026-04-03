@@ -15,19 +15,19 @@ Reference inputs:
 | ------------------------------------------------------------- | ----: |
 | Executable frozen reference files                             |   101 |
 | Support files                                                 |     2 |
-| Passing via ported upstream file                              |     4 |
+| Passing via ported upstream file                              |     6 |
 | Passing with documented port gap                              |     1 |
 | Passing via local analogue only                               |    11 |
-| Partial local coverage                                        |    39 |
+| Partial local coverage                                        |    37 |
 | Missing local coverage                                        |     7 |
 | Blocked by missing surface                                    |    39 |
-| Remaining P0 files not yet passing via port or local analogue |    17 |
+| Remaining P0 files not yet passing via port or local analogue |    15 |
 
 ## Priority Breakdown
 
 | Priority | Total executable files | Ported | Ported gap | Local analogue | Partial | Missing | Blocked |
 | -------- | ---------------------: | -----: | ---------: | -------------: | ------: | ------: | ------: |
-| `P0`     |                     33 |      4 |          1 |             11 |       7 |       1 |       9 |
+| `P0`     |                     33 |      6 |          1 |             11 |       5 |       1 |       9 |
 | `P1`     |                     53 |      0 |          0 |              0 |      29 |       3 |      21 |
 | `P2`     |                     15 |      0 |          0 |              0 |       3 |       3 |       9 |
 
@@ -35,7 +35,7 @@ Reference inputs:
 
 | Scope        | Total files | Ported | Ported gap | Local analogue | Partial | Missing | Blocked | Support only |
 | ------------ | ----------: | -----: | ---------: | -------------: | ------: | ------: | ------: | -----------: |
-| `remend`     |          24 |      4 |          1 |             11 |       5 |       1 |       2 |            0 |
+| `remend`     |          24 |      6 |          1 |             11 |       3 |       1 |       2 |            0 |
 | `streamdown` |          73 |      0 |          0 |              0 |      34 |       6 |      33 |            0 |
 | `plugins`    |           4 |      0 |          0 |              0 |       0 |       0 |       4 |            0 |
 | `support`    |           2 |      0 |          0 |              0 |       0 |       0 |       0 |            2 |
@@ -46,9 +46,7 @@ The table below keeps the missing work visible by listing every file that is sti
 
 | Source file                                                            | Priority | Local destination                                                | Pass status | Blocker                                                                                                                                                  |
 | ---------------------------------------------------------------------- | -------- | ---------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/remend/__tests__/bold-italic.test.ts`                        | `P0`     | `src/tests/strong.test.ts`<br>`src/tests/em.test.ts`             | `partial`   | `src/tests/strong.test.ts` and `src/tests/em.test.ts` cover the pieces, but not the combined upstream contract.                                          |
 | `packages/remend/__tests__/broken-markdown-variants.test.ts`           | `P0`     | `src/tests/*`<br>`src/tests/weird-cases.test.ts`                 | `partial`   | Incomplete-markdown recovery exists across `src/tests/*` plus `src/tests/weird-cases.test.ts`, but the upstream regression matrix is not ported.         |
-| `packages/remend/__tests__/mixed-formatting.test.ts`                   | `P0`     | -                                                                | `partial`   | Local tests cover individual constructs, but not the mixed-formatting expectations as a single upstream contract.                                        |
 | `packages/streamdown/__tests__/dollar-sign.test.tsx`                   | `P0`     | `src/tests/math.test.ts`                                         | `partial`   | `src/tests/math.test.ts` covers math parsing, but not the exact literal-dollar regressions from upstream.                                                |
 | `packages/streamdown/__tests__/email-addresses.test.tsx`               | `P0`     | `src/tests/link.test.ts`                                         | `partial`   | Local parser coverage exists in `src/tests/link.test.ts`, but the upstream rendered-output contract is not ported.                                       |
 | `packages/streamdown/__tests__/html-block-multiline.test.tsx`          | `P0`     | -                                                                | `partial`   | Local markdown/HTML handling exists, but not the exact multiline HTML block behavior from upstream.                                                      |
@@ -136,7 +134,9 @@ The table below keeps the missing work visible by listing every file that is sti
 
 | Source file                                                            | Area           | Priority | Migration status             | Local destination                                                          | Pass status               | Blockers or evidence                                                                                                                                                           |
 | ---------------------------------------------------------------------- | -------------- | -------- | ---------------------------- | -------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `packages/remend/__tests__/bold-italic.test.ts`                        | `parser`       | `P0`     | `ported_to_local_harness`    | `tests/ported/remend/bold-italic.test.ts`                                  | `passes (ported)`         | Ported to `tests/ported/remend/bold-italic.test.ts`; triple-asterisk recovery and overlapping closer cases now run directly against local `parseIncompleteMarkdown`.           |
 | `packages/remend/__tests__/comparison-operators.test.ts`               | `regressions`  | `P0`     | `ported_to_local_harness`    | `tests/ported/remend/comparison-operators.test.ts`                         | `passes (ported)`         | Ported to `tests/ported/remend/comparison-operators.test.ts`; local parser now matches the upstream `\\>` list-item escape contract.                                           |
+| `packages/remend/__tests__/mixed-formatting.test.ts`                   | `parser`       | `P0`     | `ported_to_local_harness`    | `tests/ported/remend/mixed-formatting.test.ts`                             | `passes (ported)`         | Ported to `tests/ported/remend/mixed-formatting.test.ts`; mixed formatter ordering, incomplete-link priority, and streaming recovery now follow the frozen upstream contract.  |
 | `packages/remend/__tests__/setext-heading.test.ts`                     | `parser`       | `P0`     | `ported_to_local_harness`    | `tests/ported/remend/setext-heading.test.ts`                               | `passes (ported)`         | Ported to `tests/ported/remend/setext-heading.test.ts`; local parser now encodes the upstream zero-width-space guard contract.                                                 |
 | `packages/remend/__tests__/single-tilde.test.ts`                       | `regressions`  | `P0`     | `ported_to_local_harness`    | `tests/ported/remend/single-tilde.test.ts`                                 | `passes (ported)`         | Ported to `tests/ported/remend/single-tilde.test.ts`; local parser now escapes word-internal single tildes per upstream issue `#445`.                                          |
 | `packages/remend/__tests__/streaming.test.ts`                          | `parser`       | `P0`     | `ported_to_local_harness`    | `tests/ported/remend/streaming.test.ts`                                    | `passes (ported)`         | Ported to `tests/ported/remend/streaming.test.ts`; chunk-by-chunk recovery is now asserted directly against local `parseIncompleteMarkdown`.                                   |
@@ -152,9 +152,7 @@ The table below keeps the missing work visible by listing every file that is sti
 | `packages/remend/__tests__/links.test.ts`                              | `parser`       | `P0`     | `mapped_to_local_tests`      | `src/tests/link.test.ts`                                                   | `passes (local analogue)` | Direct local analogue in `src/tests/link.test.ts`.                                                                                                                             |
 | `packages/remend/__tests__/lists.test.ts`                              | `parser`       | `P0`     | `mapped_to_local_tests`      | `src/tests/li.test.ts`<br>`src/tests/ol.test.ts`<br>`src/tests/ul.test.ts` | `passes (local analogue)` | Direct local analogues in `src/tests/li.test.ts`, `src/tests/ol.test.ts`, and `src/tests/ul.test.ts`.                                                                          |
 | `packages/remend/__tests__/strikethrough.test.ts`                      | `parser`       | `P0`     | `mapped_to_local_tests`      | `src/tests/del.test.ts`                                                    | `passes (local analogue)` | Direct local analogue in `src/tests/del.test.ts`.                                                                                                                              |
-| `packages/remend/__tests__/bold-italic.test.ts`                        | `parser`       | `P0`     | `partial_local_coverage`     | `src/tests/strong.test.ts`<br>`src/tests/em.test.ts`                       | `partial`                 | `src/tests/strong.test.ts` and `src/tests/em.test.ts` cover the pieces, but not the combined upstream contract.                                                                |
 | `packages/remend/__tests__/broken-markdown-variants.test.ts`           | `regressions`  | `P0`     | `partial_local_coverage`     | `src/tests/*`<br>`src/tests/weird-cases.test.ts`                           | `partial`                 | Incomplete-markdown recovery exists across `src/tests/*` plus `src/tests/weird-cases.test.ts`, but the upstream regression matrix is not ported.                               |
-| `packages/remend/__tests__/mixed-formatting.test.ts`                   | `parser`       | `P0`     | `partial_local_coverage`     | -                                                                          | `partial`                 | Local tests cover individual constructs, but not the mixed-formatting expectations as a single upstream contract.                                                              |
 | `packages/streamdown/__tests__/dollar-sign.test.tsx`                   | `regressions`  | `P0`     | `partial_local_coverage`     | `src/tests/math.test.ts`                                                   | `partial`                 | `src/tests/math.test.ts` covers math parsing, but not the exact literal-dollar regressions from upstream.                                                                      |
 | `packages/streamdown/__tests__/email-addresses.test.tsx`               | `security`     | `P0`     | `partial_local_coverage`     | `src/tests/link.test.ts`                                                   | `partial`                 | Local parser coverage exists in `src/tests/link.test.ts`, but the upstream rendered-output contract is not ported.                                                             |
 | `packages/streamdown/__tests__/html-block-multiline.test.tsx`          | `security`     | `P0`     | `partial_local_coverage`     | -                                                                          | `partial`                 | Local markdown/HTML handling exists, but not the exact multiline HTML block behavior from upstream.                                                                            |
