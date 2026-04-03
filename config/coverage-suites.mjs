@@ -1,3 +1,19 @@
+/**
+ * @typedef {{ statements: number; branches: number; functions: number; lines: number }} CoverageThresholds
+ */
+
+/**
+ * @typedef {{
+ *   description: string;
+ *   projects: string[];
+ *   testGlobs: string[];
+ *   excludedTestGlobs: string[];
+ *   thresholds: CoverageThresholds;
+ * }} CoverageSuite
+ */
+
+/** @typedef {'parser' | 'components' | 'parity'} CoverageSuiteName */
+
 export const coverageSourceInclude = ['src/lib/**/*.{ts,svelte}'];
 
 export const coverageSourceExclude = ['src/lib/**/*.d.ts'];
@@ -7,6 +23,7 @@ const flakyParserParityTests = [
 	'tests/ported/remend/mixed-formatting.test.ts'
 ];
 
+/** @type {Record<CoverageSuiteName, CoverageSuite>} */
 export const coverageSuites = {
 	parser: {
 		description: 'Parser, streaming, and markdown normalization coverage',
@@ -56,10 +73,12 @@ export const coverageSuites = {
 	}
 };
 
+/** @returns {CoverageSuiteName[]} */
 export function getCoverageSuiteNames() {
-	return Object.keys(coverageSuites);
+	return /** @type {CoverageSuiteName[]} */ (Object.keys(coverageSuites));
 }
 
+/** @param {CoverageSuiteName} name */
 export function getCoverageSuite(name) {
 	const suite = coverageSuites[name];
 
