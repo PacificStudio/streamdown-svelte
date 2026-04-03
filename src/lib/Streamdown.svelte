@@ -3,6 +3,8 @@
 	import { StreamdownContext, type StreamdownProps } from './context.svelte.js';
 	import { createCn, mergeTheme, prefixThemeClasses, shadcnTheme } from './theme.js';
 	import { parseBlocks } from './marked/index.js';
+	import { preprocessCustomTags } from './security/preprocess-custom-tags.js';
+	import { preprocessLiteralTagContent } from './security/preprocess-literal-tag-content.js';
 	import { mergeTranslations } from './translations.js';
 	import { useDarkMode } from '$lib/utils/darkMode.svelte.js';
 
@@ -164,6 +166,22 @@
 		mermaidConfig?.theme ? mermaidConfig.theme : darkMode.current ? 'dark' : 'default'
 	);
 
+	const allowedTagNames = $derived(allowedTags ? Object.keys(allowedTags) : []);
+
+	const preprocessedContent = $derived.by(() => {
+		let result = content;
+
+		if (literalTagContent && literalTagContent.length > 0) {
+			result = preprocessLiteralTagContent(result, literalTagContent);
+		}
+
+		if (allowedTagNames.length > 0) {
+			result = preprocessCustomTags(result, allowedTagNames);
+		}
+
+		return result;
+	});
+
 	streamdown = new StreamdownContext({
 		get element() {
 			return element;
@@ -310,12 +328,14 @@
 		previousIsAnimating = isAnimating;
 	});
 
-	const blocks = $derived(resolvedStatic ? content : parseBlocks(content, streamdown.extensions));
+	const blocks = $derived(
+		resolvedStatic ? [preprocessedContent] : parseBlocks(preprocessedContent, streamdown.extensions)
+	);
 </script>
 
 <div bind:this={element} class={rootClassName} style={rootStyle}>
 	{#if resolvedStatic}
-		<Block static={resolvedStatic} block={content} />
+		<Block static={resolvedStatic} block={preprocessedContent} />
 	{:else}
 		{#each blocks as block, index (`${id}-block-${index}`)}
 			<Block static={resolvedStatic} {block} />

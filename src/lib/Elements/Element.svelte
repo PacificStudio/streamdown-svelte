@@ -6,9 +6,10 @@
 	import type { StreamdownToken } from '$lib/marked/index.js';
 	import Slot from './Slot.svelte';
 	import { useStreamdown } from '$lib/context.svelte.js';
+	import { renderHtmlToken } from '$lib/security/html.js';
 	import FootnoteRef from './FootnoteRef.svelte';
 	import Citation from './Citation.svelte';
-	import TableDownload from './TableDownload.svelte';
+	import Table from './Table.svelte';
 	// Import fallback components
 	import { CodeFallback, MermaidFallback, MathFallback } from './fallbacks/index.js';
 	let { token, children }: { token: StreamdownToken; children: Snippet } = $props();
@@ -124,18 +125,10 @@
 	</Slot>
 {:else if token.type === 'table'}
 	<Slot props={{ token, children }} render={streamdown.snippets.table}>
-		{#if streamdown.controls.table}
-			<TableDownload {id} {token} />
-		{/if}
-		<div
-			data-streamdown-table={id}
-			{style}
-			class={`${streamdown.theme.table.base} group`}
-			style:overscroll-behavior-x="none"
-		>
-			<table class={streamdown.theme.table.table}>
+		<div {style}>
+			<Table {id}>
 				{@render children()}
-			</table>
+			</Table>
 		</div>
 	</Slot>
 {:else if token.type === 'thead'}
@@ -297,11 +290,14 @@
 {:else if token.type === 'text'}
 	{@render children()}
 {:else if token.type === 'html'}
-	{#if streamdown.renderHtml}
-		{@const content =
-			typeof streamdown.renderHtml === 'function' ? streamdown.renderHtml(token) : token.raw}
-		{@html content}
-	{/if}
+	{@const content = renderHtmlToken(token, {
+		allowedImagePrefixes: streamdown.allowedImagePrefixes,
+		allowedLinkPrefixes: streamdown.allowedLinkPrefixes,
+		allowedTags: streamdown.allowedTags,
+		defaultOrigin: streamdown.defaultOrigin,
+		renderHtml: streamdown.renderHtml
+	})}
+	{@html content}
 {:else if token.type === 'mdx'}
 	{@const Component = streamdown.mdxComponents?.[token.tagName]}
 	{#if Component}

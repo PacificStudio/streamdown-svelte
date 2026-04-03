@@ -42,6 +42,12 @@
 	"exports": {
 		"streamdown": [
 			{
+				"name": "AllowedTags",
+				"kind": "type",
+				"source": "./security/types.js",
+				"importedName": "AllowedTags"
+			},
+			{
 				"name": "Extension",
 				"kind": "type",
 				"source": "./marked/index.js",
@@ -78,6 +84,12 @@
 				"importedName": "StreamdownTranslations"
 			},
 			{
+				"name": "TableData",
+				"kind": "type",
+				"source": "./utils/table.js",
+				"importedName": "TableData"
+			},
+			{
 				"name": "Theme",
 				"kind": "type",
 				"source": "./theme.js",
@@ -100,6 +112,12 @@
 				"kind": "value",
 				"source": "./translations.js",
 				"importedName": "defaultTranslations"
+			},
+			{
+				"name": "extractTableDataFromElement",
+				"kind": "value",
+				"source": "./utils/table.js",
+				"importedName": "extractTableDataFromElement"
 			},
 			{
 				"name": "IncompleteMarkdownParser",
@@ -148,6 +166,24 @@
 				"kind": "value",
 				"source": "./Streamdown.svelte",
 				"importedName": "default"
+			},
+			{
+				"name": "tableDataToCSV",
+				"kind": "value",
+				"source": "./utils/table.js",
+				"importedName": "tableDataToCSV"
+			},
+			{
+				"name": "tableDataToMarkdown",
+				"kind": "value",
+				"source": "./utils/table.js",
+				"importedName": "tableDataToMarkdown"
+			},
+			{
+				"name": "tableDataToTSV",
+				"kind": "value",
+				"source": "./utils/table.js",
+				"importedName": "tableDataToTSV"
 			},
 			{
 				"name": "theme",
@@ -280,7 +316,7 @@
 		{
 			"name": "controls",
 			"optional": true,
-			"type": "{code?:boolean;mermaid?:boolean;table?:boolean;}",
+			"type": "{code?:boolean;mermaid?:boolean;table?:TableControlsConfig;}",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
