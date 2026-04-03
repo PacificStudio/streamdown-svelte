@@ -19,11 +19,13 @@
 		mermaidConfig = {},
 		katexConfig,
 		translations,
+		lineNumbers = true,
 		baseTheme,
 		mergeTheme: shouldMergeTheme = true,
 		streamdown = $bindable(),
 		renderHtml,
 		controls,
+		isAnimating = false,
 		animation,
 		element = $bindable(),
 		icons,
@@ -80,7 +82,7 @@
 		get theme() {
 			return shouldMergeTheme
 				? mergeTheme(theme, baseTheme)
-				: theme || (baseTheme === 'shadcn' ? shadcnTheme : theme);
+				: theme ?? mergeTheme(undefined, baseTheme);
 		},
 		get baseTheme() {
 			return baseTheme;
@@ -99,6 +101,9 @@
 		},
 		get translations() {
 			return mergeTranslations(translations);
+		},
+		get lineNumbers() {
+			return lineNumbers;
 		},
 		get shikiLanguages() {
 			return shikiLanguages;
@@ -126,14 +131,38 @@
 				tokenize: animation.tokenize || 'word'
 			};
 		},
+		get isAnimating() {
+			return isAnimating;
+		},
 		get controls() {
 			const codeControls = controls?.code ?? true;
 			const mermaidControls = controls?.mermaid ?? true;
 			const tableControls = controls?.table ?? true;
 			return {
-				code: codeControls,
+				code: codeControls !== false,
 				mermaid: mermaidControls,
 				table: tableControls
+			};
+		},
+		get codeControls() {
+			const codeControls = controls?.code ?? true;
+			if (codeControls === false) {
+				return {
+					copy: false,
+					download: false
+				};
+			}
+
+			if (codeControls === true) {
+				return {
+					copy: true,
+					download: true
+				};
+			}
+
+			return {
+				copy: codeControls.copy ?? true,
+				download: codeControls.download ?? true
 			};
 		},
 		get children() {

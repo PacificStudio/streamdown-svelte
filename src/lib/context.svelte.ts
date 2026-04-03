@@ -16,16 +16,47 @@ export interface StreamdownContext
 	shikiTheme: string;
 	theme: Theme;
 	translations: StreamdownTranslations;
+	lineNumbers: boolean;
+	isAnimating: boolean;
 	controls: {
 		code: boolean;
 		mermaid: boolean;
 		table: TableControlsConfig;
+	};
+	codeControls: {
+		copy: boolean;
+		download: boolean;
 	};
 	inlineCitationsMode: 'list' | 'carousel';
 	animation: {
 		enabled: boolean;
 	} & StreamdownProps['animation'];
 }
+
+type StreamdownContextInit<Source extends Record<string, any> = Record<string, any>> = Omit<
+	StreamdownProps<Source>,
+	keyof Snippets<Source> | 'class' | 'theme' | 'shikiTheme' | 'inlineCitationsMode' | 'translations'
+> & {
+	snippets: Snippets<Source>;
+	shikiTheme: string;
+	theme: Theme | DeepPartialTheme | undefined;
+	translations: StreamdownTranslations;
+	lineNumbers: boolean;
+	isAnimating: boolean;
+	controls: {
+		code: boolean;
+		mermaid: boolean;
+		table: boolean;
+	};
+	codeControls: {
+		copy: boolean;
+		download: boolean;
+	};
+	inlineCitationsMode: 'list' | 'carousel';
+	animation: {
+		enabled: boolean;
+	} & StreamdownProps<Source>['animation'];
+};
 export class StreamdownContext<Source extends Record<string, any> = Record<string, any>> {
 	footnotes = {
 		refs: new Map<string, FootnoteRef>(),
@@ -61,9 +92,7 @@ animation-fill-mode: forwards;`
 				: undefined;
 	}
 
-	constructor(
-		props: Omit<StreamdownProps, keyof Snippets | 'class'> & { snippets: Snippets<Source> }
-	) {
+	constructor(props: StreamdownContextInit<Source>) {
 		bind(this, props);
 		setContext('streamdown', this);
 		if (this.animation.animateOnMount) {
@@ -211,11 +240,18 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	mermaidConfig?: MermaidConfig;
 	katexConfig?: KatexOptions | ((inline: boolean) => KatexOptions);
 	translations?: Partial<StreamdownTranslations>;
+	lineNumbers?: boolean;
 	controls?: {
-		code?: boolean;
+		code?:
+			| boolean
+			| {
+					copy?: boolean;
+					download?: boolean;
+			  };
 		mermaid?: boolean;
 		table?: TableControlsConfig;
 	};
+	isAnimating?: boolean;
 	renderHtml?: boolean | ((token: Tokens.HTML | Tokens.Tag) => string);
 
 	animation?: {

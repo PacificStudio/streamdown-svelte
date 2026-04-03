@@ -4,7 +4,8 @@
 	import { lex, type StreamdownToken } from './marked/index.js';
 	import AnimatedText from './AnimatedText.svelte';
 	import { useStreamdown } from './context.svelte.js';
-	import { getContext } from 'svelte';
+	import { getContext, setContext } from 'svelte';
+	import { hasIncompleteCodeFence } from './utils/code-block.js';
 
 	let {
 		block,
@@ -15,10 +16,17 @@
 	} = $props();
 
 	const streamdown = useStreamdown();
+	const isIncompleteCodeFence = $derived(streamdown.isAnimating && !isStatic && hasIncompleteCodeFence(block));
 	const tokens = $derived(
 		lex(isStatic ? block : parseIncompleteMarkdown(block.trim()), streamdown.extensions)
 	);
 	const insidePopover = getContext('POPOVER');
+
+	setContext('STREAMDOWN_BLOCK', {
+		get isIncompleteCodeFence() {
+			return isIncompleteCodeFence;
+		}
+	});
 </script>
 
 {#snippet renderChildren(tokens: StreamdownToken[])}

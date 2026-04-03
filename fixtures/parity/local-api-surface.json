@@ -289,7 +289,7 @@
 		{
 			"name": "controls",
 			"optional": true,
-			"type": "{code?:boolean;mermaid?:boolean;table?:TableControlsConfig;}",
+			"type": "{code?:boolean|{copy?:boolean;download?:boolean;};mermaid?:boolean;table?:TableControlsConfig;}",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
@@ -434,6 +434,13 @@
 			"default": "'carousel'"
 		},
 		{
+			"name": "isAnimating",
+			"optional": true,
+			"type": "boolean",
+			"source": "src/lib/context.svelte.ts",
+			"default": "false"
+		},
+		{
 			"name": "katexConfig",
 			"optional": true,
 			"type": "KatexOptions|((inline:boolean)=>KatexOptions)",
@@ -446,6 +453,13 @@
 			"type": "Snippet<[{children:Snippet;token:ListItemToken;}]>",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
+		},
+		{
+			"name": "lineNumbers",
+			"optional": true,
+			"type": "boolean",
+			"source": "src/lib/context.svelte.ts",
+			"default": "true"
 		},
 		{
 			"name": "link",

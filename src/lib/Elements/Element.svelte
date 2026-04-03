@@ -9,13 +9,14 @@
 	import FootnoteRef from './FootnoteRef.svelte';
 	import Citation from './Citation.svelte';
 	import Table from './Table.svelte';
+	import Code from './Code.svelte';
 	// Import fallback components
-	import { CodeFallback, MermaidFallback, MathFallback } from './fallbacks/index.js';
+	import { MermaidFallback, MathFallback } from './fallbacks/index.js';
 	let { token, children }: { token: StreamdownToken; children: Snippet } = $props();
 	const streamdown = useStreamdown();
 
 	// Use provided components or fallback to lightweight versions
-	const CodeComponent = $derived(streamdown.components?.code ?? CodeFallback);
+	const CodeComponent = $derived(streamdown.components?.code ?? Code);
 	const MermaidComponent = $derived(streamdown.components?.mermaid ?? MermaidFallback);
 	const MathComponent = $derived(streamdown.components?.math ?? MathFallback);
 

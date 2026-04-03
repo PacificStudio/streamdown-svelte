@@ -184,8 +184,6 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'className',
 			'dir',
 			'disallowedElements',
-			'isAnimating',
-			'lineNumbers',
 			'linkSafety',
 			'literalTagContent',
 			'mode',
@@ -280,7 +278,8 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			{
 				name: 'controls',
 				reference: 'ControlsConfig',
-				local: '{code?:boolean;mermaid?:boolean;table?:TableControlsConfig;}'
+				local:
+					'{code?:boolean|{copy?:boolean;download?:boolean;};mermaid?:boolean;table?:TableControlsConfig;}'
 			},
 			{
 				name: 'icons',
