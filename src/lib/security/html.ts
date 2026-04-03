@@ -2,6 +2,7 @@ import { harden } from 'rehype-harden';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import type { Tokens } from 'marked';
@@ -65,6 +66,7 @@ export function renderMarkdownFragment(
 		return String(
 			unified()
 				.use(remarkParse)
+				.use(remarkGfm)
 				.use(remarkRehype, { allowDangerousHtml: true })
 				.use(rehypeRaw)
 				.use(rehypeSanitize, createSanitizeSchema(allowedTags))

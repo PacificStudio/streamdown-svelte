@@ -52,4 +52,26 @@ Paragraph inside details.
 		expect(image?.getAttribute('height')).toBe('100');
 		expect(paragraphs).toHaveLength(2);
 	});
+
+	testInBrowser('preserves GFM tables inside details blocks', () => {
+		const screen = render(Streamdown, {
+			content: `<details>
+<summary>Summary</summary>
+
+| Name | Value |
+| --- | --- |
+| Alpha | Beta |
+</details>`,
+			static: true
+		});
+
+		const details = screen.container.querySelector('details');
+		const table = screen.container.querySelector('table');
+		const cells = [...screen.container.querySelectorAll('td')].map((cell) => cell.textContent?.trim());
+
+		expect(details).toBeTruthy();
+		expect(table).toBeTruthy();
+		expect(details?.contains(table as Node)).toBe(true);
+		expect(cells).toEqual(['Alpha', 'Beta']);
+	});
 });
