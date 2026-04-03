@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { detectTextDirection } from './utils/detectDirection.js';
-	import Element from './Elements/Element.svelte';
-	import { applyPluginMarkdownTransforms } from './plugins.js';
-	import AnimatedText from './AnimatedText.svelte';
-	import { useStreamdown } from './context.svelte.js';
-	import { renderMarkdownFragment } from './security/html.js';
-	import { lex, type StreamdownToken } from './marked/index.js';
-	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 	import { getContext } from 'svelte';
+	import AnimatedText from './AnimatedText.svelte';
+	import Element from './Elements/Element.svelte';
+	import { useStreamdown } from './context.svelte.js';
+	import { lex, type StreamdownToken } from './marked/index.js';
+	import { applyPluginMarkdownTransforms } from './plugins.js';
+	import { renderMarkdownFragment } from './security/html.js';
+	import { detectTextDirection } from './utils/detectDirection.js';
+	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 
 	let {
 		block,
@@ -28,19 +28,18 @@
 	);
 	const tokens = $derived(lex(markdown, streamdown.extensions));
 	const insidePopover = getContext('POPOVER');
-
 	const allowedTagNames = $derived(
 		streamdown.allowedTags ? Object.keys(streamdown.allowedTags) : []
 	);
 
 	const shouldRenderSecurityHtmlBlock = $derived.by(() => {
-		const trimmed = block.trimStart();
+		const trimmed = markdown.trimStart();
 		if (trimmed.startsWith('<')) {
 			return true;
 		}
 
 		return allowedTagNames.some((tagName) =>
-			new RegExp(`<\\/?${tagName}(?=[\\s>/])`, 'i').test(block)
+			new RegExp(`<\\/?${tagName}(?=[\\s>/])`, 'i').test(markdown)
 		);
 	});
 
@@ -50,7 +49,7 @@
 		}
 
 		if (streamdown.renderHtml === false) {
-			return block
+			return markdown
 				.replaceAll('&', '&amp;')
 				.replaceAll('<', '&lt;')
 				.replaceAll('>', '&gt;')
@@ -58,7 +57,7 @@
 				.replaceAll("'", '&#39;');
 		}
 
-		return renderMarkdownFragment(block, {
+		return renderMarkdownFragment(markdown, {
 			allowedImagePrefixes: streamdown.allowedImagePrefixes,
 			allowedLinkPrefixes: streamdown.allowedLinkPrefixes,
 			allowedTags: streamdown.allowedTags,
@@ -72,7 +71,7 @@
 		}
 
 		if (streamdown.dir === 'auto') {
-			return detectTextDirection(block);
+			return detectTextDirection(markdown);
 		}
 
 		return streamdown.dir;
