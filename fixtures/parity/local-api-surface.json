@@ -733,16 +733,16 @@
 			"default": "true"
 		},
 		{
-			"name": "prefix",
+			"name": "plugins",
 			"optional": true,
-			"type": "string",
+			"type": "PluginConfig",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
 		{
-			"name": "plugins",
+			"name": "prefix",
 			"optional": true,
-			"type": "PluginConfig",
+			"type": "string",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
