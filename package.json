@@ -14,6 +14,7 @@
 		"test:ui": "vitest --ui",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
+		"verify:pack": "node scripts/verify-pack.mjs",
 		"verify:toolchain": "node scripts/verify-toolchain.mjs",
 		"verify:clean-build": "node scripts/verify-clean-build.mjs"
 	},
