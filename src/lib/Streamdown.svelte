@@ -28,7 +28,7 @@
 		fadeIn: 'fade',
 		slideUp: 'slideUp'
 	} as const;
-	type LocalAnimationConfig = NonNullable<StreamdownProps['animation']>;
+	type LocalAnimationConfig = { enabled: boolean } & NonNullable<StreamdownProps['animation']>;
 	type AnimationTimingFunction = NonNullable<LocalAnimationConfig['timingFunction']>;
 	const supportedTimingFunctions = new Set<AnimationTimingFunction>([
 		'ease',
@@ -322,9 +322,30 @@
 			const codeControls = controls?.code ?? true;
 			const tableControls = controls?.table ?? true;
 			return {
-				code: codeControls,
+				code: codeControls !== false,
 				mermaid: normalizeMermaidControls(controls?.mermaid),
 				table: tableControls
+			};
+		},
+		get codeControls() {
+			const codeControls = controls?.code ?? true;
+			if (codeControls === false) {
+				return {
+					copy: false,
+					download: false
+				};
+			}
+
+			if (codeControls === true) {
+				return {
+					copy: true,
+					download: true
+				};
+			}
+
+			return {
+				copy: codeControls.copy ?? true,
+				download: codeControls.download ?? true
 			};
 		},
 		get children() {
