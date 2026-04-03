@@ -22,8 +22,13 @@ function runCommand(command, args, label, cwd = repoRoot) {
 	const result = spawnSync(command, args, {
 		cwd,
 		encoding: 'utf8',
-		stdio: 'pipe'
+		stdio: 'pipe',
+		maxBuffer: 10 * 1024 * 1024
 	});
+
+	if (result.error) {
+		throw result.error;
+	}
 
 	if (result.status !== 0) {
 		const stderr = result.stderr.trim();
@@ -198,6 +203,12 @@ function runPackSmoke(fixtureDirectory, tarballPath) {
 		fixtureDirectory
 	);
 	runCommand('pnpm', ['build'], 'pack smoke build', fixtureDirectory);
+	runCommand(
+		'node',
+		[join('dist-ssr', posix.basename(generatedSmokeEntryRelativePath))],
+		'pack smoke execute built bundle',
+		fixtureDirectory
+	);
 }
 
 function main() {

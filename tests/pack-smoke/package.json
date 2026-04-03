@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "vite build"
+		"build": "vite build --ssr src/export-smoke.js --outDir dist-ssr"
 	},
 	"devDependencies": {
 		"@sveltejs/vite-plugin-svelte": "^6.0.0",
