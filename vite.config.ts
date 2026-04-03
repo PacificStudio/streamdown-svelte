@@ -6,6 +6,7 @@ import type { ViteDevServer } from 'vite';
 import type { Stats } from 'node:fs';
 import { copyFileSync, watchFile, unwatchFile } from 'node:fs';
 import { resolve } from 'node:path';
+import { coverageSourceExclude, coverageSourceInclude } from './config/coverage-suites.mjs';
 
 // Plugin to copy README.md from root to src folder
 function copyReadmePlugin() {
@@ -52,6 +53,14 @@ export default defineConfig({
 	assetsInclude: ['**/*.md'],
 	test: {
 		expect: { requireAssertions: true },
+		coverage: {
+			all: true,
+			provider: 'v8',
+			reporter: ['text', 'json-summary', 'html'],
+			reportsDirectory: './coverage/default',
+			include: coverageSourceInclude,
+			exclude: coverageSourceExclude
+		},
 		projects: [
 			{
 				extends: './vite.config.ts',
@@ -74,7 +83,11 @@ export default defineConfig({
 					name: 'server',
 					environment: 'node',
 					include: ['src/**/*.{test,spec}.{js,ts}', 'tests/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}', 'tests/**/*.svelte.{test,spec}.{js,ts}', 'tests/pack-smoke/**']
+					exclude: [
+						'src/**/*.svelte.{test,spec}.{js,ts}',
+						'tests/**/*.svelte.{test,spec}.{js,ts}',
+						'tests/pack-smoke/**'
+					]
 				}
 			}
 		]

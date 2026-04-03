@@ -1,0 +1,73 @@
+export const coverageSourceInclude = ['src/lib/**/*.{ts,svelte}'];
+
+export const coverageSourceExclude = ['src/lib/**/*.d.ts'];
+
+const flakyParserParityTests = [
+	'tests/ported/remend/broken-markdown-variants.test.ts',
+	'tests/ported/remend/mixed-formatting.test.ts'
+];
+
+export const coverageSuites = {
+	parser: {
+		description: 'Parser, streaming, and markdown normalization coverage',
+		projects: ['server'],
+		testGlobs: [
+			'tests/contracts/parser-ir.spec.ts',
+			'tests/contracts/parser-parity.spec.ts',
+			'tests/ported/remend/**/*.test.ts',
+			'tests/ported/streamdown/security/*.test.ts'
+		],
+		excludedTestGlobs: flakyParserParityTests,
+		thresholds: {
+			statements: 64,
+			branches: 70,
+			functions: 50,
+			lines: 64
+		}
+	},
+	components: {
+		description: 'Browser-rendered component and control coverage',
+		projects: ['client'],
+		testGlobs: ['tests/helpers/dom.svelte.test.ts', 'tests/ported/streamdown/**/*.svelte.test.ts'],
+		excludedTestGlobs: [],
+		thresholds: {
+			statements: 72,
+			branches: 71,
+			functions: 65,
+			lines: 72
+		}
+	},
+	parity: {
+		description: 'Reference-backed parity coverage across ported server and browser suites',
+		projects: ['server', 'client'],
+		testGlobs: [
+			'tests/contracts/parser-parity.spec.ts',
+			'tests/helpers/fixtures.test.ts',
+			'tests/ported/remend/**/*.test.ts',
+			'tests/ported/streamdown/**/*.{test,spec}.ts'
+		],
+		excludedTestGlobs: flakyParserParityTests,
+		thresholds: {
+			statements: 80,
+			branches: 75,
+			functions: 70,
+			lines: 80
+		}
+	}
+};
+
+export function getCoverageSuiteNames() {
+	return Object.keys(coverageSuites);
+}
+
+export function getCoverageSuite(name) {
+	const suite = coverageSuites[name];
+
+	if (!suite) {
+		throw new Error(
+			`Unknown coverage suite "${name}". Expected one of: ${getCoverageSuiteNames().join(', ')}`
+		);
+	}
+
+	return suite;
+}
