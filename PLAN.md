@@ -111,7 +111,7 @@ Success criteria:
 
 ### Issue P0-02: Create Feature Parity Matrix
 
-- Status: `todo`
+- Status: `done`
 - Goal: Build the master list of features and current status.
 - Tasks:
 - Enumerate reference public exports
