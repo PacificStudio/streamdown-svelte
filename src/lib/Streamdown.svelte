@@ -3,15 +3,19 @@
 	import { StreamdownContext, type StreamdownProps } from './context.svelte.js';
 	import { mergeTheme, shadcnTheme } from './theme.js';
 	import { parseBlocks } from './marked/index.js';
+	import { parseIncompleteMarkdown as repairIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
+	import { carets, hasIncompleteCodeFence, hasTable } from './streaming.js';
 	import { mergeTranslations } from './translations.js';
 
 	let {
 		content = '',
 		class: className,
+		className: futureClassName,
 		shikiTheme,
 		shikiLanguages,
 		shikiThemes,
 		parseIncompleteMarkdown,
+		parseMarkdownIntoBlocksFn,
 		defaultOrigin,
 		allowedLinkPrefixes = ['*'],
 		allowedImagePrefixes = ['*'],
@@ -25,6 +29,12 @@
 		renderHtml,
 		controls,
 		animation,
+		animated,
+		isAnimating,
+		caret,
+		mode,
+		onAnimationStart,
+		onAnimationEnd,
 		element = $bindable(),
 		icons,
 		children,
@@ -33,7 +43,7 @@
 		inlineCitationsMode = 'carousel',
 		mdxComponents,
 		components,
-		static: isStatic,
+		static: staticMode,
 		...snippets
 	}: StreamdownProps<Source> = $props();
 	import { useDarkMode } from '$lib/utils/darkMode.svelte.js';
@@ -52,6 +62,64 @@
 		mermaidConfig?.theme ? mermaidConfig.theme : darkMode.current ? 'dark' : 'default'
 	);
 
+	const resolvedClassName = $derived(
+		[className, futureClassName].filter((value): value is string => Boolean(value)).join(' ')
+	);
+
+	const resolvedMode = $derived(mode ?? (staticMode ? 'static' : 'streaming'));
+	const resolvedIsAnimating = $derived(isAnimating ?? false);
+	const shouldParseIncompleteMarkdown = $derived(parseIncompleteMarkdown ?? true);
+
+	const resolvedAnimation = $derived.by(() => {
+		if (resolvedMode === 'static') {
+			return { enabled: false } as const;
+		}
+
+		if (animated !== undefined) {
+			if (!animated || !resolvedIsAnimating) {
+				return { enabled: false } as const;
+			}
+
+			if (animated === true) {
+				return {
+					enabled: true,
+					animateOnMount: false,
+					type: 'fade',
+					duration: 150,
+					timingFunction: 'ease',
+					tokenize: 'word'
+				} as const;
+			}
+
+			return {
+				enabled: true,
+				animateOnMount: false,
+				type:
+					animated.animation === 'blurIn'
+						? 'blur'
+						: animated.animation === 'slideUp'
+							? 'slideUp'
+							: 'fade',
+				duration: animated.duration ?? 150,
+				timingFunction: animated.easing ?? 'ease',
+				tokenize: animated.sep ?? 'word'
+			} as const;
+		}
+
+		if (!animation?.enabled) {
+			return { enabled: false } as const;
+		}
+
+		return {
+			enabled: isAnimating === undefined ? true : resolvedIsAnimating,
+			animateOnMount: animation.animateOnMount ?? false,
+			type: animation.type || 'blur',
+			duration: animation.duration || 500,
+			timingFunction: animation.timingFunction || 'ease-in',
+			tokenize: animation.tokenize || 'word'
+		} as const;
+	});
+
 	streamdown = new StreamdownContext({
 		get element() {
 			return element;
@@ -60,7 +128,10 @@
 			return content;
 		},
 		get parseIncompleteMarkdown() {
-			return parseIncompleteMarkdown;
+			return shouldParseIncompleteMarkdown;
+		},
+		get parseMarkdownIntoBlocksFn() {
+			return parseMarkdownIntoBlocksFn;
 		},
 		get defaultOrigin() {
 			return defaultOrigin;
@@ -112,19 +183,14 @@
 		get inlineCitationsMode() {
 			return inlineCitationsMode;
 		},
+		get isAnimating() {
+			return resolvedIsAnimating;
+		},
+		get mode() {
+			return resolvedMode;
+		},
 		get animation() {
-			if (!animation?.enabled)
-				return {
-					enabled: false
-				};
-			return {
-				enabled: true,
-				animateOnMount: animation.animateOnMount ?? false,
-				type: animation.type || 'blur',
-				duration: animation.duration || 500,
-				timingFunction: animation.timingFunction || 'ease-in',
-				tokenize: animation.tokenize || 'word'
-			};
+			return resolvedAnimation;
 		},
 		get controls() {
 			const codeControls = controls?.code ?? true;
@@ -154,16 +220,105 @@
 	});
 
 	const id = $props.id();
+	const splitBlocks = $derived(
+		parseMarkdownIntoBlocksFn ??
+			((markdown: string) => parseBlocks(markdown, streamdown.extensions))
+	);
 
-	const blocks = $derived(isStatic ? content : parseBlocks(content, streamdown.extensions));
+	const rawBlocks = $derived(resolvedMode === 'static' ? [content] : splitBlocks(content));
+	const blockIsIncomplete = $derived(
+		rawBlocks.map(
+			(block, index) =>
+				resolvedMode === 'streaming' &&
+				resolvedIsAnimating &&
+				index === rawBlocks.length - 1 &&
+				hasIncompleteCodeFence(block)
+		)
+	);
+
+	const blocks = $derived.by(() => {
+		if (resolvedMode === 'static') {
+			return [content];
+		}
+
+		return rawBlocks.map((block, index) => {
+			if (
+				!shouldParseIncompleteMarkdown ||
+				(blockIsIncomplete[index] && hasIncompleteCodeFence(block))
+			) {
+				return block;
+			}
+
+			return repairIncompleteMarkdown(block);
+		});
+	});
+
+	const shouldHideCaret = $derived(
+		resolvedMode !== 'streaming' || !caret || !resolvedIsAnimating || rawBlocks.length === 0
+			? false
+			: (() => {
+					const lastBlock = rawBlocks.at(-1) as string;
+					return hasIncompleteCodeFence(lastBlock) || hasTable(lastBlock);
+				})()
+	);
+
+	const wrapperClassName = $derived(
+		[
+			resolvedClassName,
+			caret && resolvedIsAnimating && resolvedMode === 'streaming' && !shouldHideCaret
+				? 'streamdown-caret-active'
+				: ''
+		]
+			.filter(Boolean)
+			.join(' ')
+	);
+
+	const wrapperStyle = $derived(
+		caret && resolvedIsAnimating && resolvedMode === 'streaming' && !shouldHideCaret
+			? `--streamdown-caret:"${carets[caret]}";`
+			: undefined
+	);
+
+	let previousIsAnimating = $state<boolean | null>(null);
+
+	$effect(() => {
+		if (resolvedMode === 'static') {
+			previousIsAnimating = resolvedIsAnimating;
+			return;
+		}
+
+		const previousValue = previousIsAnimating;
+		previousIsAnimating = resolvedIsAnimating;
+
+		if (previousValue === null) {
+			if (resolvedIsAnimating) {
+				onAnimationStart?.();
+			}
+			return;
+		}
+
+		if (resolvedIsAnimating && !previousValue) {
+			onAnimationStart?.();
+		} else if (!resolvedIsAnimating && previousValue) {
+			onAnimationEnd?.();
+		}
+	});
 </script>
 
-<div bind:this={element} class={className}>
-	{#if isStatic}
-		<Block static={isStatic} block={content} />
+<div bind:this={element} class={wrapperClassName} style={wrapperStyle}>
+	{#if resolvedMode === 'static'}
+		<Block static={true} block={content} parseIncompleteMarkdown={false} />
 	{:else}
+		{#if blocks.length === 0 && caret && resolvedIsAnimating && !shouldHideCaret}
+			<span data-streamdown-caret-placeholder=""></span>
+		{/if}
 		{#each blocks as block, index (`${id}-block-${index}`)}
-			<Block static={isStatic} {block} />
+			<Block
+				static={false}
+				{block}
+				parseIncompleteMarkdown={false}
+				isIncomplete={blockIsIncomplete[index]}
+			/>
 		{/each}
 	{/if}
 </div>
@@ -210,6 +365,12 @@
 				transform: translateY(0);
 				opacity: 1;
 			}
+		}
+
+		:global(.streamdown-caret-active > :last-child::after) {
+			display: inline;
+			vertical-align: baseline;
+			content: var(--streamdown-caret);
 		}
 	}
 </style>

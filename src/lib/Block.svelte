@@ -8,15 +8,22 @@
 
 	let {
 		block,
-		static: isStatic = false
+		static: isStatic = false,
+		parseIncompleteMarkdown: shouldParseIncompleteMarkdown = false,
+		isIncomplete = false
 	}: {
 		block: string;
 		static?: boolean;
+		parseIncompleteMarkdown?: boolean;
+		isIncomplete?: boolean;
 	} = $props();
 
 	const streamdown = useStreamdown();
 	const tokens = $derived(
-		lex(isStatic ? block : parseIncompleteMarkdown(block.trim()), streamdown.extensions)
+		lex(
+			isStatic || !shouldParseIncompleteMarkdown ? block : parseIncompleteMarkdown(block),
+			streamdown.extensions
+		)
 	);
 	const insidePopover = getContext('POPOVER');
 </script>
@@ -26,7 +33,7 @@
 		{#if token}
 			{@const children = (token as any)?.tokens || []}
 			{@const isTextOnlyNode = children.length === 0}
-			<Element {token}>
+			<Element {token} {isIncomplete}>
 				{#if isTextOnlyNode}
 					{#if streamdown.animation.enabled && !insidePopover && !isStatic}
 						<AnimatedText text={'text' in token ? token.text || '' : ''} />

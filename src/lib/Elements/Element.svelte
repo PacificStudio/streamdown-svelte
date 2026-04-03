@@ -11,7 +11,15 @@
 	import Table from './Table.svelte';
 	// Import fallback components
 	import { CodeFallback, MermaidFallback, MathFallback } from './fallbacks/index.js';
-	let { token, children }: { token: StreamdownToken; children: Snippet } = $props();
+	let {
+		token,
+		children,
+		isIncomplete = false
+	}: {
+		token: StreamdownToken;
+		children: Snippet;
+		isIncomplete?: boolean;
+	} = $props();
 	const streamdown = useStreamdown();
 
 	// Use provided components or fallback to lightweight versions
@@ -72,11 +80,15 @@
 	</Slot>
 {:else if token.type === 'code' && token.lang === 'mermaid'}
 	<Slot props={{ children, token }} render={streamdown.snippets.code}>
-		<MermaidComponent {id} {token} />
+		{#if isIncomplete}
+			<MermaidFallback {id} {token} isIncomplete={true} />
+		{:else}
+			<MermaidComponent {id} {token} isIncomplete={false} />
+		{/if}
 	</Slot>
 {:else if token.type === 'code'}
 	<Slot props={{ children, token }} render={streamdown.snippets.code}>
-		<CodeComponent {id} {token} />
+		<CodeComponent {id} {token} {isIncomplete} />
 	</Slot>
 {:else if token.type === 'codespan'}
 	<Slot props={{ children, token }} render={streamdown.snippets.codespan}>

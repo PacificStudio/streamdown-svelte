@@ -22,6 +22,8 @@ export interface StreamdownContext
 		table: TableControlsConfig;
 	};
 	inlineCitationsMode: 'list' | 'carousel';
+	isAnimating: boolean;
+	mode: 'static' | 'streaming';
 	animation: {
 		enabled: boolean;
 	} & StreamdownProps['animation'];
@@ -187,6 +189,20 @@ export type Snippets<Source extends Record<string, any> = Record<string, any>> =
 export type StreamdownProps<Source extends Record<string, any> = Record<string, any>> = {
 	streamdown?: StreamdownContext;
 	static?: boolean;
+	mode?: 'streaming' | 'static';
+	isAnimating?: boolean;
+	animated?:
+		| boolean
+		| {
+				animation?: 'fadeIn' | 'blurIn' | 'slideUp';
+				duration?: number;
+				easing?: 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'linear';
+				sep?: 'word' | 'char';
+		  };
+	caret?: 'block' | 'circle';
+	onAnimationStart?: () => void;
+	onAnimationEnd?: () => void;
+	parseMarkdownIntoBlocksFn?: (markdown: string) => string[];
 	sources?: {
 		[key: string]: Source;
 	};
@@ -195,6 +211,7 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	element?: HTMLElement;
 	content: string;
 	class?: string;
+	className?: string;
 	parseIncompleteMarkdown?: boolean;
 	// Security props
 	defaultOrigin?: string;
