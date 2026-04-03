@@ -280,12 +280,12 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 				name: 'components',
 				reference: 'Components',
 				local:
-					'{code?:Component<{token:Tokens.Code;id:string;},any,any>;mermaid?:Component<{token:Tokens.Code;id:string;},any,any>;math?:Component<{token:MathToken;id:string;},any,any>;}'
+					'{code?:Component<{token:Tokens.Code;id:string;},any,any>;mermaid?:Component<{token:Tokens.Code;id:string;},any,any>;mermaidError?:Component<MermaidErrorComponentProps,any,any>;math?:Component<{token:MathToken;id:string;},any,any>;}'
 			},
 			{
 				name: 'controls',
 				reference: 'ControlsConfig',
-				local: '{code?:boolean;mermaid?:boolean;table?:boolean;}'
+				local: '{code?:boolean;mermaid?:MermaidControls;table?:boolean;}'
 			},
 			{
 				name: 'icons',
