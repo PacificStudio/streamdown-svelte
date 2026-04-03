@@ -14,7 +14,7 @@
 	import Code from './Code.svelte';
 	import Mermaid from './Mermaid.svelte';
 	import Math from './Math.svelte';
-	import { CodeFallback, MermaidFallback, MathFallback } from './fallbacks/index.js';
+	import { MermaidFallback, MathFallback } from './fallbacks/index.js';
 	import {
 		extractCodeFenceLanguage,
 		extractCodeFenceMeta,
@@ -25,9 +25,7 @@
 	const headingTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
 
 	// Use provided components or fallback to lightweight versions
-	const CodeComponent = $derived(
-		streamdown.components?.code ?? (streamdown.plugins?.code ? Code : CodeFallback)
-	);
+	const CodeComponent = $derived(streamdown.components?.code ?? Code);
 	const MermaidComponent = $derived(
 		streamdown.components?.mermaid ?? (streamdown.plugins?.mermaid ? Mermaid : MermaidFallback)
 	);
