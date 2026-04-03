@@ -7,6 +7,29 @@ import type { LanguageInfo } from './utils/bundledLanguages.js';
 import type { ThemeRegistration } from 'shiki';
 import type { StreamdownTranslations } from './translations.js';
 
+export type AllowedTags = Record<string, string[]>;
+
+export interface AnimateOptions {
+	animation?: 'fadeIn' | 'blurIn' | 'slideUp' | (string & {});
+	duration?: number;
+	easing?: string;
+	sep?: 'word' | 'char';
+	stagger?: number;
+}
+
+export interface LinkSafetyModalProps {
+	href: string;
+	open: boolean;
+	onClose: () => void;
+	onConfirm: () => void;
+}
+
+export interface LinkSafetyConfig {
+	enabled?: boolean;
+	onLinkCheck?: (href: string) => boolean | Promise<boolean>;
+	renderModal?: (props: LinkSafetyModalProps) => unknown;
+}
+
 export interface StreamdownContext
 	extends Omit<
 		StreamdownProps,
@@ -177,6 +200,8 @@ export type Snippets<Source extends Record<string, any> = Record<string, any>> =
 };
 
 export type StreamdownProps<Source extends Record<string, any> = Record<string, any>> = {
+	mode?: 'static' | 'streaming';
+	dir?: 'auto' | 'ltr' | 'rtl';
 	streamdown?: StreamdownContext;
 	static?: boolean;
 	sources?: {
@@ -192,6 +217,11 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	defaultOrigin?: string;
 	allowedLinkPrefixes?: string[];
 	allowedImagePrefixes?: string[];
+	linkSafety?: LinkSafetyConfig;
+	allowedTags?: AllowedTags;
+	literalTagContent?: string[];
+	prefix?: string;
+	lineNumbers?: boolean;
 
 	// Theme
 	theme?: DeepPartialTheme;
@@ -209,6 +239,11 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 		table?: boolean;
 	};
 	renderHtml?: boolean | ((token: Tokens.HTML | Tokens.Tag) => string);
+	isAnimating?: boolean;
+	animated?: boolean | AnimateOptions;
+	caret?: 'block' | 'circle';
+	onAnimationStart?: () => void;
+	onAnimationEnd?: () => void;
 
 	animation?: {
 		animateOnMount?: boolean;

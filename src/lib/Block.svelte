@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { parseIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
+	import { detectTextDirection } from './utils/detectDirection.js';
+	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 	import Element from './Elements/Element.svelte';
 	import { lex, type StreamdownToken } from './marked/index.js';
 	import AnimatedText from './AnimatedText.svelte';
@@ -15,10 +16,24 @@
 	} = $props();
 
 	const streamdown = useStreamdown();
-	const tokens = $derived(
-		lex(isStatic ? block : parseIncompleteMarkdown(block.trim()), streamdown.extensions)
+	const markdown = $derived(
+		isStatic || streamdown.parseIncompleteMarkdown === false
+			? block
+			: completeIncompleteMarkdown(block.trim())
 	);
+	const tokens = $derived(lex(markdown, streamdown.extensions));
 	const insidePopover = getContext('POPOVER');
+	const dir = $derived.by(() => {
+		if (!streamdown.dir) {
+			return undefined;
+		}
+
+		if (streamdown.dir === 'auto') {
+			return detectTextDirection(block);
+		}
+
+		return streamdown.dir;
+	});
 </script>
 
 {#snippet renderChildren(tokens: StreamdownToken[])}
@@ -41,4 +56,10 @@
 	{/each}
 {/snippet}
 
-{@render renderChildren(tokens)}
+{#if dir}
+	<div data-streamdown-dir={dir} {dir} style="display: contents;">
+		{@render renderChildren(tokens)}
+	</div>
+{:else}
+	{@render renderChildren(tokens)}
+{/if}
