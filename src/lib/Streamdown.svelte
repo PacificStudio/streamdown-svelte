@@ -1,10 +1,13 @@
 <script lang="ts" generics="Source extends Record<string, any> = Record<string, any>">
+	import { useDarkMode } from '$lib/utils/darkMode.svelte.js';
 	import Block from './Block.svelte';
 	import { StreamdownContext, type StreamdownProps } from './context.svelte.js';
-	import { mergeTheme, shadcnTheme } from './theme.js';
 	import { parseBlocks } from './marked/index.js';
+	import { normalizeHtmlIndentation } from './security/html.js';
+	import { preprocessCustomTags } from './security/preprocess-custom-tags.js';
+	import { preprocessLiteralTagContent } from './security/preprocess-literal-tag-content.js';
+	import { mergeTheme, shadcnTheme } from './theme.js';
 	import { mergeTranslations } from './translations.js';
-	import { prepareMarkdownForHtml } from './utils/html-support.js';
 
 	let {
 		content = '',
@@ -16,6 +19,9 @@
 		defaultOrigin,
 		allowedLinkPrefixes = ['*'],
 		allowedImagePrefixes = ['*'],
+		allowedTags,
+		literalTagContent,
+		normalizeHtmlIndentation: shouldNormalizeHtmlIndentation = false,
 		theme,
 		mermaidConfig = {},
 		katexConfig,
@@ -24,9 +30,6 @@
 		mergeTheme: shouldMergeTheme = true,
 		streamdown = $bindable(),
 		renderHtml,
-		allowedTags,
-		literalTagContent,
-		normalizeHtmlIndentation = false,
 		controls,
 		animation,
 		element = $bindable(),
@@ -40,7 +43,6 @@
 		static: isStatic,
 		...snippets
 	}: StreamdownProps<Source> = $props();
-	import { useDarkMode } from '$lib/utils/darkMode.svelte.js';
 
 	const darkMode = useDarkMode();
 
@@ -55,6 +57,22 @@
 	const mermaidThemedTheme = $derived(
 		mermaidConfig?.theme ? mermaidConfig.theme : darkMode.current ? 'dark' : 'default'
 	);
+
+	const allowedTagNames = $derived(allowedTags ? Object.keys(allowedTags) : []);
+
+	const preprocessedContent = $derived.by(() => {
+		let result = shouldNormalizeHtmlIndentation ? normalizeHtmlIndentation(content) : content;
+
+		if (literalTagContent && literalTagContent.length > 0) {
+			result = preprocessLiteralTagContent(result, literalTagContent);
+		}
+
+		if (allowedTagNames.length > 0) {
+			result = preprocessCustomTags(result, allowedTagNames);
+		}
+
+		return result;
+	});
 
 	streamdown = new StreamdownContext({
 		get element() {
@@ -74,6 +92,15 @@
 		},
 		get allowedImagePrefixes() {
 			return allowedImagePrefixes;
+		},
+		get allowedTags() {
+			return allowedTags;
+		},
+		get literalTagContent() {
+			return literalTagContent;
+		},
+		get normalizeHtmlIndentation() {
+			return shouldNormalizeHtmlIndentation;
 		},
 		get shikiTheme() {
 			return shikiTheme || shikiThemedTheme;
@@ -101,15 +128,6 @@
 		get renderHtml() {
 			return renderHtml ?? true;
 		},
-		get allowedTags() {
-			return allowedTags;
-		},
-		get literalTagContent() {
-			return literalTagContent;
-		},
-		get normalizeHtmlIndentation() {
-			return normalizeHtmlIndentation;
-		},
 		get translations() {
 			return mergeTranslations(translations);
 		},
@@ -126,10 +144,12 @@
 			return inlineCitationsMode;
 		},
 		get animation() {
-			if (!animation?.enabled)
+			if (!animation?.enabled) {
 				return {
 					enabled: false
 				};
+			}
+
 			return {
 				enabled: true,
 				animateOnMount: animation.animateOnMount ?? false,
@@ -168,22 +188,14 @@
 
 	const id = $props.id();
 
-	const preparedContent = $derived(
-		prepareMarkdownForHtml(content, {
-			allowedTags,
-			literalTagContent,
-			normalizeIndentation: normalizeHtmlIndentation
-		})
-	);
-
 	const blocks = $derived(
-		isStatic ? preparedContent : parseBlocks(preparedContent, streamdown.extensions)
+		isStatic ? [preprocessedContent] : parseBlocks(preprocessedContent, streamdown.extensions)
 	);
 </script>
 
 <div bind:this={element} class={className}>
 	{#if isStatic}
-		<Block static={isStatic} block={preparedContent} />
+		<Block static={isStatic} block={preprocessedContent} />
 	{:else}
 		{#each blocks as block, index (`${id}-block-${index}`)}
 			<Block static={isStatic} {block} />

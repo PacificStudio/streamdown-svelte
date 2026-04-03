@@ -1,6 +1,7 @@
 export { default as Streamdown } from './Streamdown.svelte';
 export { useStreamdown, type StreamdownProps } from './context.svelte.js';
-export { normalizeHtmlIndentation } from './utils/html-support.js';
+export type { AllowedTags } from './security/types.js';
+export { normalizeHtmlIndentation } from './security/html.js';
 export { theme, shadcnTheme, mergeTheme, type Theme } from './theme.js';
 export { type Extension, type StreamdownToken, lex, parseBlocks } from './marked/index.js';
 
@@ -19,3 +20,10 @@ export {
 	mergeTranslations,
 	type StreamdownTranslations
 } from './translations.js';
+export {
+	extractTableDataFromElement,
+	tableDataToCSV,
+	tableDataToMarkdown,
+	tableDataToTSV,
+	type TableData
+} from './utils/table.js';

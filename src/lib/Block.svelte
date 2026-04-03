@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { parseIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
-	import Element from './Elements/Element.svelte';
-	import { lex, type StreamdownToken } from './marked/index.js';
-	import AnimatedText from './AnimatedText.svelte';
-	import { useStreamdown } from './context.svelte.js';
 	import { getContext } from 'svelte';
-	import { containsHtml, renderMarkdownToHtml } from './utils/html-support.js';
+	import AnimatedText from './AnimatedText.svelte';
+	import Element from './Elements/Element.svelte';
+	import { useStreamdown } from './context.svelte.js';
+	import { lex, type StreamdownToken } from './marked/index.js';
+	import { renderMarkdownFragment } from './security/html.js';
+	import { parseIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 
 	let {
 		block,
@@ -17,25 +17,48 @@
 
 	const streamdown = useStreamdown();
 	const normalizedBlock = $derived(isStatic ? block : parseIncompleteMarkdown(block.trim()));
-	const shouldRenderHtmlBlock = $derived(
-		typeof streamdown.renderHtml !== 'function' &&
-			streamdown.renderHtml !== false &&
-			containsHtml(normalizedBlock)
-	);
-	const renderedHtml = $derived(
-		shouldRenderHtmlBlock
-			? renderMarkdownToHtml(normalizedBlock, {
-					allowedTags: streamdown.allowedTags,
-					literalTagContent: streamdown.literalTagContent
-				})
-			: ''
-	);
 	const tokens = $derived(lex(normalizedBlock, streamdown.extensions));
 	const insidePopover = getContext('POPOVER');
+	const allowedTagNames = $derived(
+		streamdown.allowedTags ? Object.keys(streamdown.allowedTags) : []
+	);
+
+	const shouldRenderSecurityHtmlBlock = $derived.by(() => {
+		const trimmed = normalizedBlock.trimStart();
+		if (trimmed.startsWith('<')) {
+			return true;
+		}
+
+		return allowedTagNames.some((tagName) =>
+			new RegExp(`<\\/?${tagName}(?=[\\s>/])`, 'i').test(normalizedBlock)
+		);
+	});
+
+	const securityHtmlBlock = $derived.by(() => {
+		if (!shouldRenderSecurityHtmlBlock) {
+			return '';
+		}
+
+		if (streamdown.renderHtml === false) {
+			return normalizedBlock
+				.replaceAll('&', '&amp;')
+				.replaceAll('<', '&lt;')
+				.replaceAll('>', '&gt;')
+				.replaceAll('"', '&quot;')
+				.replaceAll("'", '&#39;');
+		}
+
+		return renderMarkdownFragment(normalizedBlock, {
+			allowedImagePrefixes: streamdown.allowedImagePrefixes,
+			allowedLinkPrefixes: streamdown.allowedLinkPrefixes,
+			allowedTags: streamdown.allowedTags,
+			defaultOrigin: streamdown.defaultOrigin
+		});
+	});
 </script>
 
-{#if shouldRenderHtmlBlock}
-	{@html renderedHtml}
+{#if shouldRenderSecurityHtmlBlock}
+	{@html securityHtmlBlock}
 {:else}
 	{#snippet renderChildren(tokens: StreamdownToken[])}
 		{#each tokens as token}

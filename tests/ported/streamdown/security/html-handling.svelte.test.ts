@@ -1,10 +1,20 @@
+import { expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
-import { expect } from 'vitest';
 
 describeInBrowser('ported streamdown security HTML handling', () => {
-	testInBrowser('reference default renders multiline content inside details blocks', () => {
+	testInBrowser('renders safe inline HTML through the default security pipeline', () => {
+		const screen = render(Streamdown, {
+			content: '<div>Hello</div>',
+			static: true
+		});
+
+		expect(screen.container.textContent).toContain('Hello');
+		expect(screen.container.querySelector('div div')).toBeTruthy();
+	});
+
+	testInBrowser('renders multiline content inside details blocks', () => {
 		const screen = render(Streamdown, {
 			content: `<details>
 <summary>Summary</summary>
@@ -24,7 +34,7 @@ Paragraph inside details.
 		expect(details?.contains(paragraph as Node)).toBe(true);
 	});
 
-	testInBrowser('reference default renders safe self-closing img HTML blocks', () => {
+	testInBrowser('renders safe self-closing img HTML blocks', () => {
 		const screen = render(Streamdown, {
 			content: `<p>Before image</p>
 <img src="https://example.com/image.jpg" alt="Test Image" width="100" height="100">
@@ -41,6 +51,30 @@ Paragraph inside details.
 		expect(image?.getAttribute('width')).toBe('100');
 		expect(image?.getAttribute('height')).toBe('100');
 		expect(paragraphs).toHaveLength(2);
+	});
+
+	testInBrowser('preserves GFM tables inside details blocks', () => {
+		const screen = render(Streamdown, {
+			content: `<details>
+<summary>Summary</summary>
+
+| Name | Value |
+| --- | --- |
+| Alpha | Beta |
+</details>`,
+			static: true
+		});
+
+		const details = screen.container.querySelector('details');
+		const table = screen.container.querySelector('table');
+		const cells = [...screen.container.querySelectorAll('td')].map((cell) =>
+			cell.textContent?.trim()
+		);
+
+		expect(details).toBeTruthy();
+		expect(table).toBeTruthy();
+		expect(details?.contains(table as Node)).toBe(true);
+		expect(cells).toEqual(['Alpha', 'Beta']);
 	});
 
 	testInBrowser('reference normalizeHtmlIndentation renders indented HTML blocks as HTML', () => {

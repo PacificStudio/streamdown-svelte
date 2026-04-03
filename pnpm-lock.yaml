@@ -29,6 +29,9 @@ importers:
       mermaid:
         specifier: ^11.11.0
         version: 11.11.0
+      rehype-harden:
+        specifier: ^1.1.8
+        version: 1.1.8
       rehype-raw:
         specifier: ^7.0.0
         version: 7.0.0
@@ -56,9 +59,6 @@ importers:
       unified:
         specifier: ^11.0.5
         version: 11.0.5
-      unist-util-visit:
-        specifier: ^5.1.0
-        version: 5.1.0
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250906.0
@@ -138,9 +138,6 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
-      rehype-harden:
-        specifier: ^1.1.8
-        version: 1.1.8
       stick-to-bottom-svelte:
         specifier: ^1.0.1
         version: 1.0.1(svelte@5.38.7)
@@ -159,6 +156,9 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.2
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
       unist-util-visit-parents:
         specifier: ^6.0.2
         version: 6.0.2
