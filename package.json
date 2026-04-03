@@ -13,7 +13,8 @@
 		"lint": "prettier --check .",
 		"test:ui": "vitest --ui",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "npm run test:unit -- --run",
+		"verify:toolchain": "node scripts/verify-toolchain.mjs"
 	},
 	"files": [
 		"dist",
@@ -92,5 +93,10 @@
 		"mermaid": "^11.11.0",
 		"shiki": "^3.13.0",
 		"tailwind-merge": "^3.3.1"
+	},
+	"packageManager": "pnpm@10.32.1",
+	"volta": {
+		"node": "22.22.1",
+		"pnpm": "10.32.1"
 	}
 }

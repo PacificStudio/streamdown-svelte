@@ -67,18 +67,18 @@ The release commit must be tagged as `v<package-version>` after publish verifica
 
 Every trusted release must be blocked on the exact jobs below.
 
-| Required job              | Purpose                                                                                | Minimum command or evidence                                                 | Plan mapping  |
-| ------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------- |
-| `lint-and-format`         | Reject formatting drift before packaging                                               | `npm run lint`                                                              | baseline gate |
-| `typecheck`               | Reject Svelte/TypeScript contract regressions                                          | `npm run check`                                                             | baseline gate |
-| `unit-tests`              | Reject behavioral regressions covered by the current test suite                        | `npm test`                                                                  | baseline gate |
-| `build-package`           | Ensure the package builds from source on the release runner                            | `npm run build`                                                             | baseline gate |
-| `verify-toolchain`        | Ensure CI and local release docs use the same pinned Node and package-manager versions | pinned runtime files plus CI config                                         | `P1-01`       |
-| `verify-clean-build`      | Prove a clean checkout builds deterministically and does not depend on unstaged files  | clean install, build, and generated-file diff check                         | `P1-02`       |
-| `verify-pack`             | Prove the tarball contains only policy-approved files                                  | `scripts/verify-pack.mjs` plus `npm pack` inspection                        | `P1-03`       |
-| `verify-exports`          | Prove every declared export resolves from the packed tarball                           | `scripts/verify-exports.mjs` plus temp-project smoke import                 | `P1-04`       |
-| `publish-with-provenance` | Publish from CI with npm provenance enabled and preserve the release commit SHA        | release workflow logs plus npm provenance record                            | release gate  |
-| `post-publish-verify`     | Verify the registry artifact matches the reviewed commit and intended version          | install published package, inspect metadata, verify provenance, confirm tag | release gate  |
+| Required job              | Purpose                                                                                | Minimum command or evidence                                                     | Plan mapping  |
+| ------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------- |
+| `lint-and-format`         | Reject formatting drift before packaging                                               | `npm run lint`                                                                  | baseline gate |
+| `typecheck`               | Reject Svelte/TypeScript contract regressions                                          | `npm run check`                                                                 | baseline gate |
+| `unit-tests`              | Reject behavioral regressions covered by the current test suite                        | `npm test`                                                                      | baseline gate |
+| `build-package`           | Ensure the package builds from source on the release runner                            | `npm run build`                                                                 | baseline gate |
+| `verify-toolchain`        | Ensure CI and local release docs use the same pinned Node and package-manager versions | `pnpm verify:toolchain` plus `.nvmrc`, `packageManager`, `volta`, and CI config | `P1-01`       |
+| `verify-clean-build`      | Prove a clean checkout builds deterministically and does not depend on unstaged files  | clean install, build, and generated-file diff check                             | `P1-02`       |
+| `verify-pack`             | Prove the tarball contains only policy-approved files                                  | `scripts/verify-pack.mjs` plus `npm pack` inspection                            | `P1-03`       |
+| `verify-exports`          | Prove every declared export resolves from the packed tarball                           | `scripts/verify-exports.mjs` plus temp-project smoke import                     | `P1-04`       |
+| `publish-with-provenance` | Publish from CI with npm provenance enabled and preserve the release commit SHA        | release workflow logs plus npm provenance record                                | release gate  |
+| `post-publish-verify`     | Verify the registry artifact matches the reviewed commit and intended version          | install published package, inspect metadata, verify provenance, confirm tag     | release gate  |
 
 Rules:
 
