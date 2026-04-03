@@ -21,55 +21,76 @@ export const parseUrl = (url: unknown, defaultOrigin?: string): URL | null => {
 
 export const isPathRelativeUrl = (url: unknown): boolean => {
 	if (typeof url !== 'string') return false;
-	return url.startsWith('/');
+	return (
+		(url.startsWith('/') && !url.startsWith('//')) ||
+		url.startsWith('./') ||
+		url.startsWith('../') ||
+		url.startsWith('#') ||
+		url.startsWith('?')
+	);
 };
+
+type UrlPolicyKind = 'image' | 'link';
+
+type TransformUrlOptions = {
+	kind?: UrlPolicyKind;
+};
+
+const WILDCARD_PROTOCOLS = {
+	link: new Set(['http:', 'https:', 'mailto:', 'tel:']),
+	image: new Set(['http:', 'https:'])
+} satisfies Record<UrlPolicyKind, Set<string>>;
+
+function isAllowedByWildcard(url: URL, kind: UrlPolicyKind): boolean {
+	if (WILDCARD_PROTOCOLS[kind].has(url.protocol)) {
+		return true;
+	}
+
+	return kind === 'image' && url.protocol === 'data:' && /^data:image\//i.test(url.href);
+}
 
 export const transformUrl = (
 	url: unknown,
 	allowedPrefixes: string[],
-	defaultOrigin?: string
+	defaultOrigin?: string,
+	{ kind = 'link' }: TransformUrlOptions = {}
 ): string | null => {
 	if (!url) return null;
+	if (typeof url !== 'string') return null;
+
+	const inputWasRelative = isPathRelativeUrl(url);
 	const parsedUrl = parseUrl(url, defaultOrigin);
 	if (!parsedUrl) return null;
 
-	// If the input is path relative, we output a path relative URL as well,
-	// however, we always run the same checks on an absolute URL and we
-	// always rescronstruct the output from the parsed URL to ensure that
-	// the output is always a valid URL.
-	const inputWasRelative = isPathRelativeUrl(url);
-	const urlString = parseUrl(url);
 	if (
-		urlString &&
 		allowedPrefixes.some((prefix) => {
-			const parsedPrefix = parseUrl(prefix);
+			const parsedPrefix = parseUrl(prefix, defaultOrigin);
 			if (!parsedPrefix) {
 				return false;
 			}
-			if (parsedPrefix.origin !== urlString.origin) {
+			if (parsedPrefix.origin !== parsedUrl.origin) {
 				return false;
 			}
-			return urlString.href.startsWith(parsedPrefix.href);
+			return parsedUrl.href.startsWith(parsedPrefix.href);
 		})
 	) {
 		if (inputWasRelative) {
-			return urlString.pathname + urlString.search + urlString.hash;
+			return url;
 		}
-		return urlString.href;
+		return parsedUrl.href;
 	}
-	// Check for wildcard - allow all URLs
+
 	if (allowedPrefixes.includes('*')) {
-		// Wildcard only allows http and https URLs
-		if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+		if (inputWasRelative) {
+			return url;
+		}
+
+		if (!isAllowedByWildcard(parsedUrl, kind)) {
 			return null;
 		}
-		const inputWasRelative = isPathRelativeUrl(url);
-		if (parsedUrl) {
-			if (inputWasRelative) {
-				return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
-			}
-			return parsedUrl.href;
-		}
+
+		return parsedUrl.href;
 	}
+
 	return null;
 };
