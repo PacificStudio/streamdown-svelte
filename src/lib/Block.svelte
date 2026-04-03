@@ -5,7 +5,8 @@
 	import { useStreamdown } from './context.svelte.js';
 	import { lex, type StreamdownToken } from './marked/index.js';
 	import { renderMarkdownFragment } from './security/html.js';
-	import { parseIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
+	import { detectTextDirection } from './utils/detectDirection.js';
+	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 
 	let {
 		block,
@@ -16,21 +17,23 @@
 	} = $props();
 
 	const streamdown = useStreamdown();
-	const normalizedBlock = $derived(isStatic ? block : parseIncompleteMarkdown(block.trim()));
-	const tokens = $derived(lex(normalizedBlock, streamdown.extensions));
-	const insidePopover = getContext('POPOVER');
-	const allowedTagNames = $derived(
-		streamdown.allowedTags ? Object.keys(streamdown.allowedTags) : []
+	const markdown = $derived(
+		isStatic || streamdown.parseIncompleteMarkdown === false
+			? block
+			: completeIncompleteMarkdown(block.trim())
 	);
+	const tokens = $derived(lex(markdown, streamdown.extensions));
+	const insidePopover = getContext('POPOVER');
+	const allowedTagNames = $derived(streamdown.allowedTags ? Object.keys(streamdown.allowedTags) : []);
 
 	const shouldRenderSecurityHtmlBlock = $derived.by(() => {
-		const trimmed = normalizedBlock.trimStart();
+		const trimmed = markdown.trimStart();
 		if (trimmed.startsWith('<')) {
 			return true;
 		}
 
 		return allowedTagNames.some((tagName) =>
-			new RegExp(`<\\/?${tagName}(?=[\\s>/])`, 'i').test(normalizedBlock)
+			new RegExp(`<\\/?${tagName}(?=[\\s>/])`, 'i').test(markdown)
 		);
 	});
 
@@ -40,7 +43,7 @@
 		}
 
 		if (streamdown.renderHtml === false) {
-			return normalizedBlock
+			return markdown
 				.replaceAll('&', '&amp;')
 				.replaceAll('<', '&lt;')
 				.replaceAll('>', '&gt;')
@@ -48,12 +51,24 @@
 				.replaceAll("'", '&#39;');
 		}
 
-		return renderMarkdownFragment(normalizedBlock, {
+		return renderMarkdownFragment(markdown, {
 			allowedImagePrefixes: streamdown.allowedImagePrefixes,
 			allowedLinkPrefixes: streamdown.allowedLinkPrefixes,
 			allowedTags: streamdown.allowedTags,
 			defaultOrigin: streamdown.defaultOrigin
 		});
+	});
+
+	const dir = $derived.by(() => {
+		if (!streamdown.dir) {
+			return undefined;
+		}
+
+		if (streamdown.dir === 'auto') {
+			return detectTextDirection(markdown);
+		}
+
+		return streamdown.dir;
 	});
 </script>
 
@@ -80,5 +95,11 @@
 		{/each}
 	{/snippet}
 
-	{@render renderChildren(tokens)}
+	{#if dir}
+		<div data-streamdown-dir={dir} {dir} style="display: contents;">
+			{@render renderChildren(tokens)}
+		</div>
+	{:else}
+		{@render renderChildren(tokens)}
+	{/if}
 {/if}
