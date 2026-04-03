@@ -20,7 +20,9 @@
 	const isRelativeUrl = $derived(isPathRelativeUrl(token.href));
 
 	const transformedUrl = $derived(
-		transformUrl(token.href, streamdown.allowedLinkPrefixes ?? [], streamdown.defaultOrigin)
+		transformUrl(token.href, streamdown.allowedLinkPrefixes ?? [], streamdown.defaultOrigin, {
+			kind: 'link'
+		})
 	);
 </script>
 
