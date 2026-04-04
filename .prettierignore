@@ -9,3 +9,4 @@ bun.lockb
 /static/
 /.openase/
 /artifacts/nightly/playwright-parity/html-report/
+/tests/fixtures/ported/streamdown/basic-render/expected.html
