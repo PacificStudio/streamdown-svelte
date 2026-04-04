@@ -82,7 +82,7 @@ const parseMarkdownFilteringOptions = (
 	unwrapDisallowed: options.unwrapDisallowed === true
 });
 
-const getHtmlTokenTagName = (token: Tokens.HTML): string | null => {
+const getHtmlTokenTagName = (token: Tokens.HTML | Tokens.Tag): string | null => {
 	const match = token.raw.match(/^\s*<([A-Za-z][\w:-]*)(?=[\s/>])/);
 	if (!match) {
 		return null;
