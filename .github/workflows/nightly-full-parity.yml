@@ -479,7 +479,7 @@ jobs:
             --json-file
             "$SUITE_DIR/status.json"
             --command
-            "pnpm verify:dependency-policy"
+            "node scripts/verify-dependency-policy.mjs"
             --artifact
             "summary=$SUITE_DIR/summary.md"
             --artifact
@@ -488,6 +488,8 @@ jobs:
             "report=$SUITE_DIR/dependency-policy.json"
             --artifact
             "stderr=$SUITE_DIR/dependency-policy.stderr.log"
+            --artifact
+            "reviewed-production-exceptions=$SUITE_DIR/reviewed-production-exceptions.md"
           )
 
           if [ -n "${{ steps.suite.outputs.duration_ms }}" ]; then

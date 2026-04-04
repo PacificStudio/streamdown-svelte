@@ -7,8 +7,8 @@
 					{
 						"id": "1115805",
 						"module": "lodash-es",
-						"reason": "Transitive through mermaid@11.11.0 in the current lockfile; removing it requires a dependency upgrade outside the P1-05 gate wiring scope.",
-						"reviewBy": "before the first trusted release"
+						"reason": "Reviewed on 2026-04-04 for ASE-40. The only remaining shipped high-severity advisory is lodash-es@4.17.21 through mermaid@11.11.0; keep it explicit in the gate output, but do not cut the first trusted release until the production graph no longer resolves lodash-es < 4.18.0.",
+						"reviewBy": "remove before the first trusted release by upgrading the mermaid/lodash-es chain"
 					}
 				]
 			},
@@ -19,121 +19,115 @@
 						"id": "1109208",
 						"module": "playwright",
 						"reason": "Accepted temporarily while the repository baseline still pins Playwright 1.53.x; removal requires a coordinated tooling upgrade.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Playwright version changes"
 					},
 					{
 						"id": "1112183",
 						"module": "devalue",
 						"reason": "Transitive via the current SvelteKit toolchain; removal requires a framework upgrade sweep outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the SvelteKit version changes"
 					},
 					{
 						"id": "1112188",
 						"module": "devalue",
 						"reason": "Transitive via the current SvelteKit toolchain; removal requires a framework upgrade sweep outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the SvelteKit version changes"
 					},
 					{
 						"id": "1112190",
 						"module": "@sveltejs/kit",
 						"reason": "Accepted temporarily while the repository baseline still pins the current SvelteKit line; removal requires a framework upgrade sweep.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the SvelteKit version changes"
 					},
 					{
 						"id": "1112456",
 						"module": "wrangler",
 						"reason": "Accepted temporarily while the current Cloudflare toolchain remains pinned for release hardening work.",
-						"reviewBy": "before the first trusted release"
-					},
-					{
-						"id": "1115969",
-						"module": "defu",
-						"reason": "Transitive through unenv/@cloudflare-unenv-preset in the current wrangler 4.34.0 toolchain; removal requires a coordinated Cloudflare tooling upgrade outside the animation parity scope.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Wrangler version changes"
 					},
 					{
 						"id": "1112659",
 						"module": "tar",
 						"reason": "Transitive via the current dev-tooling graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1113300",
 						"module": "tar",
 						"reason": "Transitive via the current dev-tooling graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1113375",
 						"module": "tar",
 						"reason": "Transitive via the current dev-tooling graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1113515",
 						"module": "rollup",
 						"reason": "Accepted temporarily while the current Vite/Rollup stack remains pinned for parity work.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Vite or Rollup version changes"
 					},
 					{
 						"id": "1114200",
 						"module": "tar",
 						"reason": "Transitive via the current dev-tooling graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1114302",
 						"module": "tar",
 						"reason": "Transitive via the current dev-tooling graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1114526",
 						"module": "flatted",
 						"reason": "Transitive via current dev tooling; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1114591",
 						"module": "undici",
 						"reason": "Accepted temporarily while the pinned Cloudflare and SvelteKit toolchain remains unchanged.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Wrangler or SvelteKit version changes"
 					},
 					{
 						"id": "1114637",
 						"module": "undici",
 						"reason": "Accepted temporarily while the pinned Cloudflare and SvelteKit toolchain remains unchanged.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Wrangler or SvelteKit version changes"
 					},
 					{
 						"id": "1114639",
 						"module": "undici",
 						"reason": "Accepted temporarily while the pinned Cloudflare and SvelteKit toolchain remains unchanged.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Wrangler or SvelteKit version changes"
 					},
 					{
 						"id": "1114680",
 						"module": "tar",
 						"reason": "Transitive via the current dev-tooling graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1115357",
 						"module": "flatted",
 						"reason": "Transitive via current dev tooling; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the dev-tooling dependency graph changes"
 					},
 					{
 						"id": "1115554",
 						"module": "picomatch",
 						"reason": "Transitive via the current Vitest UI graph; removal requires dependency upgrades outside P1-05.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Vitest UI dependency graph changes"
 					},
 					{
 						"id": "1115969",
 						"module": "defu",
 						"reason": "Transitive via unenv@2.0.0-rc.20 in the pinned Wrangler and adapter-cloudflare dev toolchain; removal requires a coordinated Cloudflare dependency upgrade outside the current parity ticket scope.",
-						"reviewBy": "before the first trusted release"
+						"reviewBy": "if the Wrangler or adapter-cloudflare version changes"
 					}
 				]
 			}
@@ -146,24 +140,18 @@
 					"MIT",
 					"ISC",
 					"Apache-2.0",
+					"BSD-2-Clause",
 					"BSD-3-Clause",
 					"(MPL-2.0 OR Apache-2.0)",
 					"Unlicense"
 				],
 				"approvedPackages": [
 					{
-						"name": "entities",
-						"license": "BSD-2-Clause",
-						"reason": "Transitive via rehype-raw/parse5 in the current production graph; keep the exception package-specific until broader BSD-2-Clause policy review is completed.",
-						"evidence": "node_modules/.pnpm/entities@6.0.1/node_modules/entities/LICENSE",
-						"reviewBy": "if the entities version changes"
-					},
-					{
 						"name": "khroma",
 						"license": "Unknown",
-						"reason": "The published package omits SPDX metadata, but the bundled license file in the installed package is MIT.",
-						"evidence": "node_modules/.pnpm/khroma@2.1.0/node_modules/khroma/license",
-						"reviewBy": "if the khroma version changes"
+						"reason": "Reviewed on 2026-04-04 for ASE-40. `pnpm licenses list --json --prod` still reports `Unknown`, but the khroma@2.1.0 npm tarball ships `package/license` with MIT text, so keep a package-specific metadata exception until the published package declares SPDX metadata.",
+						"evidence": "artifacts/nightly/dependency-audit/reviewed-production-exceptions.md#khroma-2-1-0-license-metadata",
+						"reviewBy": "if the khroma version changes or the package metadata is corrected"
 					}
 				]
 			}

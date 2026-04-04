@@ -32,15 +32,23 @@ If any item above is false, the release is not trusted and must not be presented
 
 ## Current Readiness Gate
 
-As of the commit that introduced this policy, this repository is not yet authorized for a trusted release.
+As of `2026-04-04`, this repository is still not authorized for a trusted release.
 
-The blocker is explicit: the repository still has approved dependency-policy exceptions, and the npm package must be configured for trusted publishing before the first trusted release.
+The blockers are explicit:
+
+- the reviewed dependency decision for advisory `1115805` (`lodash-es` via `mermaid@11.11.0`) still marks that production `high` advisory as blocking until the shipped graph upgrades past `lodash-es < 4.18.0`
+- the npm package still lacks completed repo-hosted `publish-with-provenance` and `post-publish-verify` evidence for the reviewed commit
 
 Until those gates exist and are passing in CI:
 
 - no maintainer may cut a release from a local workstation
 - no maintainer may treat `npm publish` as an acceptable substitute for CI publishing
 - any release attempt is classified as an untrusted/manual release
+
+The reviewed production license decisions in [docs/dependency-policy.md](./dependency-policy.md) are not automatic blockers:
+
+- `BSD-2-Clause` is now allowlisted, so the prior `entities` package exception is removed
+- `khroma` remains a metadata exception only; it stays reviewable, but it does not block the first trusted release while the reviewed evidence remains current
 
 ## Release Authority
 
@@ -109,6 +117,7 @@ The release checklist is mandatory and must be satisfied in order.
 - Review the `npm pack` output or the future `verify-pack` job output.
 - Review export verification evidence from the future `verify-exports` job.
 - Review dependency audit and license inventory evidence from `verify-dependency-policy`.
+- Review the current production-exception decisions in `docs/dependency-policy.md` and `artifacts/nightly/dependency-audit/reviewed-production-exceptions.md`.
 - Review `artifacts/release/` metadata and attestation evidence from `verify-release-metadata`.
 - Confirm the release runner uses the pinned toolchain required by `P1-01`.
 
