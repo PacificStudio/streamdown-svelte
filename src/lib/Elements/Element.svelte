@@ -56,9 +56,44 @@
 			? streamdown.components?.p
 			: undefined
 	);
+	const BlockquoteComponent = $derived(
+		token.type === 'blockquote' ? streamdown.components?.blockquote : undefined
+	);
 	const InlineCodeComponent = $derived(
 		token.type === 'codespan' ? streamdown.components?.inlineCode : undefined
 	);
+	const OrderedListComponent = $derived(
+		token.type === 'list' && token.ordered ? streamdown.components?.ol : undefined
+	);
+	const UnorderedListComponent = $derived(
+		token.type === 'list' && !token.ordered ? streamdown.components?.ul : undefined
+	);
+	const ListItemComponent = $derived(
+		token.type === 'list_item' ? streamdown.components?.li : undefined
+	);
+	const TableHeadComponent = $derived(
+		token.type === 'thead' ? streamdown.components?.thead : undefined
+	);
+	const TableBodyComponent = $derived(
+		token.type === 'tbody' ? streamdown.components?.tbody : undefined
+	);
+	const TableFootComponent = $derived(
+		token.type === 'tfoot' ? streamdown.components?.tfoot : undefined
+	);
+	const TableRowComponent = $derived(token.type === 'tr' ? streamdown.components?.tr : undefined);
+	const TableCellComponent = $derived(token.type === 'td' ? streamdown.components?.td : undefined);
+	const TableHeaderCellComponent = $derived(
+		token.type === 'th' ? streamdown.components?.th : undefined
+	);
+	const SubComponent = $derived(token.type === 'sub' ? streamdown.components?.sub : undefined);
+	const SupComponent = $derived(token.type === 'sup' ? streamdown.components?.sup : undefined);
+	const StrongComponent = $derived(
+		token.type === 'strong' ? streamdown.components?.strong : undefined
+	);
+	const EmComponent = $derived(token.type === 'em' ? streamdown.components?.em : undefined);
+	const DelComponent = $derived(token.type === 'del' ? streamdown.components?.del : undefined);
+	const HrComponent = $derived(token.type === 'hr' ? streamdown.components?.hr : undefined);
+	const BrComponent = $derived(token.type === 'br' ? streamdown.components?.br : undefined);
 	const shouldUnwrapStandaloneImageParagraph = $derived(
 		token.type === 'paragraph' && token.tokens?.length === 1 && token.tokens[0]?.type === 'image'
 	);
@@ -121,7 +156,11 @@
 		</Slot>
 	{/if}
 {:else if token.type === 'blockquote'}
-	<Slot props={{ children, token }} render={streamdown.snippets.blockquote}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.blockquote.base, style }}
+		render={streamdown.snippets.blockquote}
+		component={BlockquoteComponent}
+	>
 		<blockquote data-streamdown-blockquote={id} {style} class={streamdown.theme.blockquote.base}>
 			{@render children()}
 		</blockquote>
@@ -158,7 +197,11 @@
 	</Slot>
 {:else if token.type === 'list'}
 	{#if token.ordered}
-		<Slot props={{ children, token }} render={streamdown.snippets.ol}>
+		<Slot
+			props={{ children, token, class: streamdown.theme.ol.base }}
+			render={streamdown.snippets.ol}
+			component={OrderedListComponent}
+		>
 			<ol
 				data-streamdown-ol={id}
 				style:list-style-type={token.listType}
@@ -168,14 +211,22 @@
 			</ol>
 		</Slot>
 	{:else}
-		<Slot props={{ children, token }} render={streamdown.snippets.ul}>
+		<Slot
+			props={{ children, token, class: streamdown.theme.ul.base }}
+			render={streamdown.snippets.ul}
+			component={UnorderedListComponent}
+		>
 			<ul data-streamdown-ul={id} class={streamdown.theme.ul.base}>
 				{@render children()}
 			</ul>
 		</Slot>
 	{/if}
 {:else if token.type === 'list_item'}
-	<Slot props={{ children, token }} render={streamdown.snippets.li}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.li.base, style }}
+		render={streamdown.snippets.li}
+		component={ListItemComponent}
+	>
 		<li
 			data-streamdown-li={id}
 			{style}
@@ -203,32 +254,52 @@
 		</div>
 	</Slot>
 {:else if token.type === 'thead'}
-	<Slot props={{ token, children }} render={streamdown.snippets.thead}>
+	<Slot
+		props={{ token, children, class: streamdown.theme.thead.base, style }}
+		render={streamdown.snippets.thead}
+		component={TableHeadComponent}
+	>
 		<thead data-streamdown-thead={id} {style} class={streamdown.theme.thead.base}>
 			{@render children?.()}
 		</thead>
 	</Slot>
 {:else if token.type === 'tbody'}
-	<Slot props={{ token, children }} render={streamdown.snippets.tbody}>
+	<Slot
+		props={{ token, children, class: streamdown.theme.tbody.base, style }}
+		render={streamdown.snippets.tbody}
+		component={TableBodyComponent}
+	>
 		<tbody data-streamdown-tbody={id} {style} class={streamdown.theme.tbody.base}>
 			{@render children?.()}
 		</tbody>
 	</Slot>
 {:else if token.type === 'tfoot'}
-	<Slot props={{ token, children }} render={streamdown.snippets.tfoot}>
+	<Slot
+		props={{ token, children, class: streamdown.theme.tfoot.base, style }}
+		render={streamdown.snippets.tfoot}
+		component={TableFootComponent}
+	>
 		<tfoot data-streamdown-tfoot={id} {style} class={streamdown.theme.tfoot.base}>
 			{@render children?.()}
 		</tfoot>
 	</Slot>
 {:else if token.type === 'tr'}
-	<Slot props={{ token, children }} render={streamdown.snippets.tr}>
+	<Slot
+		props={{ token, children, class: streamdown.theme.tr.base, style }}
+		render={streamdown.snippets.tr}
+		component={TableRowComponent}
+	>
 		<tr data-streamdown-tr={id} {style} class={streamdown.theme.tr.base}>
 			{@render children?.()}
 		</tr>
 	</Slot>
 {:else if token.type === 'td'}
 	{#if token.rowspan > 0}
-		<Slot props={{ children, token }} render={streamdown.snippets.td}>
+		<Slot
+			props={{ children, token, class: streamdown.theme.td.base, style }}
+			render={streamdown.snippets.td}
+			component={TableCellComponent}
+		>
 			<td
 				{style}
 				data-streamdown-td={id}
@@ -245,7 +316,11 @@
 	{/if}
 {:else if token.type === 'th'}
 	{#if token.rowspan > 0}
-		<Slot props={{ children, token }} render={streamdown.snippets.th}>
+		<Slot
+			props={{ children, token, class: streamdown.theme.th.base, style }}
+			render={streamdown.snippets.th}
+			component={TableHeaderCellComponent}
+		>
 			<th
 				{style}
 				data-streamdown-th={id}
@@ -265,41 +340,67 @@
 {:else if token.type === 'link'}
 	<Link {id} {token} {children} />
 {:else if token.type === 'sub'}
-	<Slot props={{ children, token }} render={streamdown.snippets.sub}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.sub.base }}
+		render={streamdown.snippets.sub}
+		component={SubComponent}
+	>
 		<sub data-streamdown-sub={id} class={streamdown.theme.sub.base}>
 			{@render children()}
 		</sub>
 	</Slot>
 {:else if token.type === 'sup'}
-	<Slot props={{ children, token }} render={streamdown.snippets.sup}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.sup.base }}
+		render={streamdown.snippets.sup}
+		component={SupComponent}
+	>
 		<sup data-streamdown-sup={id} class={streamdown.theme.sup.base}>
 			{@render children()}
 		</sup>
 	</Slot>
 {:else if token.type === 'strong'}
-	<Slot props={{ children, token }} render={streamdown.snippets.strong}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.strong.base }}
+		render={streamdown.snippets.strong}
+		component={StrongComponent}
+	>
 		<strong data-streamdown-strong={id} class={streamdown.theme.strong.base}>
 			{@render children()}
 		</strong>
 	</Slot>
 {:else if token.type === 'em'}
-	<Slot props={{ children, token }} render={streamdown.snippets.em}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.em.base }}
+		render={streamdown.snippets.em}
+		component={EmComponent}
+	>
 		<em data-streamdown-em={id} class={streamdown.theme.em.base}>
 			{@render children()}
 		</em>
 	</Slot>
 {:else if token.type === 'del'}
-	<Slot props={{ children, token }} render={streamdown.snippets.del}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.del.base }}
+		render={streamdown.snippets.del}
+		component={DelComponent}
+	>
 		<del data-streamdown-del={id} class={streamdown.theme.del.base}>
 			{@render children()}
 		</del>
 	</Slot>
 {:else if token.type === 'hr'}
-	<Slot props={{ children, token }} render={streamdown.snippets.hr}>
+	<Slot
+		props={{ children, token, class: streamdown.theme.hr.base, style }}
+		render={streamdown.snippets.hr}
+		component={HrComponent}
+	>
 		<hr data-streamdown-hr={id} {style} class={streamdown.theme.hr.base} />
 	</Slot>
 {:else if token.type === 'br'}
-	<br data-streamdown-br={id} />
+	<Slot props={{ children, token }} render={streamdown.snippets.br} component={BrComponent}>
+		<br data-streamdown-br={id} />
+	</Slot>
 {:else if token.type === 'math'}
 	<Slot
 		props={{

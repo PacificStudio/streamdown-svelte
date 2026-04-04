@@ -94,6 +94,7 @@ Allowed normalization:
 - React `children` composition may map to Svelte snippets or slots
 - React event typing may map to Svelte callback typing
 - The frozen internal `Markdown` post-processing helper may map to the root `Streamdown` filtering props when the same `allowedElements` / `disallowedElements` / `allowElement` / `unwrapDisallowed` / `skipHtml` / `urlTransform` / `renderHtml` outcomes are preserved
+- additive local compatibility props or aliases may coexist when the frozen prop, default, and user-visible behavior still remain available unchanged
 
 These type-system or framework-syntax adaptations are acceptable only when all of the following are true:
 

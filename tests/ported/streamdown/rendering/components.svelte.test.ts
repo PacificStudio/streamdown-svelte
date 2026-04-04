@@ -3,6 +3,7 @@ import { expect } from 'vitest';
 import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import Code from '../../../../src/lib/Elements/Code.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
+import BlockComponentProbe from './fixtures/BlockComponentProbe.svelte';
 import ComponentOverrideProbe from './fixtures/ComponentOverrideProbe.svelte';
 import SnippetPriorityHarness from './fixtures/SnippetPriorityHarness.svelte';
 
@@ -141,6 +142,83 @@ describeInBrowser('ported streamdown component overrides', () => {
 			);
 			expect(screen.container.querySelector('[data-streamdown-code]')).toBeTruthy();
 			expect(screen.container.querySelector('button[title="Copy Code"]')).toBeTruthy();
+		}
+	);
+
+	testInBrowser(
+		'supports broader reference-style components overrides for blockquotes, lists, tables, and text formatting',
+		() => {
+			const screen = render(StreamdownWithFutureProps, {
+				content: [
+					'> Quote',
+					'',
+					'- Bullet',
+					'',
+					'1. Ordered',
+					'',
+					'| Name | Value |',
+					'| ---- | ----- |',
+					'| Foo | Bar |',
+					'',
+					'**bold** _italic_ ~~gone~~ H~2~O x^2^'
+				].join('\n'),
+				mode: 'static',
+				components: {
+					blockquote: ComponentOverrideProbe,
+					ul: ComponentOverrideProbe,
+					ol: ComponentOverrideProbe,
+					li: ComponentOverrideProbe,
+					thead: ComponentOverrideProbe,
+					tbody: ComponentOverrideProbe,
+					tr: ComponentOverrideProbe,
+					th: ComponentOverrideProbe,
+					td: ComponentOverrideProbe,
+					strong: ComponentOverrideProbe,
+					em: ComponentOverrideProbe,
+					del: ComponentOverrideProbe,
+					sub: ComponentOverrideProbe,
+					sup: ComponentOverrideProbe
+				}
+			});
+
+			expect(screen.container.querySelector('blockquote[data-override="blockquote"]')).toBeTruthy();
+			expect(screen.container.querySelector('ul[data-override="ul"]')).toBeTruthy();
+			expect(screen.container.querySelector('ol[data-override="ol"]')).toBeTruthy();
+			expect(screen.container.querySelectorAll('li[data-override="li"]')).toHaveLength(2);
+			expect(screen.container.querySelector('thead[data-override="thead"]')).toBeTruthy();
+			expect(screen.container.querySelector('tbody[data-override="tbody"]')).toBeTruthy();
+			expect(screen.container.querySelectorAll('tr[data-override="tr"]').length).toBeGreaterThan(0);
+			expect(screen.container.querySelector('th[data-override="th"]')?.textContent).toContain(
+				'Name'
+			);
+			expect(screen.container.querySelector('td[data-override="td"]')?.textContent).toContain(
+				'Foo'
+			);
+			expect(screen.container.querySelector('strong[data-override="strong"]')?.textContent).toBe(
+				'bold'
+			);
+			expect(screen.container.querySelector('em[data-override="em"]')?.textContent).toBe('italic');
+			expect(screen.container.querySelector('del[data-override="del"]')?.textContent).toBe('gone');
+			expect(screen.container.querySelector('sub[data-override="sub"]')?.textContent).toBe('2');
+			expect(screen.container.querySelector('sup[data-override="sup"]')?.textContent).toBe('2');
+		}
+	);
+
+	testInBrowser(
+		'wraps each parsed block with BlockComponent while preserving the default block content',
+		() => {
+			const screen = render(StreamdownWithFutureProps, {
+				content: ['مرحبا بالعالم', '', 'Paragraph text'].join('\n'),
+				dir: 'auto',
+				BlockComponent: BlockComponentProbe
+			});
+
+			const blocks = [...screen.container.querySelectorAll('[data-block-probe]')];
+			expect(blocks).toHaveLength(2);
+			expect(blocks[0]?.getAttribute('data-dir')).toBe('rtl');
+			expect(blocks[1]?.getAttribute('data-dir')).toBe('ltr');
+			expect(blocks[0]?.textContent).toContain('مرحبا بالعالم');
+			expect(blocks[1]?.textContent).toContain('Paragraph text');
 		}
 	);
 });

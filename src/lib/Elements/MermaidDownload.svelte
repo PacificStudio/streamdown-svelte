@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { useStreamdown } from '$lib/context.svelte.js';
 	import { scale } from 'svelte/transition';
-	import { downloadIcon } from './icons.js';
+	import { downloadIcon, resolveIcon } from './icons.js';
 	import { Popover } from './popover.svelte.js';
 	import { useClickOutside } from '$lib/utils/useClickOutside.svelte.js';
 	import { useKeyDown } from '$lib/utils/useKeyDown.svelte.js';
@@ -124,6 +124,10 @@
 <button
 	class={streamdown.theme.components.button}
 	onclick={(e: MouseEvent) => {
+		if (streamdown.isAnimating) {
+			return;
+		}
+
 		if (popover.isOpen) {
 			popover.isOpen = false;
 			return;
@@ -134,7 +138,8 @@
 	{@attach clickOutside.attachment}
 	title={streamdown.translations.downloadDiagram}
 	aria-label={streamdown.translations.downloadDiagram}
+	disabled={streamdown.isAnimating}
 	data-panzoom-ignore
 >
-	{@render (streamdown.icons?.download || downloadIcon)()}
+	{@render resolveIcon(streamdown.icons, 'download', downloadIcon)()}
 </button>

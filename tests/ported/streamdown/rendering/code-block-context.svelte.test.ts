@@ -37,4 +37,24 @@ describeInBrowser('ported streamdown code block context analogue', () => {
 			expect(probe?.getAttribute('data-translation-download')).toBe('Save snippet');
 		}
 	);
+
+	testInBrowser(
+		'accepts the reference shikiTheme tuple and resolves the active theme by color scheme',
+		() => {
+			document.documentElement.dataset.theme = 'dark';
+
+			const screen = render(Streamdown, {
+				content: '```ts\nconst x = 1;\n```',
+				shikiTheme: ['github-light', 'github-dark'],
+				components: {
+					code: CodeContextProbe
+				}
+			});
+
+			const probe = screen.container.querySelector('[data-probe="code-context"]');
+			expect(probe?.getAttribute('data-theme')).toBe('github-dark');
+
+			delete document.documentElement.dataset.theme;
+		}
+	);
 });

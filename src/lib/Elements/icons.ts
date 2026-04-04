@@ -1,6 +1,9 @@
-import { createRawSnippet } from 'svelte';
+import { createRawSnippet, type Snippet } from 'svelte';
+import type { IconMap } from '../context.svelte.js';
 
-export const copyIcon = createRawSnippet(() => {
+export type IconSnippet = Snippet<[]>;
+
+export const copyIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => {
 			return `
@@ -21,7 +24,7 @@ export const copyIcon = createRawSnippet(() => {
 		}
 	};
 });
-export const downloadIcon = createRawSnippet(() => {
+export const downloadIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => {
 			return `<svg
@@ -42,7 +45,7 @@ export const downloadIcon = createRawSnippet(() => {
 	};
 });
 
-export const checkIcon = createRawSnippet(() => {
+export const checkIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => {
 			return `
@@ -51,7 +54,7 @@ export const checkIcon = createRawSnippet(() => {
 		}
 	};
 });
-export const zoomInIcon = createRawSnippet(() => {
+export const zoomInIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => `
 			<svg
@@ -74,7 +77,7 @@ export const zoomInIcon = createRawSnippet(() => {
 	};
 });
 
-export const zoomOutIcon = createRawSnippet(() => {
+export const zoomOutIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => `
 		<svg
@@ -96,7 +99,7 @@ export const zoomOutIcon = createRawSnippet(() => {
 	};
 });
 
-export const fitViewIcon = createRawSnippet(() => {
+export const fitViewIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => `
 		<svg
@@ -120,7 +123,7 @@ export const fitViewIcon = createRawSnippet(() => {
 	};
 });
 
-export const fullscreenIcon = createRawSnippet(() => {
+export const fullscreenIcon: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => `
 		<svg
@@ -141,7 +144,7 @@ export const fullscreenIcon = createRawSnippet(() => {
 	};
 });
 
-export const chevronRight = createRawSnippet(() => {
+export const chevronRight: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => `
 			<svg
@@ -161,7 +164,7 @@ export const chevronRight = createRawSnippet(() => {
 	};
 });
 
-export const chevronLeft = createRawSnippet(() => {
+export const chevronLeft: IconSnippet = createRawSnippet(() => {
 	return {
 		render: () => `
 			<svg
@@ -180,3 +183,37 @@ export const chevronLeft = createRawSnippet(() => {
 		`
 	};
 });
+
+const iconAliases = {
+	check: ['check', 'CheckIcon'],
+	copy: ['copy', 'CopyIcon'],
+	download: ['download', 'DownloadIcon'],
+	fullscreen: ['fullscreen', 'Maximize2Icon', 'XIcon'],
+	zoomIn: ['zoomIn', 'ZoomInIcon'],
+	zoomOut: ['zoomOut', 'ZoomOutIcon'],
+	fitView: ['fitView', 'RotateCcwIcon'],
+	note: ['note'],
+	tip: ['tip'],
+	warning: ['warning'],
+	caution: ['caution'],
+	important: ['important'],
+	chevronLeft: ['chevronLeft'],
+	chevronRight: ['chevronRight']
+} as const satisfies Record<string, readonly (keyof IconMap)[]>;
+
+export type ResolvedIconName = keyof typeof iconAliases;
+
+export const resolveIcon = (
+	icons: Partial<IconMap> | undefined,
+	name: ResolvedIconName,
+	fallback: IconSnippet
+): IconSnippet => {
+	for (const key of iconAliases[name]) {
+		const icon = icons?.[key];
+		if (icon) {
+			return icon;
+		}
+	}
+
+	return fallback;
+};

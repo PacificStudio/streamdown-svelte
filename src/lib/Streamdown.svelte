@@ -5,9 +5,11 @@
 		normalizeMermaidControls,
 		StreamdownContext,
 		type ResolvedAnimationConfig,
+		type BlockProps,
+		type MermaidOptions,
 		type StreamdownProps
 	} from './context.svelte.js';
-	import { getThemeName } from './plugins.js';
+	import { getThemeName, type ThemeInput } from './plugins.js';
 	import { createCn, mergeTheme, prefixThemeClasses, shadcnTheme } from './theme.js';
 	import {
 		lexWithFootnotes,
@@ -24,6 +26,7 @@
 	import { preprocessLiteralTagContent } from './security/preprocess-literal-tag-content.js';
 	import { carets, hasIncompleteCodeFence, hasTable } from './streaming.js';
 	import { mergeTranslations } from './translations.js';
+	import { detectTextDirection } from './utils/detectDirection.js';
 
 	const animationNameMap = {
 		blurIn: 'blur',
@@ -34,6 +37,30 @@
 	const defaultLinkSafetyConfig = {
 		enabled: true
 	} as const;
+	const defaultShikiTheme: [ThemeInput, ThemeInput] = ['github-light', 'github-dark'];
+
+	const resolveShikiThemePair = (
+		theme: StreamdownProps<Source>['shikiTheme'] | undefined
+	): [ThemeInput, ThemeInput] => {
+		if (Array.isArray(theme)) {
+			return [theme[0] ?? defaultShikiTheme[0], theme[1] ?? theme[0] ?? defaultShikiTheme[1]];
+		}
+
+		if (theme) {
+			return [theme, theme];
+		}
+
+		return defaultShikiTheme;
+	};
+
+	const collectThemeRegistrations = (
+		themes: [ThemeInput, ThemeInput]
+	): Record<string, import('shiki').ThemeRegistration> =>
+		Object.fromEntries(
+			themes
+				.filter((theme): theme is Exclude<ThemeInput, string> => typeof theme !== 'string')
+				.map((theme) => [getThemeName(theme), theme])
+		);
 
 	const resolveCompatAnimation = (
 		animated: StreamdownProps<Source>['animated'],
@@ -132,6 +159,7 @@
 		shikiTheme,
 		shikiLanguages,
 		shikiThemes,
+		mermaid,
 		plugins,
 		parseIncompleteMarkdown = true,
 		parseMarkdownIntoBlocksFn,
@@ -160,12 +188,13 @@
 		mergeTheme: shouldMergeTheme = true,
 		streamdown = $bindable(),
 		renderHtml,
-		controls,
+		controls = true,
 		isAnimating = false,
 		animated,
 		caret,
 		onAnimationStart,
 		onAnimationEnd,
+		BlockComponent,
 		animation,
 		element = $bindable(),
 		icons,
@@ -188,6 +217,13 @@
 	);
 	const shouldShowCaret = $derived(resolvedMode !== 'static' && Boolean(caret) && isAnimating);
 	const resolvedControls = $derived(resolveControls(controls));
+	const resolvedShikiThemePair = $derived.by(() => {
+		if (plugins?.code) {
+			return plugins.code.getThemes();
+		}
+
+		return resolveShikiThemePair(shikiTheme);
+	});
 	const resolvedAnimation = $derived.by(() => {
 		if (animation) {
 			if (!animation.enabled) {
@@ -217,17 +253,12 @@
 		return prefixThemeClasses(prefix, mergedTheme);
 	});
 
-	const shikiThemedTheme = $derived(
-		shikiThemes
-			? Object.keys(shikiThemes)[0] || 'github-light'
-			: darkMode.current
-				? 'github-dark'
-				: 'github-light'
-	);
+	const shikiThemedTheme = $derived(getThemeName(resolvedShikiThemePair[darkMode.current ? 1 : 0]));
 
 	const mermaidThemedTheme = $derived(
 		mermaidConfig?.theme ? mermaidConfig.theme : darkMode.current ? 'dark' : 'default'
 	);
+	const resolvedMermaid = $derived<MermaidOptions | undefined>(mermaid);
 
 	const allowedTagNames = $derived(allowedTags ? Object.keys(allowedTags) : []);
 
@@ -310,15 +341,6 @@
 			return lineNumbers;
 		},
 		get shikiTheme() {
-			if (shikiTheme) {
-				return shikiTheme;
-			}
-
-			if (plugins?.code) {
-				const [lightTheme, darkTheme] = plugins.code.getThemes();
-				return darkMode.current ? getThemeName(darkTheme) : getThemeName(lightTheme);
-			}
-
 			return shikiThemedTheme;
 		},
 		get snippets() {
@@ -333,8 +355,12 @@
 		get mermaidConfig() {
 			return {
 				theme: mermaidThemedTheme,
+				...(resolvedMermaid?.config ?? {}),
 				...mermaidConfig
 			};
+		},
+		get mermaid() {
+			return resolvedMermaid;
 		},
 		get katexConfig() {
 			return katexConfig;
@@ -352,22 +378,9 @@
 			return shikiLanguages;
 		},
 		get shikiThemes() {
-			if (!plugins?.code) {
-				return shikiThemes;
-			}
-
-			const [lightTheme, darkTheme] = plugins.code.getThemes();
-			const pluginThemes = [lightTheme, darkTheme].filter(
-				(theme): theme is Exclude<typeof theme, string> => typeof theme !== 'string'
-			);
-
-			if (pluginThemes.length === 0) {
-				return shikiThemes;
-			}
-
 			return {
 				...(shikiThemes ?? {}),
-				...Object.fromEntries(pluginThemes.map((theme) => [theme.name ?? 'custom-theme', theme]))
+				...collectThemeRegistrations(resolvedShikiThemePair)
 			};
 		},
 		get sources() {
@@ -550,6 +563,17 @@
 				'[&>*:last-child]:after:inline [&>*:last-child]:after:align-baseline [&>*:last-child]:after:content-[var(--streamdown-caret)]'
 		)
 	);
+	const resolveBlockDirection = (block: string): BlockProps['dir'] => {
+		if (!dir) {
+			return undefined;
+		}
+
+		if (dir === 'auto') {
+			return detectTextDirection(block);
+		}
+
+		return dir;
+	};
 </script>
 
 <div bind:this={element} class={rootClassName} style={rootStyle}>
@@ -557,13 +581,34 @@
 		<span aria-hidden="true" data-streamdown-caret-placeholder></span>
 	{/if}
 	{#each parsedBlocks as parsedBlock, index (`${id}-block-${index}`)}
-		<Block
-			static={resolvedStatic}
-			block={parsedBlock.raw}
-			tokens={parsedBlock.tokens}
-			parseIncompleteMarkdown={false}
-			isIncomplete={parsedBlock.isIncomplete}
-		/>
+		{#if BlockComponent}
+			{#snippet blockChildren()}
+				<Block
+					static={resolvedStatic}
+					block={parsedBlock.raw}
+					tokens={parsedBlock.tokens}
+					parseIncompleteMarkdown={false}
+					isIncomplete={parsedBlock.isIncomplete}
+				/>
+			{/snippet}
+			<BlockComponent
+				content={parsedBlock.raw}
+				shouldParseIncompleteMarkdown={parseIncompleteMarkdown}
+				{shouldNormalizeHtmlIndentation}
+				{index}
+				isIncomplete={parsedBlock.isIncomplete}
+				dir={resolveBlockDirection(parsedBlock.raw)}
+				children={blockChildren}
+			/>
+		{:else}
+			<Block
+				static={resolvedStatic}
+				block={parsedBlock.raw}
+				tokens={parsedBlock.tokens}
+				parseIncompleteMarkdown={false}
+				isIncomplete={parsedBlock.isIncomplete}
+			/>
+		{/if}
 	{/each}
 	<Footnotes entries={footnoteEntries} />
 	{#if shouldShowCaret && !shouldHideCaret && !content.trim()}

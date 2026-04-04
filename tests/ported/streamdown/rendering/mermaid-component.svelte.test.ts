@@ -36,9 +36,11 @@ describeInBrowser('ported streamdown mermaid component', () => {
 			components: {
 				mermaid: Mermaid
 			},
-			mermaidConfig: {
-				theme: 'dark',
-				fontFamily: 'Arial'
+			mermaid: {
+				config: {
+					theme: 'dark',
+					fontFamily: 'Arial'
+				}
 			}
 		});
 
@@ -84,8 +86,10 @@ describeInBrowser('ported streamdown mermaid component', () => {
 		const customScreen = render(Streamdown, {
 			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
 			components: {
-				mermaid: Mermaid,
-				mermaidError: MermaidErrorProbe
+				mermaid: Mermaid
+			},
+			mermaid: {
+				errorComponent: MermaidErrorProbe
 			}
 		});
 

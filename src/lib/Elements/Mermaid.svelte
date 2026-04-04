@@ -4,7 +4,7 @@
 	import type { Tokens } from 'marked';
 	import type { MermaidConfig } from 'mermaid';
 	import { usePanzoom } from '$lib/utils/panzoom.svelte';
-	import { fitViewIcon, fullscreenIcon, zoomInIcon, zoomOutIcon } from './icons.js';
+	import { fitViewIcon, fullscreenIcon, resolveIcon, zoomInIcon, zoomOutIcon } from './icons.js';
 	import MermaidDownload from './MermaidDownload.svelte';
 
 	const streamdown = useStreamdown();
@@ -43,9 +43,12 @@
 		zoomSpeed: 1
 	});
 
-	const MermaidErrorComponent = $derived(streamdown.components?.mermaidError);
+	const MermaidErrorComponent = $derived(
+		streamdown.components?.mermaidError ?? streamdown.mermaid?.errorComponent
+	);
 	const renderedSvg = $derived(svgContent || lastValidSvg);
 	const controls = $derived(streamdown.controls.mermaid);
+	const buttonDisabled = $derived(streamdown.isAnimating);
 	const showActionBar = $derived(
 		!!(mermaidPlugin || mermaid) &&
 			controls.enabled &&
@@ -161,27 +164,30 @@
 						aria-label="Zoom to fit"
 						title="Zoom to fit"
 						onclick={() => panzoom.zoomToFit()}
+						disabled={buttonDisabled}
 						data-panzoom-ignore
 					>
-						{@render (streamdown.icons?.fitView || fitViewIcon)()}
+						{@render resolveIcon(streamdown.icons, 'fitView', fitViewIcon)()}
 					</button>
 					<button
 						class={streamdown.theme.components.button}
 						aria-label="Zoom in"
 						title="Zoom in"
 						onclick={() => panzoom.zoomIn()}
+						disabled={buttonDisabled}
 						data-panzoom-ignore
 					>
-						{@render (streamdown.icons?.zoomIn || zoomInIcon)()}
+						{@render resolveIcon(streamdown.icons, 'zoomIn', zoomInIcon)()}
 					</button>
 					<button
 						class={streamdown.theme.components.button}
 						aria-label="Zoom out"
 						title="Zoom out"
 						onclick={() => panzoom.zoomOut()}
+						disabled={buttonDisabled}
 						data-panzoom-ignore
 					>
-						{@render (streamdown.icons?.zoomOut || zoomOutIcon)()}
+						{@render resolveIcon(streamdown.icons, 'zoomOut', zoomOutIcon)()}
 					</button>
 				{/if}
 				{#if controls.fullscreen}
@@ -194,9 +200,10 @@
 							? streamdown.translations.exitFullscreen
 							: streamdown.translations.viewFullscreen}
 						onclick={() => panzoom.toggleExpand()}
+						disabled={buttonDisabled}
 						data-panzoom-ignore
 					>
-						{@render (streamdown.icons?.fullscreen || fullscreenIcon)()}
+						{@render resolveIcon(streamdown.icons, 'fullscreen', fullscreenIcon)()}
 					</button>
 				{/if}
 				{#if controls.download}

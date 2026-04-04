@@ -3,7 +3,7 @@
 	import type { TableToken } from '$lib/marked/index.js';
 	import { useKeyDown } from '$lib/utils/useKeyDown.svelte.js';
 	import { lockBodyScroll } from '$lib/utils/scroll-lock.js';
-	import { fullscreenIcon } from './icons.js';
+	import { fullscreenIcon, resolveIcon } from './icons.js';
 	import Slot from './Slot.svelte';
 	import TableDownload from './TableDownload.svelte';
 
@@ -104,7 +104,7 @@
 						}
 					}}
 				>
-					{@render (streamdown.icons?.fullscreen || fullscreenIcon)()}
+					{@render resolveIcon(streamdown.icons, 'fullscreen', fullscreenIcon)()}
 				</button>
 			{/if}
 		</div>
