@@ -488,6 +488,7 @@ Reference inputs:
 - Upstream repository: \`https://github.com/vercel/streamdown.git\`
 - Frozen commit: \`5f6475139a87dee8af08fcf7b01475292bc064d2\` (\`5f64751\`)
 - Inventory source: [docs/reference-tests-inventory.md](./reference-tests-inventory.md)
+- Workflow-aligned evidence: \`artifacts/nightly/ported-tests/summary.md\` and \`artifacts/nightly/summary/summary.md\`
 - Regenerate: \`node scripts/test-migration-status.mjs --write\`
 
 ## At A Glance
