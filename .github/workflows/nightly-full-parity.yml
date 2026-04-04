@@ -153,6 +153,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Checkout frozen reference repo
+        uses: actions/checkout@v4
+        with:
+          repository: vercel/streamdown
+          ref: 5f6475139a87dee8af08fcf7b01475292bc064d2
+          path: references/streamdown
+          fetch-depth: 1
+
       - name: Prepare artifact directory
         run: mkdir -p "$SUITE_DIR"
 
