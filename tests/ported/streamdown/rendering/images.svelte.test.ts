@@ -3,11 +3,22 @@ import { render } from 'vitest-browser-svelte';
 import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
 
+const { saveMock } = vi.hoisted(() => ({
+	saveMock: vi.fn()
+}));
+
+vi.mock('$lib/utils/save.js', () => ({
+	save: saveMock
+}));
+
 let restoreImagePrototype: (() => void) | null = null;
+const originalFetch = globalThis.fetch;
 
 afterEach(() => {
 	restoreImagePrototype?.();
 	restoreImagePrototype = null;
+	globalThis.fetch = originalFetch;
+	vi.restoreAllMocks();
 });
 
 function mockImageElementState({
@@ -104,6 +115,7 @@ describeInBrowser('ported streamdown image rendering', () => {
 	});
 
 	testInBrowser('shows download controls after load and fallback content after error', async () => {
+		saveMock.mockReset();
 		const loadScreen = render(Streamdown, {
 			content: '![Loaded image](https://example.com/loaded.png)'
 		});
@@ -117,6 +129,17 @@ describeInBrowser('ported streamdown image rendering', () => {
 
 		await vi.waitFor(() => {
 			expect(loadScreen.container.querySelector('button[title="Download image"]')).toBeTruthy();
+		});
+
+		globalThis.fetch = vi.fn().mockResolvedValue({
+			blob: async () => new Blob(['image'], { type: 'image/png' })
+		}) as typeof fetch;
+		(
+			loadScreen.container.querySelector('button[title="Download image"]') as HTMLButtonElement
+		).click();
+
+		await vi.waitFor(() => {
+			expect(saveMock).toHaveBeenCalledWith('loaded.png', expect.any(Blob), 'image/png');
 		});
 
 		const errorScreen = render(Streamdown, {

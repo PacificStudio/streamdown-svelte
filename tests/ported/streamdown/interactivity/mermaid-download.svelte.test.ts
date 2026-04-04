@@ -148,4 +148,33 @@ describeInBrowser('ported streamdown mermaid download controls', () => {
 
 		expect(saveMock).toHaveBeenCalledWith('diagram.mmd', 'graph TD; A-->B', 'text/plain');
 	});
+
+	testInBrowser('disables mermaid controls while the stream is animating', async () => {
+		renderMock.mockReset();
+		renderMock.mockResolvedValue({
+			svg: '<svg width="120" height="80"><text>Streaming Diagram</text></svg>'
+		});
+
+		const screen = render(Streamdown, {
+			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
+			isAnimating: true,
+			components: {
+				mermaid: Mermaid
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(screen.container.querySelector('button[title="Download diagram"]')).toBeTruthy();
+			expect(screen.container.querySelector('button[title="View fullscreen"]')).toBeTruthy();
+			expect(screen.container.querySelector('button[title="Zoom in"]')).toBeTruthy();
+		});
+
+		expect(screen.container.querySelector('button[title="Download diagram"]')).toHaveAttribute(
+			'disabled'
+		);
+		expect(screen.container.querySelector('button[title="View fullscreen"]')).toHaveAttribute(
+			'disabled'
+		);
+		expect(screen.container.querySelector('button[title="Zoom in"]')).toHaveAttribute('disabled');
+	});
 });

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { useStreamdown } from '$lib/context.svelte.js';
 	import { scale } from 'svelte/transition';
-	import { checkIcon, copyIcon, downloadIcon } from './icons.js';
+	import { checkIcon, copyIcon, downloadIcon, resolveIcon } from './icons.js';
 	import { Popover } from './popover.svelte.js';
 	import { useClickOutside } from '$lib/utils/useClickOutside.svelte.js';
 	import { useKeyDown } from '$lib/utils/useKeyDown.svelte.js';
@@ -53,7 +53,7 @@
 		}
 	});
 
-	const copyOrDownload = (type: 'Markdown' | 'CSV' | 'TSV') => {
+	const copyOrDownload = async (type: 'Markdown' | 'CSV' | 'TSV') => {
 		const tableRoot = document.querySelector(targetSelector);
 		const table = tableRoot?.querySelector('table');
 		if (!table) {
@@ -65,20 +65,54 @@
 		if (type === 'Markdown') {
 			copyValue = tableDataToMarkdown(tableData);
 			if (modeState === 'copy') {
-				copy.copy();
+				if (
+					typeof navigator?.clipboard?.write === 'function' &&
+					typeof ClipboardItem !== 'undefined'
+				) {
+					const html = table.outerHTML;
+					const plainText = copyValue;
+					try {
+						await navigator.clipboard.write([
+							new ClipboardItem({
+								'text/plain': new Blob([plainText], { type: 'text/plain' }),
+								'text/html': new Blob([html], { type: 'text/html' })
+							})
+						]);
+					} catch {
+						await copy.copy();
+					}
+				} else {
+					await copy.copy();
+				}
 			} else {
 				save('table.md', copyValue, 'text/markdown');
 			}
 		} else if (type === 'CSV') {
 			copyValue = tableDataToCSV(tableData);
 			if (modeState === 'copy') {
-				copy.copy();
+				if (
+					typeof navigator?.clipboard?.write === 'function' &&
+					typeof ClipboardItem !== 'undefined'
+				) {
+					try {
+						await navigator.clipboard.write([
+							new ClipboardItem({
+								'text/plain': new Blob([copyValue], { type: 'text/plain' }),
+								'text/html': new Blob([table.outerHTML], { type: 'text/html' })
+							})
+						]);
+					} catch {
+						await copy.copy();
+					}
+				} else {
+					await copy.copy();
+				}
 			} else {
 				save('table.csv', copyValue, 'text/csv');
 			}
 		} else {
 			copyValue = tableDataToTSV(tableData);
-			copy.copy();
+			await copy.copy();
 		}
 
 		popover.isOpen = false;
@@ -143,6 +177,9 @@
 			<button
 				class={streamdown.theme.components.button}
 				onclick={async (e: MouseEvent) => {
+					if (streamdown.isAnimating) {
+						return;
+					}
 					if (modeState === mode && popover.isOpen) {
 						popover.isOpen = false;
 						return;
@@ -165,13 +202,14 @@
 				aria-label={mode === 'download'
 					? streamdown.translations.downloadTable
 					: streamdown.translations.copyTable}
+				disabled={streamdown.isAnimating}
 			>
 				{#if mode === 'download'}
-					{@render (streamdown.icons?.download || downloadIcon)()}
+					{@render resolveIcon(streamdown.icons, 'download', downloadIcon)()}
 				{:else if copy.isCopied}
-					{@render (streamdown.icons?.check || checkIcon)()}
+					{@render resolveIcon(streamdown.icons, 'check', checkIcon)()}
 				{:else}
-					{@render (streamdown.icons?.copy || copyIcon)()}
+					{@render resolveIcon(streamdown.icons, 'copy', copyIcon)()}
 				{/if}
 			</button>
 		{/each}

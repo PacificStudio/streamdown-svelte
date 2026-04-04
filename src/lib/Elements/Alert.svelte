@@ -14,6 +14,7 @@
 	};
 
 	import { useStreamdown } from '$lib/context.svelte.js';
+	import { resolveIcon } from './icons.js';
 	import Slot from './Slot.svelte';
 	import type { AlertToken } from '$lib/marked/index.js';
 	import type { Snippet } from 'svelte';
@@ -44,7 +45,7 @@
 		class={`${streamdown.theme.alert.base} ${streamdown.theme.alert[token.variant]}`}
 	>
 		<div data-alert-title class={streamdown.theme.alert.title}>
-			{@render (streamdown.icons?.[token.variant] || icon)()}
+			{@render resolveIcon(streamdown.icons, token.variant, icon)()}
 			{streamdown.translations?.alert?.[token.variant] || token.variant}
 		</div>
 		{@render children()}

@@ -9,7 +9,7 @@
 	import { bundledLanguagesInfo } from '$lib/utils/bundledLanguages.js';
 	import type { Tokens } from 'marked';
 	import { getContext, untrack } from 'svelte';
-	import { checkIcon, copyIcon, downloadIcon } from './icons.js';
+	import { checkIcon, copyIcon, downloadIcon, resolveIcon } from './icons.js';
 
 	type RenderToken = HighlightToken;
 
@@ -137,7 +137,7 @@
 						disabled={buttonDisabled}
 						type="button"
 					>
-						{@render (streamdown.icons?.download || downloadIcon)()}
+						{@render resolveIcon(streamdown.icons, 'download', downloadIcon)()}
 					</button>
 				{/if}
 
@@ -155,9 +155,9 @@
 						type="button"
 					>
 						{#if copy.isCopied}
-							{@render (streamdown.icons?.check || checkIcon)()}
+							{@render resolveIcon(streamdown.icons, 'check', checkIcon)()}
 						{:else}
-							{@render (streamdown.icons?.copy || copyIcon)()}
+							{@render resolveIcon(streamdown.icons, 'copy', copyIcon)()}
 						{/if}
 					</button>
 				{/if}
