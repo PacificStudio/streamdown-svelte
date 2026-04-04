@@ -29,6 +29,21 @@ const PASS_STATUS_ORDER = [
 
 const PRIORITY_ORDER = ['P0', 'P1', 'P2'];
 const SOURCE_SCOPE_ORDER = ['remend', 'streamdown', 'plugins', 'support'];
+const PARITY_CATEGORIES = new Set([
+	'parser',
+	'security',
+	'rendering',
+	'interactions',
+	'plugins',
+	'package/export boundaries',
+	'performance/framework drift'
+]);
+const NEXT_ACTIONS = new Set([
+	'implement',
+	'add/port test',
+	'accepted drift',
+	'release blocker'
+]);
 
 function parseArgs(argv) {
 	const options = {
@@ -110,7 +125,61 @@ function classifyScope(sourceFile, passStatus) {
 	return 'plugins';
 }
 
-function parseInventory(markdown) {
+function parseUnresolvedMetadata(markdown) {
+	const lines = markdown.split('\n');
+	const metadata = new Map();
+	let inSection = false;
+
+	for (const line of lines) {
+		if (line.startsWith('## ')) {
+			inSection = line === '## Categorized Remaining Test Backlog';
+			continue;
+		}
+
+		if (!inSection || !line.startsWith('|')) {
+			continue;
+		}
+
+		const cells = parseMarkdownRow(line);
+
+		if (cells.length < 3) {
+			continue;
+		}
+
+		if (cells[0] === 'Parity category' || /^-+$/.test(cells[0])) {
+			continue;
+		}
+
+		const parityCategory = unwrapCode(cells[0]);
+		const nextAction = unwrapCode(cells[1]);
+		const sourceFile = unwrapCode(cells[2]);
+
+		if (!sourceFile.startsWith('packages/')) {
+			continue;
+		}
+
+		if (!PARITY_CATEGORIES.has(parityCategory)) {
+			throw new Error(`Unhandled parity category metadata for ${sourceFile}: ${parityCategory}`);
+		}
+
+		if (!NEXT_ACTIONS.has(nextAction)) {
+			throw new Error(`Unhandled next action metadata for ${sourceFile}: ${nextAction}`);
+		}
+
+		if (metadata.has(sourceFile)) {
+			throw new Error(`Duplicate categorized backlog entry for ${sourceFile}`);
+		}
+
+		metadata.set(sourceFile, {
+			nextAction,
+			parityCategory
+		});
+	}
+
+	return metadata;
+}
+
+function parseInventory(markdown, unresolvedMetadata) {
 	const records = [];
 
 	for (const line of markdown.split('\n')) {
@@ -143,9 +212,17 @@ function parseInventory(markdown) {
 		const migrationStatus = unwrapCode(cells[3]);
 		const evidence = cells[4];
 		const passStatus = PASS_STATUS_BY_MIGRATION_STATUS[migrationStatus];
+		const isUnresolved = ['partial', 'missing', 'blocked'].includes(passStatus);
+		const metadata = unresolvedMetadata.get(sourceFile);
 
 		if (!passStatus) {
 			throw new Error(`Unhandled migration status: ${migrationStatus}`);
+		}
+
+		if (isUnresolved && !metadata) {
+			throw new Error(
+				`Missing categorized remaining-test metadata for unresolved reference file: ${sourceFile}`
+			);
 		}
 
 		records.push({
@@ -153,6 +230,8 @@ function parseInventory(markdown) {
 			evidence,
 			localDestinations: extractLocalDestinations(evidence),
 			migrationStatus,
+			nextAction: metadata?.nextAction ?? null,
+			parityCategory: metadata?.parityCategory ?? null,
 			passStatus,
 			priority,
 			scope: classifyScope(sourceFile, passStatus),
@@ -161,6 +240,22 @@ function parseInventory(markdown) {
 	}
 
 	return records;
+}
+
+function assertMetadataCoverage(records, unresolvedMetadata) {
+	const unresolvedSourceFiles = new Set(
+		records
+			.filter((record) => ['partial', 'missing', 'blocked'].includes(record.passStatus))
+			.map((record) => record.sourceFile)
+	);
+
+	for (const sourceFile of unresolvedMetadata.keys()) {
+		if (!unresolvedSourceFiles.has(sourceFile)) {
+			throw new Error(
+				`Categorized remaining-test metadata exists for ${sourceFile}, but the file is not unresolved in the inventory tables`
+			);
+		}
+	}
 }
 
 function compareRecords(left, right) {
@@ -288,13 +383,13 @@ function renderScopeTable(summary) {
 
 function renderRemainingTable(records) {
 	const lines = [
-		'| Source file | Priority | Local destination | Pass status | Blocker |',
-		'| --- | --- | --- | --- | --- |'
+		'| Source file | Parity category | Next action | Priority | Local destination | Pass status | Blocker |',
+		'| --- | --- | --- | --- | --- | --- | --- |'
 	];
 
 	for (const record of records.sort(compareRecords)) {
 		lines.push(
-			`| \`${formatCell(record.sourceFile)}\` | \`${record.priority}\` | ${formatPaths(record.localDestinations)} | \`${record.passStatus}\` | ${formatCell(record.evidence)} |`
+			`| \`${formatCell(record.sourceFile)}\` | \`${formatCell(record.parityCategory ?? '-')}\` | \`${formatCell(record.nextAction ?? '-')}\` | \`${record.priority}\` | ${formatPaths(record.localDestinations)} | \`${record.passStatus}\` | ${formatCell(record.evidence)} |`
 		);
 	}
 
@@ -303,13 +398,13 @@ function renderRemainingTable(records) {
 
 function renderFullTracker(records) {
 	const lines = [
-		'| Source file | Area | Priority | Migration status | Local destination | Pass status | Blockers or evidence |',
-		'| --- | --- | --- | --- | --- | --- | --- |'
+		'| Source file | Area | Parity category | Next action | Priority | Migration status | Local destination | Pass status | Blockers or evidence |',
+		'| --- | --- | --- | --- | --- | --- | --- | --- | --- |'
 	];
 
 	for (const record of [...records].sort(compareRecords)) {
 		lines.push(
-			`| \`${formatCell(record.sourceFile)}\` | \`${formatCell(record.area)}\` | \`${record.priority}\` | \`${formatCell(record.migrationStatus)}\` | ${formatPaths(record.localDestinations)} | \`${record.passStatus}\` | ${formatCell(record.evidence)} |`
+			`| \`${formatCell(record.sourceFile)}\` | \`${formatCell(record.area)}\` | \`${formatCell(record.parityCategory ?? '-')}\` | \`${formatCell(record.nextAction ?? '-')}\` | \`${record.priority}\` | \`${formatCell(record.migrationStatus)}\` | ${formatPaths(record.localDestinations)} | \`${record.passStatus}\` | ${formatCell(record.evidence)} |`
 		);
 	}
 
@@ -347,7 +442,7 @@ ${renderScopeTable(summary)}
 
 ## Remaining Gaps
 
-The table below keeps the missing work visible by listing every file that is still only partially covered, not started, or blocked.
+The table below keeps the missing work visible by listing every file that is still only partially covered, not started, or blocked, together with the normalized parity category and the next action.
 
 ${renderRemainingTable(
 	records.filter((record) => ['partial', 'missing', 'blocked'].includes(record.passStatus))
@@ -392,7 +487,9 @@ Full tracker: \`docs/test-migration-status.md\`
 function main() {
 	const options = parseArgs(process.argv.slice(2));
 	const inventory = readFileSync(inventoryPath, 'utf8');
-	const records = parseInventory(inventory);
+	const unresolvedMetadata = parseUnresolvedMetadata(inventory);
+	const records = parseInventory(inventory, unresolvedMetadata);
+	assertMetadataCoverage(records, unresolvedMetadata);
 	const document = renderDocument(records);
 
 	if (options.check) {
