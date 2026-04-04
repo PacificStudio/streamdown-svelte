@@ -12,6 +12,10 @@ type BacklogRow = {
 	referenceFile: string;
 };
 
+type DriftRow = {
+	id: string;
+};
+
 function parseMarkdownRow(line: string): string[] {
 	return line
 		.slice(1, -1)
@@ -84,6 +88,38 @@ function collectRemainingBacklogRows(markdown: string): BacklogRow[] {
 	return rows;
 }
 
+function collectDriftRows(markdown: string): DriftRow[] {
+	const rows: DriftRow[] = [];
+	let inSection = false;
+
+	for (const line of markdown.split('\n')) {
+		if (line.startsWith('## ')) {
+			inSection = line.trim() === '## Local-Only Drift';
+			continue;
+		}
+
+		if (!inSection || !line.startsWith('|')) {
+			continue;
+		}
+
+		const cells = parseMarkdownRow(line);
+		if (cells.length < 1 || cells[0] === 'ID' || /^-+$/.test(cells[0])) {
+			continue;
+		}
+
+		const id = unwrapCode(cells[0]);
+		if (/^drift-\d+$/.test(id)) {
+			rows.push({ id });
+		}
+	}
+
+	return rows;
+}
+
+function collectReferencedDriftIds(markdown: string): string[] {
+	return [...new Set(markdown.match(/drift-\d+/g) ?? [])];
+}
+
 describe('parity boundary documentation', () => {
 	test('keeps plugin and package-boundary matrix rows in final-state classifications', () => {
 		const matrixRows = new Map(
@@ -147,5 +183,27 @@ describe('parity boundary documentation', () => {
 				.filter((row) => acceptedDriftFiles.has(row.referenceFile))
 				.some((row) => row.nextAction === 'implement')
 		).toBe(false);
+	});
+
+	test('keeps plugin accepted-drift backlog items out of the implement bucket once they are classified drift', () => {
+		const backlogRows = collectRemainingBacklogRows(readDoc('docs/reference-tests-inventory.md'));
+		const pluginContextRow = backlogRows.find(
+			(row) => row.referenceFile === 'packages/streamdown/__tests__/plugin-context.test.tsx'
+		);
+
+		expect(pluginContextRow).toBeDefined();
+		expect(pluginContextRow?.category).toBe('plugins');
+		expect(pluginContextRow?.nextAction).toBe('accepted drift');
+	});
+
+	test('defines every drift id that the parity matrix cites as accepted rationale', () => {
+		const matrixMarkdown = readDoc('docs/parity-matrix.md');
+		const definedDriftIds = new Set(collectDriftRows(matrixMarkdown).map((row) => row.id));
+
+		for (const driftId of collectReferencedDriftIds(matrixMarkdown)) {
+			expect(definedDriftIds.has(driftId), `Missing Local-Only Drift row for ${driftId}`).toBe(
+				true
+			);
+		}
 	});
 });
