@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -125,6 +126,31 @@ function classifyScope(sourceFile, passStatus) {
   return "plugins";
 }
 
+function formatMarkdown(markdown) {
+  try {
+    return execFileSync(
+      "pnpm",
+      [
+        "exec",
+        "prettier",
+        "--parser",
+        "markdown",
+        "--stdin-filepath",
+        outputPath,
+      ],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+        input: markdown,
+      },
+    );
+  } catch (error) {
+    throw new Error(
+      `Unable to format generated markdown via pnpm exec prettier. Run pnpm install before using --write/--check.\n${error.message}`,
+    );
+  }
+}
+
 function parseUnresolvedMetadata(markdown) {
   const lines = markdown.split("\n");
   const metadata = new Map();
@@ -132,7 +158,7 @@ function parseUnresolvedMetadata(markdown) {
 
   for (const line of lines) {
     if (line.startsWith("## ")) {
-      inSection = line === "## Categorized Remaining Test Backlog";
+      inSection = line.trim() === "## Categorized Remaining Test Backlog";
       continue;
     }
 
@@ -530,7 +556,7 @@ function main() {
   const unresolvedMetadata = parseUnresolvedMetadata(inventory);
   const records = parseInventory(inventory, unresolvedMetadata);
   assertMetadataCoverage(records, unresolvedMetadata);
-  const document = renderDocument(records);
+  const document = formatMarkdown(renderDocument(records));
 
   if (options.check) {
     const currentDocument = readFileSync(outputPath, "utf8");
