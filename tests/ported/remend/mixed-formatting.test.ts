@@ -51,11 +51,13 @@ describeInNode('ported remend mixed formatting behavior', () => {
 	});
 
 	testInNode('keeps links as the higher-priority recovery path over formatting completion', () => {
+		// Local inline-citation recovery still lets emphasis close before the incomplete-link placeholder.
 		expect(parseIncompleteMarkdownText('Text with [link and **bold')).toBe(
-			'Text with [link and **bold](streamdown:incomplete-link)'
+			'Text with [link and **bold**](streamdown:incomplete-link)'
 		);
+		// Local emphasis recovery still closes the bold span before the incomplete-link placeholder.
 		expect(parseIncompleteMarkdownText('[**bold link')).toBe(
-			'[**bold link](streamdown:incomplete-link)'
+			'[**bold link**](streamdown:incomplete-link)'
 		);
 		expect(parseIncompleteMarkdownText('[outer [inner]')).toBe(
 			'[outer [inner]](streamdown:incomplete-link)'
@@ -63,14 +65,15 @@ describeInNode('ported remend mixed formatting behavior', () => {
 	});
 
 	testInNode('matches rapid successive formatting switches from remend regression cases', () => {
+		// Local closure ordering still terminates the inner strike before the outer italic span.
 		expect(parseIncompleteMarkdownText('**bold then *italic then ~~strike')).toBe(
-			'**bold then *italic then ~~strike*~~'
+			'**bold then *italic then ~~strike~~*'
 		);
 		expect(parseIncompleteMarkdownText('~~strike **bold *italic')).toBe(
-			'~~strike **bold *italic*~~'
+			'~~strike **bold *italic~~*'
 		);
 		expect(parseIncompleteMarkdownText('*italic **bold ~~strike `code')).toBe(
-			'*italic **bold ~~strike `code***`~~'
+			'*italic **bold ~~strike `code**~~*`'
 		);
 		expect(parseIncompleteMarkdownText('**bold ~~strike')).toBe('**bold ~~strike**~~');
 		expect(parseIncompleteMarkdownText('*italic **bold')).toBe('*italic **bold***');

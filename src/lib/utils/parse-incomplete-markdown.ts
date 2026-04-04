@@ -670,6 +670,11 @@ export const parseIncompleteMarkdown = (text: string): string => {
 	if (!text || typeof text !== 'string') {
 		return text;
 	}
+
+	if (text.trim().length === 0) {
+		return '';
+	}
+
 	return defaultParser.parse(text);
 };
 
@@ -1435,25 +1440,57 @@ const handleIncompleteUrl = (text: string, lastParenIndex: number): string | nul
 	const isImage = openBracketIndex > 0 && text[openBracketIndex - 1] === '!';
 	const startIndex = isImage ? openBracketIndex - 1 : openBracketIndex;
 	const beforeLink = text.slice(0, startIndex);
-	if (isImage) {
-		return beforeLink;
-	}
-
 	const linkText = text.slice(openBracketIndex + 1, lastParenIndex);
-	return `${beforeLink}[${linkText}](streamdown:incomplete-link)`;
+
+	return isImage
+		? `${beforeLink}![${linkText}](streamdown:incomplete-image)`
+		: `${beforeLink}[${linkText}](streamdown:incomplete-link)`;
 };
 
 const handleIncompleteTextLink = (text: string, index: number): string | null => {
 	const isImage = index > 0 && text[index - 1] === '!';
 	const openIndex = isImage ? index - 1 : index;
-	const afterOpen = text.slice(index + 1);
+	const closingIndex = findMatchingClosingBracket(text, index);
+	const placeholderProtocol = isImage
+		? 'streamdown:incomplete-image'
+		: 'streamdown:incomplete-link';
 
-	if (!afterOpen.includes(']')) {
-		return isImage ? text.slice(0, openIndex) : `${text}](streamdown:incomplete-link)`;
+	if (closingIndex === -1) {
+		return `${text}](${placeholderProtocol})`;
 	}
 
-	if (findMatchingClosingBracket(text, index) === -1) {
-		return isImage ? text.slice(0, openIndex) : `${text}](streamdown:incomplete-link)`;
+	const afterClosing = text.slice(closingIndex + 1);
+	if (afterClosing.startsWith('(')) {
+		return null;
+	}
+
+	if (afterClosing.trim().length === 0) {
+		const linkText = text.slice(index + 1, closingIndex);
+		const beforeLink = text.slice(0, openIndex);
+		const shouldRecoverAsLink =
+			isImage || linkText.includes('[') || /[*_~`]/.test(linkText);
+
+		if (!shouldRecoverAsLink) {
+			return null;
+		}
+
+		const hasOuterBracketTakingPrecedence = Array.from({ length: index }, (_, i) => i).some(
+			(i) =>
+				text[i] === '[' &&
+				!isInsideCodeBlock(text, i) &&
+				(() => {
+					const outerClosingIndex = findMatchingClosingBracket(text, i);
+					return outerClosingIndex === -1 || outerClosingIndex > closingIndex;
+				})()
+		);
+
+		if (hasOuterBracketTakingPrecedence) {
+			return null;
+		}
+
+		return isImage
+			? `${beforeLink}![${linkText}](${placeholderProtocol})`
+			: `${beforeLink}[${linkText}](${placeholderProtocol})`;
 	}
 
 	return null;
