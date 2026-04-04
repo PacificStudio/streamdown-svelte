@@ -34,10 +34,26 @@ export interface LinkSafetyConfig {
 	renderModal?: (props: LinkSafetyModalProps) => unknown;
 }
 
+export interface ResolvedAnimationConfig {
+	enabled: boolean;
+	animateOnMount?: boolean;
+	type?: string;
+	duration?: number;
+	timingFunction?: string;
+	tokenize?: 'word' | 'char';
+	stagger?: number;
+}
+
 export interface StreamdownContext
 	extends Omit<
 		StreamdownProps,
-		keyof Snippets | 'class' | 'theme' | 'shikiTheme' | 'inlineCitationsMode' | 'translations'
+		| keyof Snippets
+		| 'animation'
+		| 'class'
+		| 'theme'
+		| 'shikiTheme'
+		| 'inlineCitationsMode'
+		| 'translations'
 	> {
 	snippets: Snippets;
 	shikiTheme: string;
@@ -57,14 +73,18 @@ export interface StreamdownContext
 	};
 	inlineCitationsMode: 'list' | 'carousel';
 	mode: 'static' | 'streaming';
-	animation: {
-		enabled: boolean;
-	} & StreamdownProps['animation'];
+	animation: ResolvedAnimationConfig;
 }
 
 type StreamdownContextInit<Source extends Record<string, any> = Record<string, any>> = Omit<
 	StreamdownProps<Source>,
-	keyof Snippets<Source> | 'class' | 'theme' | 'shikiTheme' | 'inlineCitationsMode' | 'translations'
+	| keyof Snippets<Source>
+	| 'animation'
+	| 'class'
+	| 'theme'
+	| 'shikiTheme'
+	| 'inlineCitationsMode'
+	| 'translations'
 > & {
 	snippets: Snippets<Source>;
 	shikiTheme: string;
@@ -82,9 +102,7 @@ type StreamdownContextInit<Source extends Record<string, any> = Record<string, a
 		download: boolean;
 	};
 	inlineCitationsMode: 'list' | 'carousel';
-	animation: {
-		enabled: boolean;
-	} & StreamdownProps<Source>['animation'];
+	animation: ResolvedAnimationConfig;
 };
 export class StreamdownContext<Source extends Record<string, any> = Record<string, any>> {
 	footnotes = {
@@ -98,9 +116,13 @@ export class StreamdownContext<Source extends Record<string, any> = Record<strin
 		return getContext('POPOVER')
 			? undefined
 			: this.animation.enabled
-				? `animation-name: sd-${this.animation.type};
-animation-duration: ${this.animation.duration}ms;
-animation-timing-function: ${this.animation.timingFunction};
+				? `--sd-animation:sd-${this.animation.type};
+--sd-duration:${this.animation.duration}ms;
+--sd-easing:${this.animation.timingFunction};
+animation-name: var(--sd-animation);
+animation-duration: var(--sd-duration);
+animation-timing-function: var(--sd-easing);
+animation-delay: var(--sd-delay, 0ms);
 animation-iteration-count: 1;
 animation-fill-mode: forwards;
 white-space: pre-wrap;
@@ -113,9 +135,13 @@ text-decoration: inherit;`
 		return getContext('POPOVER')
 			? undefined
 			: this.animation.enabled
-				? `animation-name: sd-${this.animation.type};
-animation-duration: ${this.animation.duration}ms;
-animation-timing-function: ${this.animation.timingFunction};
+				? `--sd-animation:sd-${this.animation.type};
+--sd-duration:${this.animation.duration}ms;
+--sd-easing:${this.animation.timingFunction};
+animation-name: var(--sd-animation);
+animation-duration: var(--sd-duration);
+animation-timing-function: var(--sd-easing);
+animation-delay: var(--sd-delay, 0ms);
 animation-iteration-count: 1;
 animation-fill-mode: forwards;`
 				: undefined;
@@ -351,6 +377,7 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 		duration?: number;
 		timingFunction?: 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'linear';
 		tokenize?: 'word' | 'char';
+		stagger?: number;
 	};
 	icons?: {
 		copy?: Snippet;
