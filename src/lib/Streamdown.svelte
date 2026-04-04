@@ -38,7 +38,7 @@
 		'ease-in-out',
 		'linear'
 	]);
-	const defaultLinkSafety = {
+	const defaultLinkSafetyConfig = {
 		enabled: true
 	} as const;
 
@@ -94,7 +94,7 @@
 		defaultOrigin,
 		allowedLinkPrefixes = ['*'],
 		allowedImagePrefixes = ['*'],
-		linkSafety = defaultLinkSafety,
+		linkSafety = defaultLinkSafetyConfig,
 		allowedTags,
 		allowedElements,
 		allowElement,
