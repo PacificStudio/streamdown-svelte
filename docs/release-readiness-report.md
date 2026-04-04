@@ -37,8 +37,11 @@ Audit target:
   - `artifacts/nightly/playwright-parity/status.json`
   - `artifacts/nightly/pack-smoke/summary.md`
   - `artifacts/nightly/pack-smoke/status.json`
+  - `artifacts/nightly/pack-smoke/verify-pack.json`
+  - `artifacts/nightly/pack-smoke/verify-exports.json`
   - `artifacts/nightly/dependency-audit/summary.md`
   - `artifacts/nightly/dependency-audit/status.json`
+  - `artifacts/nightly/dependency-audit/dependency-policy.json`
   - `artifacts/release/build-metadata.json`
   - `artifacts/release/artifact-metadata.json`
   - `artifacts/release/provenance-metadata.json`
