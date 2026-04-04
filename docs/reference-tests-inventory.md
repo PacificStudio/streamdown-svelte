@@ -48,32 +48,32 @@ Scope rules used for this inventory:
 
 All `remend` files are parser-facing and feed `P2-03: Port remend Behavior Tests`.
 
-| Reference file                                               | Area          | Priority | Migration status             | Current local evidence or blocker                                                                                                                                                                                                   |
-| ------------------------------------------------------------ | ------------- | -------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/remend/__tests__/basic-input.test.ts`              | `parser`      | `P0`     | `mapped_to_local_tests`      | Core block and inline parsing already exists in `src/tests/paragraph.test.ts` and `src/tests/heading.test.ts`.                                                                                                                      |
-| `packages/remend/__tests__/bold-italic.test.ts`              | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/bold-italic.test.ts`; triple-asterisk recovery and overlapping closer cases now run directly against local `parseIncompleteMarkdown`.                                                                |
-| `packages/remend/__tests__/bold.test.ts`                     | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/strong.test.ts`.                                                                                                                                                                                |
-| `packages/remend/__tests__/broken-markdown-variants.test.ts` | `regressions` | `P0`     | `ported_with_documented_gap` | Ported to `tests/ported/remend/broken-markdown-variants.test.ts`; core parser regressions now run directly, while upstream option-surface cases such as `linkMode` and `inlineKatex` remain covered by separate API follow-up work. |
-| `packages/remend/__tests__/code-blocks.test.ts`              | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/code.test.ts`.                                                                                                                                                                                  |
-| `packages/remend/__tests__/comparison-operators.test.ts`     | `regressions` | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/comparison-operators.test.ts`; local parser now matches the upstream `\\>` list-item escape contract.                                                                                                |
-| `packages/remend/__tests__/coverage-gaps.test.ts`            | `regressions` | `P1`     | `partial_local_coverage`     | Some related edge cases exist in `src/tests/weird-cases.test.ts`, but the targeted gap list is absent.                                                                                                                              |
-| `packages/remend/__tests__/custom-handlers.test.ts`          | `parser`      | `P1`     | `blocked_by_missing_surface` | This repo has no standalone `remend` package or custom-handler API to port against yet.                                                                                                                                             |
-| `packages/remend/__tests__/edge-cases.test.ts`               | `regressions` | `P1`     | `partial_local_coverage`     | Local parser tests cover many adjacent cases, but not the upstream edge-case bundle.                                                                                                                                                |
-| `packages/remend/__tests__/horizontal-rules.test.ts`         | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/hr.test.ts`.                                                                                                                                                                                    |
-| `packages/remend/__tests__/html-tags.test.ts`                | `security`    | `P0`     | `ported_with_documented_gap` | Ported to `tests/ported/remend/html-tags.test.ts`; plain trailing-tag stripping matches upstream, while unclosed fenced-code tails still follow the local auto-close contract.                                                      |
-| `packages/remend/__tests__/images.test.ts`                   | `parser`      | `P0`     | `mapped_to_local_tests`      | Local image parsing and incomplete-image recovery already exist in `src/tests/image.test.ts` and `src/tests/weird-cases.test.ts`.                                                                                                   |
-| `packages/remend/__tests__/inline-code.test.ts`              | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/codespan.test.ts`.                                                                                                                                                                              |
-| `packages/remend/__tests__/italic.test.ts`                   | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/em.test.ts`.                                                                                                                                                                                    |
-| `packages/remend/__tests__/katex.test.ts`                    | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/math.test.ts`.                                                                                                                                                                                  |
-| `packages/remend/__tests__/links.test.ts`                    | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/link.test.ts`.                                                                                                                                                                                  |
-| `packages/remend/__tests__/lists.test.ts`                    | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogues in `src/tests/li.test.ts`, `src/tests/ol.test.ts`, and `src/tests/ul.test.ts`.                                                                                                                               |
-| `packages/remend/__tests__/mixed-formatting.test.ts`         | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/mixed-formatting.test.ts`; mixed formatter ordering, incomplete-link priority, and streaming recovery now follow the frozen upstream contract.                                                       |
-| `packages/remend/__tests__/setext-heading.test.ts`           | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/setext-heading.test.ts`; local parser now encodes the upstream zero-width-space guard contract.                                                                                                      |
-| `packages/remend/__tests__/single-tilde.test.ts`             | `regressions` | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/single-tilde.test.ts`; local parser now escapes word-internal single tildes per upstream issue `#445`.                                                                                               |
-| `packages/remend/__tests__/streaming.test.ts`                | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/streaming.test.ts`; chunk-by-chunk recovery is now asserted directly against local `parseIncompleteMarkdown`.                                                                                        |
-| `packages/remend/__tests__/strikethrough.test.ts`            | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/del.test.ts`.                                                                                                                                                                                   |
-| `packages/remend/__tests__/underscore-bug.test.tsx`          | `regressions` | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/underscore-bug.test.ts`; word-internal underscore recovery now matches the frozen upstream bug regression contract.                                                                                  |
-| `packages/remend/__tests__/utils.test.ts`                    | `parser`      | `P2`     | `blocked_by_missing_surface` | Upstream tests public parser utilities that this repo does not expose as a separate `remend` surface.                                                                                                                               |
+| Reference file                                               | Area          | Priority | Migration status             | Current local evidence or blocker                                                                                                                                                                                                                        |
+| ------------------------------------------------------------ | ------------- | -------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/remend/__tests__/basic-input.test.ts`              | `parser`      | `P0`     | `mapped_to_local_tests`      | Core block and inline parsing already exists in `src/tests/paragraph.test.ts` and `src/tests/heading.test.ts`.                                                                                                                                           |
+| `packages/remend/__tests__/bold-italic.test.ts`              | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/bold-italic.test.ts`; triple-asterisk recovery and overlapping closer cases now run directly against local `parseIncompleteMarkdown`.                                                                                     |
+| `packages/remend/__tests__/bold.test.ts`                     | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/strong.test.ts`.                                                                                                                                                                                                     |
+| `packages/remend/__tests__/broken-markdown-variants.test.ts` | `regressions` | `P0`     | `ported_with_documented_gap` | Ported to `tests/ported/remend/broken-markdown-variants.test.ts`; current evidence now documents two remaining parser drifts in the local harness: strikethrough/italic closure ordering and inline-citation recovery interfering with nested incomplete-link fallback. |
+| `packages/remend/__tests__/code-blocks.test.ts`              | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/code.test.ts`.                                                                                                                                                                                                       |
+| `packages/remend/__tests__/comparison-operators.test.ts`     | `regressions` | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/comparison-operators.test.ts`; local parser now matches the upstream `\\>` list-item escape contract.                                                                                                                     |
+| `packages/remend/__tests__/coverage-gaps.test.ts`            | `regressions` | `P1`     | `ported_with_documented_gap` | Ported to `tests/ported/remend/coverage-gaps.test.ts`; whitespace, emphasis, and HTML/link boundary coverage now run directly, while helper-only assertions and the upstream `linkMode` option surface still require a standalone `remend` parity story. |
+| `packages/remend/__tests__/custom-handlers.test.ts`          | `parser`      | `P1`     | `blocked_by_missing_surface` | This repo has no standalone `remend` package or custom-handler API to port against yet.                                                                                                                                                                  |
+| `packages/remend/__tests__/edge-cases.test.ts`               | `regressions` | `P1`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/edge-cases.test.ts`; the frozen edge-case parser bundle now runs directly against local `parseIncompleteMarkdown`.                                                                                                        |
+| `packages/remend/__tests__/horizontal-rules.test.ts`         | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/hr.test.ts`.                                                                                                                                                                                                         |
+| `packages/remend/__tests__/html-tags.test.ts`                | `security`    | `P0`     | `ported_with_documented_gap` | Ported to `tests/ported/remend/html-tags.test.ts`; plain trailing-tag stripping matches upstream, while unclosed fenced-code tails still follow the local auto-close contract.                                                                           |
+| `packages/remend/__tests__/images.test.ts`                   | `parser`      | `P0`     | `mapped_to_local_tests`      | Local image parsing and incomplete-image recovery already exist in `src/tests/image.test.ts` and `src/tests/weird-cases.test.ts`.                                                                                                                        |
+| `packages/remend/__tests__/inline-code.test.ts`              | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/codespan.test.ts`.                                                                                                                                                                                                   |
+| `packages/remend/__tests__/italic.test.ts`                   | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/em.test.ts`.                                                                                                                                                                                                         |
+| `packages/remend/__tests__/katex.test.ts`                    | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/math.test.ts`.                                                                                                                                                                                                       |
+| `packages/remend/__tests__/links.test.ts`                    | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/link.test.ts`.                                                                                                                                                                                                       |
+| `packages/remend/__tests__/lists.test.ts`                    | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogues in `src/tests/li.test.ts`, `src/tests/ol.test.ts`, and `src/tests/ul.test.ts`.                                                                                                                                                    |
+| `packages/remend/__tests__/mixed-formatting.test.ts`         | `parser`      | `P0`     | `ported_with_documented_gap` | Ported to `tests/ported/remend/mixed-formatting.test.ts`; most mixed-formatting recovery now runs directly, while current evidence documents remaining drift in strikethrough closure ordering and the local inline-citation path taking precedence over one incomplete-link case. |
+| `packages/remend/__tests__/setext-heading.test.ts`           | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/setext-heading.test.ts`; local parser now encodes the upstream zero-width-space guard contract.                                                                                                                           |
+| `packages/remend/__tests__/single-tilde.test.ts`             | `regressions` | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/single-tilde.test.ts`; local parser now escapes word-internal single tildes per upstream issue `#445`.                                                                                                                    |
+| `packages/remend/__tests__/streaming.test.ts`                | `parser`      | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/streaming.test.ts`; chunk-by-chunk recovery is now asserted directly against local `parseIncompleteMarkdown`.                                                                                                             |
+| `packages/remend/__tests__/strikethrough.test.ts`            | `parser`      | `P0`     | `mapped_to_local_tests`      | Direct local analogue in `src/tests/del.test.ts`.                                                                                                                                                                                                        |
+| `packages/remend/__tests__/underscore-bug.test.tsx`          | `regressions` | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/remend/underscore-bug.test.ts`; word-internal underscore recovery now matches the frozen upstream bug regression contract.                                                                                                       |
+| `packages/remend/__tests__/utils.test.ts`                    | `parser`      | `P2`     | `blocked_by_missing_surface` | Upstream tests public parser utilities that this repo does not expose as a separate `remend` surface.                                                                                                                                                    |
 
 ## Streamdown Reference Tests
 
@@ -81,20 +81,20 @@ All `remend` files are parser-facing and feed `P2-03: Port remend Behavior Tests
 
 These files primarily feed `P2-04: Port Security-Related Reference Tests`.
 
-| Reference file                                                         | Area           | Priority | Migration status             | Current local evidence or blocker                                                                                                                                                                                                                  |
-| ---------------------------------------------------------------------- | -------------- | -------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/streamdown/__tests__/allowed-tags.test.tsx`                  | `security`     | `P0`     | `partial_local_coverage`     | `tests/ported/streamdown/security/allowed-tags.svelte.test.ts` and `tests/ported/streamdown/security/literal-tag-content.svelte.test.ts` now cover the local allowlist and literal-tag behavior, but the upstream file is not ported verbatim yet. |
-| `packages/streamdown/__tests__/email-addresses.test.tsx`               | `security`     | `P0`     | `partial_local_coverage`     | Local parser coverage exists in `src/tests/link.test.ts`, but the upstream rendered-output contract is not ported.                                                                                                                                 |
-| `packages/streamdown/__tests__/escape-html.test.ts`                    | `security`     | `P0`     | `partial_local_coverage`     | `src/lib/security/html.ts` now runs the sanitize/harden pipeline and `tests/ported/streamdown/security/html-handling.svelte.test.ts` covers adjacent HTML behavior, but the exact upstream escaping assertions are still unported.                 |
-| `packages/streamdown/__tests__/html-block-multiline.test.tsx`          | `security`     | `P0`     | `partial_local_coverage`     | Local markdown/HTML handling exists, but not the exact multiline HTML block behavior from upstream.                                                                                                                                                |
-| `packages/streamdown/__tests__/link-modal-keyboard.test.tsx`           | `interactions` | `P0`     | `blocked_by_missing_surface` | Blocked by the missing link-safety modal flow and keyboard handling surface.                                                                                                                                                                       |
-| `packages/streamdown/__tests__/link-safety.test.tsx`                   | `security`     | `P0`     | `blocked_by_missing_surface` | Blocked by missing `linkSafety` semantics and the modal/interceptor UI.                                                                                                                                                                            |
-| `packages/streamdown/__tests__/markdown-filtering.test.ts`             | `security`     | `P1`     | `not_started`                | No local post-processing parity test exists for the upstream markdown filtering pipeline.                                                                                                                                                          |
-| `packages/streamdown/__tests__/normalize-html-indentation.test.tsx`    | `security`     | `P0`     | `partial_local_coverage`     | `Streamdown` now exposes `normalizeHtmlIndentation`, and the indented-HTML browser path is covered in `tests/ported/streamdown/security/html-handling.svelte.test.ts`; the exact upstream file is still unported.                                  |
-| `packages/streamdown/__tests__/preprocess-custom-tags.test.ts`         | `security`     | `P0`     | `partial_local_coverage`     | The local render path now preprocesses configured custom tags before markdown parse, with adjacent browser coverage in `tests/ported/streamdown/security/allowed-tags.svelte.test.ts`.                                                             |
-| `packages/streamdown/__tests__/preprocess-literal-tag-content.test.ts` | `security`     | `P0`     | `partial_local_coverage`     | `preprocessLiteralTagContent()` now exists and is covered directly in `tests/ported/streamdown/security/literal-tag-content.test.ts`, but the upstream file is not ported verbatim yet.                                                            |
-| `packages/streamdown/__tests__/rehype-literal-tag-content.test.ts`     | `security`     | `P0`     | `partial_local_coverage`     | Literal-tag rendering now exists on the browser path via `literalTagContent`, with adjacent coverage in `tests/ported/streamdown/security/literal-tag-content.svelte.test.ts`.                                                                     |
-| `packages/streamdown/__tests__/tel-links.test.tsx`                     | `security`     | `P0`     | `partial_local_coverage`     | `tests/ported/streamdown/security/url-policy*.test.ts` now covers the local `tel:` / `mailto:` / `data:` policy, but the upstream rendered-output file is not ported directly.                                                                     |
+| Reference file                                                         | Area           | Priority | Migration status             | Current local evidence or blocker                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------------------- | -------------- | -------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/streamdown/__tests__/allowed-tags.test.tsx`                  | `security`     | `P0`     | `ported_with_documented_gap` | `tests/ported/streamdown/security/allowed-tags.svelte.test.ts` and `tests/ported/streamdown/security/literal-tag-content.svelte.test.ts` now cover the allowlist and literal-tag behavior directly, while the upstream React wrapper details remain framework-specific.       |
+| `packages/streamdown/__tests__/email-addresses.test.tsx`               | `security`     | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/streamdown/security/email-addresses.svelte.test.ts`; the rendered email-address contract now runs through the local browser harness.                                                                                                                  |
+| `packages/streamdown/__tests__/escape-html.test.ts`                    | `security`     | `P0`     | `ported_with_documented_gap` | Ported to `tests/ported/streamdown/security/escape-html.svelte.test.ts`; the public `renderHtml` compatibility prop now proves escaped-vs-rendered HTML behavior, while the upstream `Markdown` helper shape remains local-only drift.                                        |
+| `packages/streamdown/__tests__/html-block-multiline.test.tsx`          | `security`     | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/streamdown/security/html-block-multiline.svelte.test.ts`; multiline HTML block behavior now runs directly in the local browser harness.                                                                                                               |
+| `packages/streamdown/__tests__/link-modal-keyboard.test.tsx`           | `interactions` | `P0`     | `blocked_by_missing_surface` | Blocked by the missing link-safety modal flow and keyboard handling surface.                                                                                                                                                                                                  |
+| `packages/streamdown/__tests__/link-safety.test.tsx`                   | `security`     | `P0`     | `blocked_by_missing_surface` | Blocked by the missing `linkSafety` modal/interceptor surface in `src/lib/Elements/Link.svelte`; the repo only exposes prefix filtering plus the compatibility prop documented in `src/README.md`.                                                                            |
+| `packages/streamdown/__tests__/markdown-filtering.test.ts`             | `security`     | `P1`     | `blocked_by_missing_surface` | Blocked by the missing public `Markdown`/filtering API surface: `src/lib/index.ts` does not export an upstream-style `Markdown` helper or filtering props such as `allowedElements`, `disallowedElements`, `allowElement`, `unwrapDisallowed`, `skipHtml`, or `urlTransform`. |
+| `packages/streamdown/__tests__/normalize-html-indentation.test.tsx`    | `security`     | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts`; the utility and compatibility prop now run directly in the local browser harness.                                                                                                     |
+| `packages/streamdown/__tests__/preprocess-custom-tags.test.ts`         | `security`     | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/streamdown/security/preprocess-custom-tags.test.ts`; the custom-tag preprocessing contract now runs directly against the local helper.                                                                                                                |
+| `packages/streamdown/__tests__/preprocess-literal-tag-content.test.ts` | `security`     | `P0`     | `ported_to_local_harness`    | Expanded `tests/ported/streamdown/security/literal-tag-content.test.ts` to cover the frozen literal-tag preprocessing cases directly against `preprocessLiteralTagContent()`.                                                                                                 |
+| `packages/streamdown/__tests__/rehype-literal-tag-content.test.ts`     | `security`     | `P0`     | `ported_with_documented_gap` | `tests/ported/streamdown/security/literal-tag-content.svelte.test.ts` now covers the local browser render path for `literalTagContent`, while the upstream rehype-specific wrapper details remain folded into the Svelte render pipeline.                                     |
+| `packages/streamdown/__tests__/tel-links.test.tsx`                     | `security`     | `P0`     | `ported_to_local_harness`    | Ported to `tests/ported/streamdown/security/tel-links.svelte.test.ts`; rendered `tel:` / `mailto:` / `http:` link behavior now runs directly in the local browser harness.                                                                                                    |
 
 ### Core Rendering And Interaction Backlog
 
@@ -186,89 +186,78 @@ These files should move only after the repo exposes parity-compatible plugin pac
 
 This is the canonical category and next-action index for every inventory row whose migration status is still `partial_local_coverage`, `not_started`, or `blocked_by_missing_surface`. `scripts/test-migration-status.mjs` consumes this table and fails if an unresolved file is missing here.
 
-| Parity category               | Next action       | Reference file                                                         |
-| ----------------------------- | ----------------- | ---------------------------------------------------------------------- |
-| `parser`                      | `add/port test`   | `packages/remend/__tests__/coverage-gaps.test.ts`                      |
-| `package/export boundaries`   | `accepted drift`  | `packages/remend/__tests__/custom-handlers.test.ts`                    |
-| `parser`                      | `add/port test`   | `packages/remend/__tests__/edge-cases.test.ts`                         |
-| `package/export boundaries`   | `accepted drift`  | `packages/remend/__tests__/utils.test.ts`                              |
-| `security`                    | `release blocker` | `packages/streamdown/__tests__/allowed-tags.test.tsx`                  |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/email-addresses.test.tsx`               |
-| `security`                    | `release blocker` | `packages/streamdown/__tests__/escape-html.test.ts`                    |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/html-block-multiline.test.tsx`          |
-| `interactions`                | `release blocker` | `packages/streamdown/__tests__/link-modal-keyboard.test.tsx`           |
-| `security`                    | `release blocker` | `packages/streamdown/__tests__/link-safety.test.tsx`                   |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/markdown-filtering.test.ts`             |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/normalize-html-indentation.test.tsx`    |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/preprocess-custom-tags.test.ts`         |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/preprocess-literal-tag-content.test.ts` |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/rehype-literal-tag-content.test.ts`     |
-| `security`                    | `add/port test`   | `packages/streamdown/__tests__/tel-links.test.tsx`                     |
-| `interactions`                | `implement`       | `packages/streamdown/__tests__/animate.test.ts`                        |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/caret.test.tsx`                         |
-| `plugins`                     | `add/port test`   | `packages/streamdown/__tests__/cjk-friendly.test.tsx`                  |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-body.test.tsx`               |
-| `rendering`                   | `implement`       | `packages/streamdown/__tests__/code-block-context.test.tsx`            |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/code-block-download.test.tsx`           |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-hydration.test.tsx`          |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-line-numbers.test.tsx`       |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-loading.test.tsx`            |
-| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/code-block-memo.test.tsx`               |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-start-line.test.tsx`         |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block.test.tsx`                    |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/components.test.tsx`                    |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/copy-dropdown.test.tsx`                 |
-| `plugins`                     | `add/port test`   | `packages/streamdown/__tests__/custom-renderer.test.tsx`               |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/detect-direction.test.ts`               |
-| `parser`                      | `add/port test`   | `packages/streamdown/__tests__/dollar-sign.test.tsx`                   |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/download-dropdown.test.tsx`             |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/footnote-section.test.tsx`              |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/footnotes.test.tsx`                     |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/icon-context.test.tsx`                  |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-cached.test.tsx`                  |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-edge-cases.test.tsx`              |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-hydration.test.tsx`               |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image.test.tsx`                         |
-| `parser`                      | `add/port test`   | `packages/streamdown/__tests__/incomplete-code-block.test.tsx`         |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/inline-code.test.tsx`                   |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/katex-classes.test.tsx`                 |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/katex-lazy-load.test.tsx`               |
-| `parser`                      | `add/port test`   | `packages/streamdown/__tests__/latex-begin-issue.test.tsx`             |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/markdown.test.tsx`                      |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/matrix-equation.test.tsx`               |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/mermaid-component.test.tsx`             |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/mermaid-download.test.tsx`              |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/mermaid-fullscreen.test.tsx`            |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/mermaid-utils.test.ts`                  |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/mermaid.test.tsx`                       |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/nested-details-tables.test.tsx`         |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/pan-zoom-interaction.test.tsx`          |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/pan-zoom.test.tsx`                      |
-| `plugins`                     | `accepted drift`  | `packages/streamdown/__tests__/plugin-context.test.tsx`                |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/prefix.test.tsx`                        |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/rtl-support.test.tsx`                   |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/show-controls.test.tsx`                 |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/streamdown-coverage.test.tsx`           |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/streamdown.test.tsx`                    |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/table-dropdowns.test.tsx`               |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/table-fullscreen.test.tsx`              |
-| `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/table-utils.test.ts`                    |
-| `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/translations.test.tsx`                  |
-| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/use-deferred-render.test.tsx`           |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/utils.test.ts`                          |
-| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-memo.test.tsx`               |
-| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-rerender.test.tsx`           |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/coverage-final.test.tsx`                |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/final-coverage.test.tsx`                |
-| `interactions`                | `implement`       | `packages/streamdown/__tests__/list-animation-retrigger.test.tsx`      |
-| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/memo-comparators.test.tsx`              |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/node-attribute-removed.test.tsx`        |
-| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/remaining-coverage.test.tsx`            |
-| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/scroll-lock.test.ts`                    |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-cjk/__tests__/index.test.ts`                      |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-code/__tests__/index.test.ts`                     |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-math/__tests__/index.test.ts`                     |
-| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-mermaid/__tests__/index.test.ts`                  |
+| Parity category               | Next action       | Reference file                                                    |
+| ----------------------------- | ----------------- | ----------------------------------------------------------------- |
+| `package/export boundaries`   | `accepted drift`  | `packages/remend/__tests__/custom-handlers.test.ts`               |
+| `package/export boundaries`   | `accepted drift`  | `packages/remend/__tests__/utils.test.ts`                         |
+| `interactions`                | `release blocker` | `packages/streamdown/__tests__/link-modal-keyboard.test.tsx`      |
+| `security`                    | `release blocker` | `packages/streamdown/__tests__/link-safety.test.tsx`              |
+| `security`                    | `release blocker` | `packages/streamdown/__tests__/markdown-filtering.test.ts`        |
+| `interactions`                | `implement`       | `packages/streamdown/__tests__/animate.test.ts`                   |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/caret.test.tsx`                    |
+| `plugins`                     | `add/port test`   | `packages/streamdown/__tests__/cjk-friendly.test.tsx`             |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-body.test.tsx`          |
+| `rendering`                   | `implement`       | `packages/streamdown/__tests__/code-block-context.test.tsx`       |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/code-block-download.test.tsx`      |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-hydration.test.tsx`     |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-line-numbers.test.tsx`  |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-loading.test.tsx`       |
+| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/code-block-memo.test.tsx`          |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block-start-line.test.tsx`    |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/code-block.test.tsx`               |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/components.test.tsx`               |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/copy-dropdown.test.tsx`            |
+| `plugins`                     | `add/port test`   | `packages/streamdown/__tests__/custom-renderer.test.tsx`          |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/detect-direction.test.ts`          |
+| `parser`                      | `add/port test`   | `packages/streamdown/__tests__/dollar-sign.test.tsx`              |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/download-dropdown.test.tsx`        |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/footnote-section.test.tsx`         |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/footnotes.test.tsx`                |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/icon-context.test.tsx`             |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-cached.test.tsx`             |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-edge-cases.test.tsx`         |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-hydration.test.tsx`          |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image.test.tsx`                    |
+| `parser`                      | `add/port test`   | `packages/streamdown/__tests__/incomplete-code-block.test.tsx`    |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/inline-code.test.tsx`              |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/katex-classes.test.tsx`            |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/katex-lazy-load.test.tsx`          |
+| `parser`                      | `add/port test`   | `packages/streamdown/__tests__/latex-begin-issue.test.tsx`        |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/markdown.test.tsx`                 |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/matrix-equation.test.tsx`          |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/mermaid-component.test.tsx`        |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/mermaid-download.test.tsx`         |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/mermaid-fullscreen.test.tsx`       |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/mermaid-utils.test.ts`             |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/mermaid.test.tsx`                  |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/nested-details-tables.test.tsx`    |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/pan-zoom-interaction.test.tsx`     |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/pan-zoom.test.tsx`                 |
+| `plugins`                     | `accepted drift`  | `packages/streamdown/__tests__/plugin-context.test.tsx`           |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/prefix.test.tsx`                   |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/rtl-support.test.tsx`              |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/show-controls.test.tsx`            |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/streamdown-coverage.test.tsx`      |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/streamdown.test.tsx`               |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/table-dropdowns.test.tsx`          |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/table-fullscreen.test.tsx`         |
+| `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/table-utils.test.ts`               |
+| `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/translations.test.tsx`             |
+| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/use-deferred-render.test.tsx`      |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/utils.test.ts`                     |
+| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-memo.test.tsx`          |
+| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-rerender.test.tsx`      |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/coverage-final.test.tsx`           |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/final-coverage.test.tsx`           |
+| `interactions`                | `implement`       | `packages/streamdown/__tests__/list-animation-retrigger.test.tsx` |
+| `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/memo-comparators.test.tsx`         |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/node-attribute-removed.test.tsx`   |
+| `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/remaining-coverage.test.tsx`       |
+| `interactions`                | `add/port test`   | `packages/streamdown/__tests__/scroll-lock.test.ts`               |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-cjk/__tests__/index.test.ts`                 |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-code/__tests__/index.test.ts`                |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-math/__tests__/index.test.ts`                |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-mermaid/__tests__/index.test.ts`             |
 
 ## Harness Support Files
 

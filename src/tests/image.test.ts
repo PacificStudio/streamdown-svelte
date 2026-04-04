@@ -277,8 +277,10 @@ describe('incomplete markdown', () => {
 		const input = 'Complete ![Image](image.jpg) and incomplete ![Alt';
 		const result = parseIncompleteMarkdown(input);
 
-		// Should preserve complete image and complete incomplete one
-		expect(result).toBe('Complete ![Image](image.jpg) and incomplete ![Alt');
+		// Should preserve the complete image and recover the incomplete one.
+		expect(result).toBe(
+			'Complete ![Image](image.jpg) and incomplete ![Alt](streamdown:incomplete-image)'
+		);
 	});
 
 	test('should handle images in different contexts', () => {

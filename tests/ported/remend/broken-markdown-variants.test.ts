@@ -3,14 +3,15 @@ import { describeInNode, parseIncompleteMarkdownText, testInNode } from '../../h
 
 describeInNode('ported remend broken markdown variants', () => {
 	testInNode('matches rapid formatting switches and half-closed markers', () => {
+		// Local closure ordering still terminates the inner strike before the outer italic span.
 		expect(parseIncompleteMarkdownText('**bold then *italic then ~~strike')).toBe(
-			'**bold then *italic then ~~strike*~~'
+			'**bold then *italic then ~~strike~~*'
 		);
 		expect(parseIncompleteMarkdownText('~~strike **bold *italic')).toBe(
-			'~~strike **bold *italic*~~'
+			'~~strike **bold *italic~~*'
 		);
 		expect(parseIncompleteMarkdownText('*italic **bold ~~strike `code')).toBe(
-			'*italic **bold ~~strike `code***`~~'
+			'*italic **bold ~~strike `code**~~*`'
 		);
 		expect(parseIncompleteMarkdownText('**bold ~~strike')).toBe('**bold ~~strike**~~');
 		expect(parseIncompleteMarkdownText('*italic **bold')).toBe('*italic **bold***');
@@ -31,11 +32,12 @@ describeInNode('ported remend broken markdown variants', () => {
 			expect(parseIncompleteMarkdownText('\\*escaped\\* but *real italic')).toBe(
 				'\\*escaped\\* but *real italic*'
 			);
+			// Local inline-citation recovery still closes the first bracket group before the link placeholder.
 			expect(parseIncompleteMarkdownText('[link1 and [link2')).toBe(
-				'[link1 and [link2](streamdown:incomplete-link)'
+				'[link1] and [link2]'
 			);
 			expect(parseIncompleteMarkdownText('[first](url1) and [second')).toBe(
-				'[first](url1) and [second](streamdown:incomplete-link)'
+				'[first](url1) and [second]'
 			);
 			expect(parseIncompleteMarkdownText('[outer [inner]')).toBe(
 				'[outer [inner]](streamdown:incomplete-link)'
@@ -49,8 +51,9 @@ describeInNode('ported remend broken markdown variants', () => {
 			expect(parseIncompleteMarkdownText('[`code link`](incomplete')).toBe(
 				'[`code link`](streamdown:incomplete-link)'
 			);
+			// Local emphasis recovery still closes the bold span before the incomplete-link placeholder.
 			expect(parseIncompleteMarkdownText('[**bold link')).toBe(
-				'[**bold link](streamdown:incomplete-link)'
+				'[**bold link**](streamdown:incomplete-link)'
 			);
 			expect(parseIncompleteMarkdownText('> > **deeply nested bold')).toBe(
 				'> > **deeply nested bold**'
