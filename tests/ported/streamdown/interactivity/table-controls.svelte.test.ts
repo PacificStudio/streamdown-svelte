@@ -16,8 +16,9 @@ const tableMarkdown = ['| Name | Value |', '| ---- | ----- |', '| Foo | Bar |'].
 describeInBrowser('ported streamdown table controls', () => {
 	testInBrowser('opens copy and download menus with the local formats and payloads', async () => {
 		const writeText = vi.fn().mockResolvedValue(undefined);
+		const write = vi.fn().mockResolvedValue(undefined);
 		Object.defineProperty(navigator, 'clipboard', {
-			value: { writeText },
+			value: { write, writeText },
 			configurable: true
 		});
 
@@ -64,7 +65,8 @@ describeInBrowser('ported streamdown table controls', () => {
 		).click();
 
 		await vi.waitFor(() => {
-			expect(writeText).toHaveBeenCalledWith('Name,Value\nFoo,Bar');
+			expect(write).toHaveBeenCalledTimes(1);
+			expect(writeText).not.toHaveBeenCalled();
 		});
 	});
 
@@ -123,7 +125,7 @@ describeInBrowser('ported streamdown table controls', () => {
 		}
 	);
 
-	testInBrowser('disables fullscreen when the stream is animating', async () => {
+	testInBrowser('disables table controls when the stream is animating', async () => {
 		const screen = render(Streamdown, {
 			content: tableMarkdown,
 			isAnimating: true
@@ -131,8 +133,16 @@ describeInBrowser('ported streamdown table controls', () => {
 
 		await vi.waitFor(() => {
 			expect(screen.container.querySelector('button[title="View fullscreen"]')).toBeTruthy();
+			expect(screen.container.querySelector('button[title="Copy table"]')).toBeTruthy();
+			expect(screen.container.querySelector('button[title="Download table"]')).toBeTruthy();
 		});
 
+		expect(screen.container.querySelector('button[title="Copy table"]')).toHaveAttribute(
+			'disabled'
+		);
+		expect(screen.container.querySelector('button[title="Download table"]')).toHaveAttribute(
+			'disabled'
+		);
 		expect(screen.container.querySelector('button[title="View fullscreen"]')).toHaveAttribute(
 			'disabled'
 		);

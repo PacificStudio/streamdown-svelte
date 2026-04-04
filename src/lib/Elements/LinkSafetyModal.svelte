@@ -2,7 +2,7 @@
 	import { useStreamdown, type LinkSafetyModalProps } from '$lib/context.svelte.js';
 	import { useCopy } from '$lib/utils/copy.svelte.js';
 	import { lockBodyScroll } from '$lib/utils/scroll-lock.js';
-	import { checkIcon, copyIcon } from './icons.js';
+	import { checkIcon, copyIcon, resolveIcon } from './icons.js';
 
 	let { url, isOpen, onClose, onConfirm }: LinkSafetyModalProps = $props();
 
@@ -97,9 +97,9 @@
 				>
 					<span class="h-4 w-4">
 						{#if copy.isCopied}
-							{@render (streamdown.icons?.check || checkIcon)()}
+							{@render resolveIcon(streamdown.icons, 'check', checkIcon)()}
 						{:else}
-							{@render (streamdown.icons?.copy || copyIcon)()}
+							{@render resolveIcon(streamdown.icons, 'copy', copyIcon)()}
 						{/if}
 					</span>
 					<span

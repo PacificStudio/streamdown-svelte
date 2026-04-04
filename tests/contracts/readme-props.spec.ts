@@ -14,7 +14,7 @@ function extractDocumentedProps(readme: string): string[] {
 
 function extractPublicStreamdownProps(source: string): Set<string> {
 	const typeMatch = source.match(
-		/export type StreamdownProps<[\s\S]*?=\s*{([\s\S]*?)}\s*&\s*Partial<Snippets<Source>>;/
+		/export type StreamdownProps<[\s\S]*?=\s*{([\s\S]*?)}\s*&\s*Partial<[^;]*>;/
 	);
 	expect(typeMatch, 'Unable to locate StreamdownProps in context.svelte.ts').toBeTruthy();
 

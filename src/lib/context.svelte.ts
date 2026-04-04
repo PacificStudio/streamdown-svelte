@@ -8,7 +8,7 @@ import type { ThemeRegistration } from 'shiki';
 import type { StreamdownTranslations } from './translations.js';
 import type { AllowedTags } from './security/types.js';
 import { carets } from './streaming.js';
-import type { PluginConfig } from './plugins.js';
+import type { PluginConfig, ThemeInput } from './plugins.js';
 import type { AllowElement, UrlTransform } from './markdown.js';
 
 export type { AllowedTags } from './security/types.js';
@@ -34,6 +34,16 @@ export interface LinkSafetyConfig {
 	renderModal?: (props: LinkSafetyModalProps) => unknown;
 }
 
+export type BlockProps = {
+	content: string;
+	shouldParseIncompleteMarkdown: boolean;
+	shouldNormalizeHtmlIndentation: boolean;
+	index: number;
+	isIncomplete: boolean;
+	dir?: 'ltr' | 'rtl';
+	children?: Snippet;
+};
+
 export interface ResolvedAnimationConfig {
 	enabled: boolean;
 	animateOnMount?: boolean;
@@ -47,7 +57,7 @@ export interface ResolvedAnimationConfig {
 export interface StreamdownContext
 	extends Omit<
 		StreamdownProps,
-		| keyof Snippets
+		| CompatSnippetKeys
 		| 'animation'
 		| 'class'
 		| 'theme'
@@ -78,7 +88,7 @@ export interface StreamdownContext
 
 type StreamdownContextInit<Source extends Record<string, any> = Record<string, any>> = Omit<
 	StreamdownProps<Source>,
-	| keyof Snippets<Source>
+	| CompatSnippetKeys<Source>
 	| 'animation'
 	| 'class'
 	| 'theme'
@@ -192,6 +202,8 @@ export type StreamdownControlsConfig =
 			table?: TableControlsConfig;
 	  };
 
+export type ControlsConfig = StreamdownControlsConfig;
+
 import type {
 	AlertToken,
 	MathToken,
@@ -283,6 +295,11 @@ export type Snippets<Source extends Record<string, any> = Record<string, any>> =
 	>;
 };
 
+type CompatSnippetKeys<Source extends Record<string, any> = Record<string, any>> = keyof Omit<
+	Snippets<Source>,
+	'mermaid'
+>;
+
 type ComponentOverrideProps<Token> = {
 	children?: Snippet;
 	token: Token;
@@ -304,10 +321,57 @@ type ImageComponentProps = ComponentOverrideProps<Tokens.Image> & {
 	onload?: () => void;
 	onerror?: () => void;
 };
+type BlockquoteComponentProps = ComponentOverrideProps<Tokens.Blockquote>;
+type ListComponentProps = ComponentOverrideProps<ListToken>;
+type ListItemComponentProps = ComponentOverrideProps<ListItemToken>;
 type TableComponentProps = ComponentOverrideProps<TableToken>;
+type TableHeadComponentProps = ComponentOverrideProps<THead>;
+type TableBodyComponentProps = ComponentOverrideProps<TBody>;
+type TableFootComponentProps = ComponentOverrideProps<TFoot>;
+type TableRowComponentProps = ComponentOverrideProps<THeadRow | TRow>;
+type TableCellComponentProps = ComponentOverrideProps<TD>;
+type TableHeaderCellComponentProps = ComponentOverrideProps<TH>;
 type InlineCodeComponentProps = ComponentOverrideProps<Tokens.Codespan>;
+type StrongComponentProps = ComponentOverrideProps<Tokens.Strong>;
+type EmphasisComponentProps = ComponentOverrideProps<Tokens.Em>;
+type DeleteComponentProps = ComponentOverrideProps<Tokens.Del>;
+type HrComponentProps = ComponentOverrideProps<Tokens.Hr>;
+type BrComponentProps = ComponentOverrideProps<Tokens.Br>;
+type SubSupComponentProps = ComponentOverrideProps<SubSupToken>;
 
-export type StreamdownComponents = {
+export interface MermaidOptions {
+	config?: MermaidConfig;
+	errorComponent?: Component<MermaidErrorComponentProps, any, any>;
+}
+
+export interface IconMap {
+	CheckIcon?: Snippet<[]>;
+	CopyIcon?: Snippet<[]>;
+	DownloadIcon?: Snippet<[]>;
+	ExternalLinkIcon?: Snippet<[]>;
+	Loader2Icon?: Snippet<[]>;
+	Maximize2Icon?: Snippet<[]>;
+	RotateCcwIcon?: Snippet<[]>;
+	XIcon?: Snippet<[]>;
+	ZoomInIcon?: Snippet<[]>;
+	ZoomOutIcon?: Snippet<[]>;
+	check?: Snippet<[]>;
+	copy?: Snippet<[]>;
+	download?: Snippet<[]>;
+	fullscreen?: Snippet<[]>;
+	zoomIn?: Snippet<[]>;
+	zoomOut?: Snippet<[]>;
+	fitView?: Snippet<[]>;
+	note?: Snippet<[]>;
+	tip?: Snippet<[]>;
+	warning?: Snippet<[]>;
+	caution?: Snippet<[]>;
+	important?: Snippet<[]>;
+	chevronLeft?: Snippet<[]>;
+	chevronRight?: Snippet<[]>;
+}
+
+export type Components = {
 	h1?: Component<HeadingComponentProps, any, any>;
 	h2?: Component<HeadingComponentProps, any, any>;
 	h3?: Component<HeadingComponentProps, any, any>;
@@ -315,15 +379,34 @@ export type StreamdownComponents = {
 	h5?: Component<HeadingComponentProps, any, any>;
 	h6?: Component<HeadingComponentProps, any, any>;
 	p?: Component<ParagraphComponentProps, any, any>;
+	blockquote?: Component<BlockquoteComponentProps, any, any>;
 	a?: Component<LinkComponentProps, any, any>;
 	img?: Component<ImageComponentProps, any, any>;
+	ul?: Component<ListComponentProps, any, any>;
+	ol?: Component<ListComponentProps, any, any>;
+	li?: Component<ListItemComponentProps, any, any>;
 	table?: Component<TableComponentProps, any, any>;
+	thead?: Component<TableHeadComponentProps, any, any>;
+	tbody?: Component<TableBodyComponentProps, any, any>;
+	tfoot?: Component<TableFootComponentProps, any, any>;
+	tr?: Component<TableRowComponentProps, any, any>;
+	td?: Component<TableCellComponentProps, any, any>;
+	th?: Component<TableHeaderCellComponentProps, any, any>;
 	inlineCode?: Component<InlineCodeComponentProps, any, any>;
+	strong?: Component<StrongComponentProps, any, any>;
+	em?: Component<EmphasisComponentProps, any, any>;
+	del?: Component<DeleteComponentProps, any, any>;
+	hr?: Component<HrComponentProps, any, any>;
+	br?: Component<BrComponentProps, any, any>;
+	sub?: Component<SubSupComponentProps, any, any>;
+	sup?: Component<SubSupComponentProps, any, any>;
 	code?: Component<{ token: Tokens.Code; id: string }, any, any>;
 	mermaid?: Component<{ token: Tokens.Code; id: string }, any, any>;
 	mermaidError?: Component<MermaidErrorComponentProps, any, any>;
 	math?: Component<{ token: MathToken; id: string }, any, any>;
 };
+
+export type StreamdownComponents = Components;
 
 export type StreamdownProps<Source extends Record<string, any> = Record<string, any>> = {
 	streamdown?: StreamdownContext;
@@ -334,6 +417,7 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	caret?: keyof typeof carets;
 	onAnimationStart?: () => void;
 	onAnimationEnd?: () => void;
+	BlockComponent?: Component<BlockProps, any, any>;
 	parseMarkdownIntoBlocksFn?: (markdown: string) => string[];
 	dir?: 'auto' | 'ltr' | 'rtl';
 	sources?: {
@@ -367,14 +451,15 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	theme?: DeepPartialTheme;
 	baseTheme?: 'tailwind' | 'shadcn';
 	mergeTheme?: boolean;
-	shikiTheme?: string;
+	shikiTheme?: ThemeInput | [ThemeInput, ThemeInput];
 	shikiLanguages?: LanguageInfo[];
 	shikiThemes?: Record<string, ThemeRegistration>;
+	mermaid?: MermaidOptions;
 	mermaidConfig?: MermaidConfig;
 	katexConfig?: KatexOptions | ((inline: boolean) => KatexOptions);
 	plugins?: PluginConfig;
 	translations?: Partial<StreamdownTranslations>;
-	controls?: StreamdownControlsConfig;
+	controls?: ControlsConfig;
 	renderHtml?: boolean | ((token: Tokens.HTML | Tokens.Tag) => string);
 	animation?: {
 		animateOnMount?: boolean;
@@ -385,22 +470,7 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 		tokenize?: 'word' | 'char';
 		stagger?: number;
 	};
-	icons?: {
-		copy?: Snippet;
-		download?: Snippet;
-		fullscreen?: Snippet;
-		zoomIn?: Snippet;
-		zoomOut?: Snippet;
-		fitView?: Snippet;
-		note?: Snippet;
-		tip?: Snippet;
-		warning?: Snippet;
-		caution?: Snippet;
-		important?: Snippet;
-		chevronLeft?: Snippet;
-		chevronRight?: Snippet;
-		check?: Snippet;
-	};
+	icons?: Partial<IconMap>;
 	extensions?: Extension[];
 	children?: Snippet<[{ streamdown: StreamdownContext; token: GenericToken; children: Snippet }]>;
 	mdxComponents?: Record<
@@ -415,8 +485,8 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 			any
 		>
 	>;
-	components?: StreamdownComponents;
-} & Partial<Snippets<Source>>;
+	components?: Components;
+} & Partial<Omit<Snippets<Source>, 'mermaid'>>;
 
 export type MermaidControls =
 	| boolean

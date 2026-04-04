@@ -74,6 +74,7 @@ Audit target:
 - The migration tracker is materially better than the prior audit:
   - `docs/test-migration-status.md` now reports `45` files passing via ported upstream tests, `15` with documented port gaps, and `16` via local analogue only
   - the remaining unresolved inventory dropped to `8` partial files, `2` missing files, `15` blocked files, and `2` remaining `P0` files not yet passing via a ported upstream file or local analogue
+- `ASE-36` closed the former rendering and interaction release-blocker rows in `docs/parity-matrix.md` with direct DOM/browser evidence, so the remaining parity backlog is now parser- and security-only
 - The committed nightly and release artifacts were refreshed again on `2026-04-04`:
   - `artifacts/nightly/summary/summary.md` reports overall `success` at `2026-04-04T09:01:43.997Z`
   - the committed release metadata bundle is refreshed, but `artifacts/release/build-metadata.json` still records the artifact source commit as merged ancestor `21747b7710869c5ad95bc991a10c5acb8a3c641b`, not the current merge commit `9b1b513ad0801af5b2c2737048b881a00b9f3818`
@@ -117,10 +118,9 @@ The `2026-04-04` re-audit no longer leaves these blockers as implicit follow-up 
 | Unresolved gap family from this report                        | Execution ticket | Why this ticket exists now                                                                                                                                                                 | Dependency order                                                                |
 | ------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
 | Remaining parser and security parity backlog                  | `ASE-35`         | Closes `prop-09`, `parser-01`, `parser-10`, `parser-11`, `parser-04`, `parser-08`, `sec-03`, and `sec-05` or reclassifies them explicitly with evidence                                    | Starts immediately; must finish before `ASE-37` and `ASE-39`                    |
-| Remaining rendering and interaction parity backlog            | `ASE-36`         | Closes `prop-08`, `prop-19`, `prop-21` through `prop-24`, `render-05`, `render-10`, `prop-05`, `prop-06`, `prop-07`, `prop-10`, `prop-18`, `interact-02`, `interact-04`, and `interact-08` | Starts immediately; must finish before `ASE-37` and `ASE-39`                    |
-| Remaining test-migration backlog and unresolved `P0` evidence | `ASE-37`         | Eliminates the remaining unresolved `P0` files and refreshes migration inventory counts after the surface work lands                                                                       | Waits for `ASE-35` and `ASE-36`; then unblocks `ASE-41` and `ASE-43`            |
+| Remaining test-migration backlog and unresolved `P0` evidence | `ASE-37`         | Eliminates the remaining unresolved `P0` files and refreshes migration inventory counts after the surface work lands                                                                       | Waits for `ASE-35`; then unblocks `ASE-41` and `ASE-43`                         |
 | Baseline formatting gate and artifact hygiene                 | `ASE-38`         | Makes `pnpm lint` green and removes the pseudo-JSON artifact failure mode                                                                                                                  | Starts immediately; then unblocks `ASE-41`, `ASE-42`, and `ASE-43`              |
-| Baseline unit-test gate                                       | `ASE-39`         | Makes `pnpm test` green on the candidate head with root-cause fixes and regression coverage                                                                                                | Waits for `ASE-35` and `ASE-36`; then unblocks `ASE-41`, `ASE-42`, and `ASE-43` |
+| Baseline unit-test gate                                       | `ASE-39`         | Makes `pnpm test` green on the candidate head with root-cause fixes and regression coverage                                                                                                | Waits for `ASE-35`; then unblocks `ASE-41`, `ASE-42`, and `ASE-43`              |
 | Dependency and license exception closeout                     | `ASE-40`         | Re-reviews or removes the temporary exceptions still blocking the first trusted release                                                                                                    | Starts immediately; then unblocks `ASE-42` and `ASE-43`                         |
 | GitHub-hosted nightly parity automation consistency           | `ASE-41`         | Produces at least one passing repo-hosted `Nightly Full Parity` run for the reviewed state                                                                                                 | Waits for `ASE-37`, `ASE-38`, and `ASE-39`; then unblocks `ASE-42` and `ASE-43` |
 | Trusted release workflow and provenance evidence              | `ASE-42`         | Produces the first completed repo-hosted `Release` workflow evidence set for the reviewed commit                                                                                           | Waits for `ASE-38`, `ASE-39`, `ASE-40`, and `ASE-41`; then unblocks `ASE-43`    |
@@ -128,8 +128,8 @@ The `2026-04-04` re-audit no longer leaves these blockers as implicit follow-up 
 
 Execution sequencing for the next closeout pass is therefore:
 
-1. Run `ASE-35`, `ASE-36`, `ASE-38`, and `ASE-40` in parallel.
-2. After the remaining parity surface work lands, run `ASE-37` and `ASE-39`.
+1. Run `ASE-35`, `ASE-38`, and `ASE-40` in parallel.
+2. After the remaining parser and security surface work lands, run `ASE-37` and `ASE-39`.
 3. Re-establish repo-hosted nightly evidence in `ASE-41`.
 4. Produce repo-hosted release provenance evidence in `ASE-42`.
 5. Perform final document and platform status synchronization in `ASE-43`.
@@ -146,7 +146,6 @@ Execution sequencing for the next closeout pass is therefore:
   - parser footnote-definition shape (`drift-11`)
 - release-blocking backlog:
   - rendering
-  - interactions
 
 `docs/test-migration-status.md` currently reports:
 
@@ -218,7 +217,7 @@ Reasoning:
 2. The exact candidate commit still fails required baseline release gates.
    `pnpm lint` is red because tracked files still have formatting drift and some committed nightly artifacts are not valid JSON for formatter purposes, and `pnpm test` is red with `17` failed files and `43` failed tests.
 3. The frozen parity closeout is not complete.
-   `docs/parity-matrix.md` now closes the targeted parser/security rows, but it still carries open rendering and interaction backlog rows, and `docs/test-migration-status.md` still reports `2` unresolved `P0` files plus partial, missing, and blocked inventory.
+   `docs/parity-matrix.md` now closes the targeted parser/security rows and the rendering/interaction blocker rows, but it still carries open rendering add/port-test backlog rows, and `docs/test-migration-status.md` still reports `2` unresolved `P0` files plus partial, missing, and blocked inventory.
 4. Trusted release automation and one reviewed production dependency blocker are still incomplete.
    There is still no completed `Release` workflow run, no repo-hosted `publish-with-provenance` or `post-publish-verify` evidence, and the reviewed `lodash-es` production `high` advisory remains blocking under `docs/release-policy.md`. The `entities` license exception has been removed and the `khroma` metadata exception is now documented as non-blocking.
 5. Repo-hosted parity evidence is not yet consistent enough for a parity-backed release claim.
@@ -228,7 +227,7 @@ Reasoning:
 
 Re-run release review only after all of the following are true:
 
-1. The remaining rendering and interaction backlog rows in `docs/parity-matrix.md` are either closed with evidence or formally reclassified in the compatibility contract.
+1. The remaining rendering add/port-test backlog rows in `docs/parity-matrix.md` are either closed with evidence or formally reclassified in the compatibility contract.
 2. `docs/test-migration-status.md` no longer reports unresolved `P0` files and has materially reduced the current `partial` / `missing` / `blocked` inventory.
 3. `pnpm lint` and `pnpm test` are green on the exact candidate release commit, and the committed evidence artifacts no longer rely on command-banner-prefixed pseudo-JSON files.
 4. A passing repo-hosted `Nightly Full Parity` run exists for the reviewed state, not just a committed artifact bundle.

@@ -171,10 +171,9 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 		kindMismatches: []
 	},
 	streamdownProps: {
-		// prop-04, prop-08, prop-09,
+		// prop-04, prop-09,
 		// prop-17, prop-18, prop-20, api-01
 		missingFromLocal: [
-			'BlockComponent',
 			'rehypePlugins',
 			'remarkPlugins',
 			'remarkRehypeOptions',
@@ -241,8 +240,13 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'tr',
 			'ul'
 		],
-		// prop-05, prop-19, prop-21, prop-22, prop-24
+		// prop-05, prop-08, prop-19, prop-21, prop-22, prop-24
 		typeMismatches: [
+			{
+				name: 'BlockComponent',
+				reference: 'ComponentType<BlockProps>',
+				local: 'Component<BlockProps,any,any>'
+			},
 			{
 				name: 'caret',
 				reference: 'keyof typeof carets',
@@ -254,25 +258,9 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 				local: 'Snippet<[{streamdown:StreamdownContext;token:GenericToken;children:Snippet;}]>'
 			},
 			{
-				name: 'components',
-				reference: 'Components',
-				local: 'StreamdownComponents'
-			},
-			{
 				name: 'controls',
 				reference: 'ControlsConfig',
 				local: 'StreamdownControlsConfig'
-			},
-			{
-				name: 'icons',
-				reference: 'Partial<IconMap>',
-				local:
-					'{copy?:Snippet;download?:Snippet;fullscreen?:Snippet;zoomIn?:Snippet;zoomOut?:Snippet;fitView?:Snippet;note?:Snippet;tip?:Snippet;warning?:Snippet;caution?:Snippet;important?:Snippet;chevronLeft?:Snippet;chevronRight?:Snippet;check?:Snippet;}'
-			},
-			{
-				name: 'mermaid',
-				reference: 'MermaidOptions',
-				local: 'Snippet<[{children:Snippet;token:Tokens.Code;}]>'
 			},
 			{
 				name: 'onAnimationEnd',
@@ -292,14 +280,14 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			{
 				name: 'shikiTheme',
 				reference: '[ThemeInput,ThemeInput]',
-				local: 'string'
+				local: 'ThemeInput|[ThemeInput,ThemeInput]'
 			}
 		],
-		// prop-05, prop-21
+		// prop-05, prop-08, prop-21
 		defaultMismatches: [
 			{
-				name: 'controls',
-				reference: 'true',
+				name: 'BlockComponent',
+				reference: 'Block',
 				local: null
 			},
 			{

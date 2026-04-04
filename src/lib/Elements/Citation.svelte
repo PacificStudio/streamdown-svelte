@@ -9,7 +9,7 @@
 	import { StepperState } from './stepperState.svelte.js';
 	import { Popover } from './popover.svelte.js';
 	import { get } from '$lib/utils/get.js';
-	import { chevronLeft, chevronRight } from './icons.js';
+	import { chevronLeft, chevronRight, resolveIcon } from './icons.js';
 
 	const {
 		token
@@ -153,14 +153,14 @@
 					class={streamdown.theme.components.button}
 					onclick={() => stepper.previous()}
 				>
-					{@render (streamdown.icons?.chevronLeft || chevronLeft)()}
+					{@render resolveIcon(streamdown.icons, 'chevronLeft', chevronLeft)()}
 				</button>
 				<button
 					disabled={!stepper.canGoNext}
 					class={streamdown.theme.components.button}
 					onclick={() => stepper.next()}
 				>
-					{@render (streamdown.icons?.chevronRight || chevronRight)()}
+					{@render resolveIcon(streamdown.icons, 'chevronRight', chevronRight)()}
 				</button>
 			</div>
 		</div>
