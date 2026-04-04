@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generatedAt": "2026-04-04T03:01:09.427Z",
+  "generatedAt": "2026-04-04T09:01:43.997Z",
   "missingSuites": [],
   "suites": [
     {
@@ -8,7 +8,7 @@
       "status": "success",
       "ok": true,
       "command": "pnpm exec vitest run tests/ported --reporter=default --reporter=junit --outputFile=artifacts/nightly/ported-tests/junit.xml",
-      "durationMs": null,
+      "durationMs": 17000,
       "failureStage": null,
       "logFile": "artifacts/nightly/ported-tests/output.log",
       "artifacts": [
@@ -30,14 +30,14 @@
         }
       ],
       "notes": [],
-      "generatedAt": "2026-04-04T03:00:46.092Z"
+      "generatedAt": "2026-04-04T09:00:36.864Z"
     },
     {
       "suite": "playwright-parity",
       "status": "success",
       "ok": true,
       "command": "pnpm exec playwright test tests/playwright/parity --reporter=line,html --output=artifacts/nightly/playwright-parity/test-results",
-      "durationMs": null,
+      "durationMs": 9000,
       "failureStage": null,
       "logFile": "artifacts/nightly/playwright-parity/output.log",
       "artifacts": [
@@ -63,14 +63,14 @@
         }
       ],
       "notes": [],
-      "generatedAt": "2026-04-04T03:00:29.798Z"
+      "generatedAt": "2026-04-04T09:01:22.781Z"
     },
     {
       "suite": "pack-smoke",
       "status": "success",
       "ok": true,
       "command": "pnpm verify:pack && pnpm verify:exports",
-      "durationMs": null,
+      "durationMs": 16000,
       "failureStage": null,
       "logFile": null,
       "artifacts": [
@@ -100,14 +100,14 @@
         }
       ],
       "notes": [],
-      "generatedAt": "2026-04-04T03:00:45.308Z"
+      "generatedAt": "2026-04-04T09:00:35.172Z"
     },
     {
       "suite": "dependency-audit",
       "status": "success",
       "ok": true,
       "command": "pnpm verify:dependency-policy",
-      "durationMs": null,
+      "durationMs": 1000,
       "failureStage": null,
       "logFile": null,
       "artifacts": [
@@ -129,7 +129,7 @@
         }
       ],
       "notes": [],
-      "generatedAt": "2026-04-04T03:00:53.968Z"
+      "generatedAt": "2026-04-04T09:00:20.690Z"
     }
   ]
 }

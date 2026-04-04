@@ -3,7 +3,7 @@
   "status": "success",
   "ok": true,
   "command": "pnpm exec vitest run tests/ported --reporter=default --reporter=junit --outputFile=artifacts/nightly/ported-tests/junit.xml",
-  "durationMs": null,
+  "durationMs": 17000,
   "failureStage": null,
   "logFile": "artifacts/nightly/ported-tests/output.log",
   "artifacts": [
@@ -25,5 +25,5 @@
     }
   ],
   "notes": [],
-  "generatedAt": "2026-04-04T03:00:46.092Z"
+  "generatedAt": "2026-04-04T09:00:36.864Z"
 }

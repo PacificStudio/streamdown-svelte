@@ -1,7 +1,7 @@
 # Nightly Suite: playwright-parity
 
 - Status: success
-- Duration: n/a
+- Duration: 9.0s
 - Command: `pnpm exec playwright test tests/playwright/parity --reporter=line,html --output=artifacts/nightly/playwright-parity/test-results`
 - Primary log: `artifacts/nightly/playwright-parity/output.log`
 

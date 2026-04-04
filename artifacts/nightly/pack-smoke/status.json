@@ -3,7 +3,7 @@
   "status": "success",
   "ok": true,
   "command": "pnpm verify:pack && pnpm verify:exports",
-  "durationMs": null,
+  "durationMs": 16000,
   "failureStage": null,
   "logFile": null,
   "artifacts": [
@@ -33,5 +33,5 @@
     }
   ],
   "notes": [],
-  "generatedAt": "2026-04-04T03:00:45.308Z"
+  "generatedAt": "2026-04-04T09:00:35.172Z"
 }

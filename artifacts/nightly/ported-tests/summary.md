@@ -1,7 +1,7 @@
 # Nightly Suite: ported-tests
 
 - Status: success
-- Duration: n/a
+- Duration: 17.0s
 - Command: `pnpm exec vitest run tests/ported --reporter=default --reporter=junit --outputFile=artifacts/nightly/ported-tests/junit.xml`
 - Primary log: `artifacts/nightly/ported-tests/output.log`
 

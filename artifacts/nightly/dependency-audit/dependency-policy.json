@@ -1,5 +1,5 @@
 
-> svelte-streamdown@3.0.1 verify:dependency-policy /home/yuzhong/.openase/workspace/test/cdn/ASE-20/svelte-streamdown
+> svelte-streamdown@3.0.1 verify:dependency-policy /home/yuzhong/.openase/workspace/test/cdn/ASE-32/svelte-streamdown
 > node scripts/verify-dependency-policy.mjs
 
 {
@@ -27,8 +27,8 @@
     "dev": {
       "scope": "dev",
       "threshold": "high",
-      "relevantCount": 18,
-      "approvedCount": 18,
+      "relevantCount": 19,
+      "approvedCount": 19,
       "unapprovedCount": 0,
       "approved": [
         {
@@ -191,6 +191,15 @@
           "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
           "recommendation": "Upgrade to version 4.0.4 or later",
           "reason": "Transitive via the current Vitest UI graph; removal requires dependency upgrades outside P1-05.",
+          "reviewBy": "before the first trusted release"
+        },
+        {
+          "id": "1115969",
+          "module": "defu",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-737v-mqg7-c878",
+          "recommendation": "Upgrade to version 6.1.5 or later",
+          "reason": "Transitive via unenv@2.0.0-rc.20 in the pinned Wrangler and adapter-cloudflare dev toolchain; removal requires a coordinated Cloudflare dependency upgrade outside the current parity ticket scope.",
           "reviewBy": "before the first trusted release"
         }
       ],
