@@ -149,7 +149,7 @@
 				enabled: true,
 				animateOnMount: animation.animateOnMount ?? false,
 				type: animation.type || 'blur',
-				duration: animation.duration || 500,
+				duration: animation.duration ?? 500,
 				timingFunction: animation.timingFunction || 'ease-in',
 				tokenize: animation.tokenize || 'word',
 				stagger: animation.stagger ?? 0

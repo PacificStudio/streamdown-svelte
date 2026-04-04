@@ -105,4 +105,20 @@ describeInBrowser('ported streamdown animation surface', () => {
 		]);
 		expect(spans.map((span) => span.style.getPropertyValue('--sd-delay'))).toEqual(['', '15ms']);
 	});
+
+	testInBrowser('local animation prop preserves explicit zero duration', () => {
+		const screen = render(StreamdownWithFutureProps, {
+			content: 'Zero duration',
+			animation: {
+				enabled: true,
+				duration: 0
+			},
+			isAnimating: true
+		});
+
+		const spans = [
+			...screen.container.querySelectorAll('[data-streamdown-animate]')
+		] as HTMLElement[];
+		expect(spans[0]?.style.getPropertyValue('--sd-duration')).toBe('0ms');
+	});
 });
