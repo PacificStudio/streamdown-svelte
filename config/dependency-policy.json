@@ -122,6 +122,12 @@
 						"module": "picomatch",
 						"reason": "Transitive via the current Vitest UI graph; removal requires dependency upgrades outside P1-05.",
 						"reviewBy": "before the first trusted release"
+					},
+					{
+						"id": "1115969",
+						"module": "defu",
+						"reason": "Transitive via the pinned Wrangler/unenv toolchain in the current dev graph; removal requires a coordinated Cloudflare tooling upgrade outside ASE-22.",
+						"reviewBy": "before the first trusted release"
 					}
 				]
 			}
