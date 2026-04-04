@@ -1,7 +1,7 @@
 # Nightly Suite: dependency-audit
 
 - Status: success
-- Duration: n/a
+- Duration: 1.0s
 - Command: `pnpm verify:dependency-policy`
 
 ## Artifacts

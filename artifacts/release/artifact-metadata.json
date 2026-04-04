@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-04T03:02:43.260Z",
+  "generatedAt": "2026-04-04T09:02:02.792Z",
   "package": {
     "name": "svelte-streamdown",
     "version": "3.0.1"
   },
   "tarball": {
     "fileName": "svelte-streamdown-3.0.1.tgz",
-    "sizeBytes": 84418,
-    "sha256": "c1820303bca56d6230d68e9c244f4dabdb4b385dce2d020783bc614bd031e229",
-    "sha512": "25ca3a6325cecd8718ae528a7af89ac0574ac588e347517f3ae3a289d8b7bf0bec66aefc0ec7723a85917163f2b05ecaf7d15ff6bc51f39cfeaf89e6997f9512",
-    "integrity": "sha512-Jco6YyXOzYcYrlKKeviawFdKxYjjR1F/OuOiidi3vwvsZq78DsdyOoWRcWPysF7K99Ff9rxR85z+r4nmmX+VEg=="
+    "sizeBytes": 90587,
+    "sha256": "1d8fd85f6806bca01955cf2d9f512babe2a0600a86db141092500c69e393b767",
+    "sha512": "53ba297d3f8ab737512507c1c134d76152bd5472d80ba6c8779f91a14c95470bdbd157b2908acc8dcbd9ecb7335e43dc75eb36f036887e98fc81bd9e111a1192",
+    "integrity": "sha512-U7opfT+KtzdRJQfBwTTXYVK9VHLYC6bId5+RoUyVRwvb0VeykIrMjcvZ7LczXkPcdes28DaIfpj8gb2eERoRkg=="
   }
 }

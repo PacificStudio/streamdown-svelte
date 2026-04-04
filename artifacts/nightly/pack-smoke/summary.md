@@ -1,7 +1,7 @@
 # Nightly Suite: pack-smoke
 
 - Status: success
-- Duration: n/a
+- Duration: 16.0s
 - Command: `pnpm verify:pack && pnpm verify:exports`
 
 ## Artifacts

@@ -1,291 +1,571 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="109" failures="0" errors="0" time="3.2509162423">
-    <testsuite name="tests/ported/remend/bold-italic.test.ts" timestamp="2026-04-04T03:00:35.832Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004465279">
-        <testcase classname="tests/ported/remend/bold-italic.test.ts" name="ported remend bold-italic behavior &gt; completes incomplete triple-asterisk spans" time="0.002787319">
+<testsuites name="vitest tests" tests="215" failures="0" errors="0" time="7.4157899577">
+    <testsuite name="tests/ported/remend/bold-italic.test.ts" timestamp="2026-04-04T09:00:26.529Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.007365163">
+        <testcase classname="tests/ported/remend/bold-italic.test.ts" name="ported remend bold-italic behavior &gt; completes incomplete triple-asterisk spans" time="0.005292086">
         </testcase>
-        <testcase classname="tests/ported/remend/bold-italic.test.ts" name="ported remend bold-italic behavior &gt; handles nested code and chunk-by-chunk bold-italic recovery" time="0.000624734">
+        <testcase classname="tests/ported/remend/bold-italic.test.ts" name="ported remend bold-italic behavior &gt; handles nested code and chunk-by-chunk bold-italic recovery" time="0.000797299">
         </testcase>
-        <testcase classname="tests/ported/remend/bold-italic.test.ts" name="ported remend bold-italic behavior &gt; preserves overlapping bold and italic closers instead of inventing extra triple markers" time="0.000318224">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/remend/broken-markdown-variants.test.ts" timestamp="2026-04-04T03:00:35.834Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.005494549">
-        <testcase classname="tests/ported/remend/broken-markdown-variants.test.ts" name="ported remend broken markdown variants &gt; matches rapid formatting switches and half-closed markers" time="0.003196806">
-        </testcase>
-        <testcase classname="tests/ported/remend/broken-markdown-variants.test.ts" name="ported remend broken markdown variants &gt; handles escapes, incomplete links, blockquotes, tasks, tables, html, and katex tails" time="0.001606983">
+        <testcase classname="tests/ported/remend/bold-italic.test.ts" name="ported remend bold-italic behavior &gt; preserves overlapping bold and italic closers instead of inventing extra triple markers" time="0.000397561">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/comparison-operators.test.ts" timestamp="2026-04-04T03:00:35.835Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.002804745">
-        <testcase classname="tests/ported/remend/comparison-operators.test.ts" name="ported remend comparison operators &gt; escapes comparison operators inside list items" time="0.001620531">
+    <testsuite name="tests/ported/remend/broken-markdown-variants.test.ts" timestamp="2026-04-04T09:00:26.532Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.004688731">
+        <testcase classname="tests/ported/remend/broken-markdown-variants.test.ts" name="ported remend broken markdown variants &gt; matches rapid formatting switches and half-closed markers" time="0.002709661">
         </testcase>
-        <testcase classname="tests/ported/remend/comparison-operators.test.ts" name="ported remend comparison operators &gt; does not escape blockquotes or non-comparison list content" time="0.000250607">
-        </testcase>
-        <testcase classname="tests/ported/remend/comparison-operators.test.ts" name="ported remend comparison operators &gt; keeps code blocks unchanged while still composing with other handlers" time="0.000322601">
+        <testcase classname="tests/ported/remend/broken-markdown-variants.test.ts" name="ported remend broken markdown variants &gt; handles escapes, incomplete links, blockquotes, tasks, tables, html, and katex tails" time="0.001237207">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/coverage-gaps.test.ts" timestamp="2026-04-04T03:00:35.837Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.004816821">
-        <testcase classname="tests/ported/remend/coverage-gaps.test.ts" name="ported remend coverage gaps &gt; covers whitespace, emphasis, code-fence, and boundary regressions visible through the parser API" time="0.004178714">
+    <testsuite name="tests/ported/remend/comparison-operators.test.ts" timestamp="2026-04-04T09:00:26.532Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.007796733">
+        <testcase classname="tests/ported/remend/comparison-operators.test.ts" name="ported remend comparison operators &gt; escapes comparison operators inside list items" time="0.004659494">
+        </testcase>
+        <testcase classname="tests/ported/remend/comparison-operators.test.ts" name="ported remend comparison operators &gt; does not escape blockquotes or non-comparison list content" time="0.001704723">
+        </testcase>
+        <testcase classname="tests/ported/remend/comparison-operators.test.ts" name="ported remend comparison operators &gt; keeps code blocks unchanged while still composing with other handlers" time="0.000533403">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/edge-cases.test.ts" timestamp="2026-04-04T03:00:35.838Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.005874894">
-        <testcase classname="tests/ported/remend/edge-cases.test.ts" name="ported remend edge cases &gt; matches the frozen remend edge-case bundle on externally visible parser behavior" time="0.005339656">
+    <testsuite name="tests/ported/remend/coverage-gaps.test.ts" timestamp="2026-04-04T09:00:26.533Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.008676519">
+        <testcase classname="tests/ported/remend/coverage-gaps.test.ts" name="ported remend coverage gaps &gt; covers whitespace, emphasis, code-fence, and boundary regressions visible through the parser API" time="0.007897349">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/html-tags.test.ts" timestamp="2026-04-04T03:00:35.838Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.003969885">
-        <testcase classname="tests/ported/remend/html-tags.test.ts" name="ported remend incomplete HTML tag stripping &gt; strips incomplete opening and closing tags at the stream tail" time="0.00255223">
-        </testcase>
-        <testcase classname="tests/ported/remend/html-tags.test.ts" name="ported remend incomplete HTML tag stripping &gt; keeps complete HTML and non-tag comparisons unchanged" time="0.000417386">
-        </testcase>
-        <testcase classname="tests/ported/remend/html-tags.test.ts" name="ported remend incomplete HTML tag stripping &gt; does not strip incomplete tags inside code spans or fenced code blocks" time="0.000294533">
+    <testsuite name="tests/ported/remend/edge-cases.test.ts" timestamp="2026-04-04T09:00:26.534Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.008705262">
+        <testcase classname="tests/ported/remend/edge-cases.test.ts" name="ported remend edge cases &gt; matches the frozen remend edge-case bundle on externally visible parser behavior" time="0.00794476">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/mixed-formatting.test.ts" timestamp="2026-04-04T03:00:35.839Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.005870582">
-        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; completes incomplete bold-italic formatting and chunk boundaries" time="0.002502626">
+    <testsuite name="tests/ported/remend/html-tags.test.ts" timestamp="2026-04-04T09:00:26.534Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.007234225">
+        <testcase classname="tests/ported/remend/html-tags.test.ts" name="ported remend incomplete HTML tag stripping &gt; strips incomplete opening and closing tags at the stream tail" time="0.006087426">
         </testcase>
-        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; preserves overlapping closing markers instead of inventing new triple-asterisk spans" time="0.000993509">
+        <testcase classname="tests/ported/remend/html-tags.test.ts" name="ported remend incomplete HTML tag stripping &gt; keeps complete HTML and non-tag comparisons unchanged" time="0.000296313">
         </testcase>
-        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; matches remend closure ordering across mixed incomplete formats" time="0.000946887">
-        </testcase>
-        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; keeps links as the higher-priority recovery path over formatting completion" time="0.000380925">
-        </testcase>
-        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; matches rapid successive formatting switches from remend regression cases" time="0.000262159">
+        <testcase classname="tests/ported/remend/html-tags.test.ts" name="ported remend incomplete HTML tag stripping &gt; does not strip incomplete tags inside code spans or fenced code blocks" time="0.000221553">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/setext-heading.test.ts" timestamp="2026-04-04T03:00:35.840Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004100102">
-        <testcase classname="tests/ported/remend/setext-heading.test.ts" name="ported remend setext heading handling &gt; guards streamed single and double underline markers with a zero-width space" time="0.002178548">
+    <testsuite name="tests/ported/remend/mixed-formatting.test.ts" timestamp="2026-04-04T09:00:26.535Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.006783873">
+        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; completes incomplete bold-italic formatting and chunk boundaries" time="0.002823388">
         </testcase>
-        <testcase classname="tests/ported/remend/setext-heading.test.ts" name="ported remend setext heading handling &gt; does not modify complete list items or valid setext and horizontal-rule markers" time="0.000497632">
+        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; preserves overlapping closing markers instead of inventing new triple-asterisk spans" time="0.00114365">
         </testcase>
-        <testcase classname="tests/ported/remend/setext-heading.test.ts" name="ported remend setext heading handling &gt; only guards the final streamed line" time="0.000636577">
+        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; matches remend closure ordering across mixed incomplete formats" time="0.001077678">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/remend/single-tilde.test.ts" timestamp="2026-04-04T03:00:35.841Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004166964">
-        <testcase classname="tests/ported/remend/single-tilde.test.ts" name="ported remend single tilde escaping &gt; escapes single tildes between word characters" time="0.002683666">
+        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; keeps links as the higher-priority recovery path over formatting completion" time="0.000469814">
         </testcase>
-        <testcase classname="tests/ported/remend/single-tilde.test.ts" name="ported remend single tilde escaping &gt; preserves complete strikethrough and non-word single tildes" time="0.000440385">
-        </testcase>
-        <testcase classname="tests/ported/remend/single-tilde.test.ts" name="ported remend single tilde escaping &gt; does not escape tildes inside code spans or code fences" time="0.000289313">
+        <testcase classname="tests/ported/remend/mixed-formatting.test.ts" name="ported remend mixed formatting behavior &gt; matches rapid successive formatting switches from remend regression cases" time="0.000310259">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/remend/streaming.test.ts" timestamp="2026-04-04T03:00:35.842Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004258015">
-        <testcase classname="tests/ported/remend/streaming.test.ts" name="ported remend streaming behavior &gt; handles nested formatting cut mid-stream" time="0.002494872">
+    <testsuite name="tests/ported/remend/setext-heading.test.ts" timestamp="2026-04-04T09:00:26.536Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004740095">
+        <testcase classname="tests/ported/remend/setext-heading.test.ts" name="ported remend setext heading handling &gt; guards streamed single and double underline markers with a zero-width space" time="0.00224964">
         </testcase>
-        <testcase classname="tests/ported/remend/streaming.test.ts" name="ported remend streaming behavior &gt; handles headings, blockquotes, tables, and mixed incomplete formats" time="0.000632193">
+        <testcase classname="tests/ported/remend/setext-heading.test.ts" name="ported remend setext heading handling &gt; does not modify complete list items or valid setext and horizontal-rule markers" time="0.000930557">
         </testcase>
-        <testcase classname="tests/ported/remend/streaming.test.ts" name="ported remend streaming behavior &gt; matches the chunk-by-chunk real-world streaming expectations" time="0.000446357">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/remend/underscore-bug.test.ts" timestamp="2026-04-04T03:00:35.843Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004133085">
-        <testcase classname="tests/ported/remend/underscore-bug.test.ts" name="ported remend underscore bug behavior &gt; keeps word-internal underscores untouched" time="0.002298649">
-        </testcase>
-        <testcase classname="tests/ported/remend/underscore-bug.test.ts" name="ported remend underscore bug behavior &gt; still completes underscore italics at real boundaries" time="0.000634594">
-        </testcase>
-        <testcase classname="tests/ported/remend/underscore-bug.test.ts" name="ported remend underscore bug behavior &gt; avoids false underscore closure in code, html, and the original bug case" time="0.000495166">
+        <testcase classname="tests/ported/remend/setext-heading.test.ts" name="ported remend setext heading handling &gt; only guards the final streamed line" time="0.000763994">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/literal-tag-content.test.ts" timestamp="2026-04-04T03:00:35.845Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.001703357">
-        <testcase classname="tests/ported/streamdown/security/literal-tag-content.test.ts" name="ported streamdown security literal tag preprocessing &gt; matches the frozen literal-tag preprocessing contract" time="0.001239204">
+    <testsuite name="tests/ported/remend/single-tilde.test.ts" timestamp="2026-04-04T09:00:26.536Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.005228375">
+        <testcase classname="tests/ported/remend/single-tilde.test.ts" name="ported remend single tilde escaping &gt; escapes single tildes between word characters" time="0.00396934">
+        </testcase>
+        <testcase classname="tests/ported/remend/single-tilde.test.ts" name="ported remend single tilde escaping &gt; preserves complete strikethrough and non-word single tildes" time="0.000300236">
+        </testcase>
+        <testcase classname="tests/ported/remend/single-tilde.test.ts" name="ported remend single tilde escaping &gt; does not escape tildes inside code spans or code fences" time="0.000216882">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/preprocess-custom-tags.test.ts" timestamp="2026-04-04T03:00:35.845Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.002115954">
-        <testcase classname="tests/ported/streamdown/security/preprocess-custom-tags.test.ts" name="ported streamdown security preprocess custom tags &gt; matches the frozen custom-tag preprocessing contract" time="0.001493866">
+    <testsuite name="tests/ported/remend/streaming.test.ts" timestamp="2026-04-04T09:00:26.537Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.005247282">
+        <testcase classname="tests/ported/remend/streaming.test.ts" name="ported remend streaming behavior &gt; handles nested formatting cut mid-stream" time="0.003286041">
+        </testcase>
+        <testcase classname="tests/ported/remend/streaming.test.ts" name="ported remend streaming behavior &gt; handles headings, blockquotes, tables, and mixed incomplete formats" time="0.000718497">
+        </testcase>
+        <testcase classname="tests/ported/remend/streaming.test.ts" name="ported remend streaming behavior &gt; matches the chunk-by-chunk real-world streaming expectations" time="0.000444024">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/url-policy.test.ts" timestamp="2026-04-04T03:00:35.846Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.002442011">
-        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; recognizes the reference relative URL forms" time="0.000900652">
+    <testsuite name="tests/ported/remend/underscore-bug.test.ts" timestamp="2026-04-04T09:00:26.538Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.004710507">
+        <testcase classname="tests/ported/remend/underscore-bug.test.ts" name="ported remend underscore bug behavior &gt; keeps word-internal underscores untouched" time="0.002617559">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; allows tel and mailto links under the wildcard link policy" time="0.000294813">
+        <testcase classname="tests/ported/remend/underscore-bug.test.ts" name="ported remend underscore bug behavior &gt; still completes underscore italics at real boundaries" time="0.00076268">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; allows data images under the wildcard image policy" time="0.000154799">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; blocks unsafe protocols even when wildcard prefixes are used" time="0.000169794">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; preserves relative URLs after same-origin prefix checks" time="0.000125765">
+        <testcase classname="tests/ported/remend/underscore-bug.test.ts" name="ported remend underscore bug behavior &gt; avoids false underscore closure in code, html, and the original bug case" time="0.000528141">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/basic-render.svelte.test.ts" timestamp="2026-04-04T03:00:35.847Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.1145999999">
-        <testcase classname="tests/ported/streamdown/basic-render.svelte.test.ts" name="ported streamdown render helpers &gt; renders a fixture through shared DOM helpers" time="0.1137000003">
+    <testsuite name="tests/ported/streamdown/security/literal-tag-content.test.ts" timestamp="2026-04-04T09:00:26.539Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.002588346">
+        <testcase classname="tests/ported/streamdown/security/literal-tag-content.test.ts" name="ported streamdown security literal tag preprocessing &gt; matches the frozen literal-tag preprocessing contract" time="0.001853379">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" timestamp="2026-04-04T03:00:35.848Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.1052000003">
-        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; fires animation lifecycle callbacks on streaming state transitions only" time="0.0554000001">
+    <testsuite name="tests/ported/streamdown/security/markdown-filtering.test.ts" timestamp="2026-04-04T09:00:26.539Z" hostname="ddq-MS-7E17" tests="7" failures="0" errors="0" skipped="0" time="0.030365184">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; createMarkdownElement normalizes tag names and defaultUrlTransform preserves URLs" time="0.000892436">
         </testcase>
-        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; hides the caret for an incomplete code fence and restores it when the fence closes" time="0.0253999996">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; applyMarkdownUrlTransform uses the custom callback when provided" time="0.000176484">
         </testcase>
-        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; keeps existing animated characters at 0ms when streamed text grows" time="0.0234000001">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; filterMarkdownTokens removes skipped raw HTML and unwraps disallowed markdown nodes" time="0.011097687">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/citations.svelte.test.ts" timestamp="2026-04-04T03:00:35.849Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.2067999997">
-        <testcase classname="tests/ported/streamdown/rendering/citations.svelte.test.ts" name="inline citation widgets &gt; renders list-mode citations with linked source entries" time="0.0991999998">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; filterMarkdownTokens combines allowedElements with allowElement" time="0.00292498">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/citations.svelte.test.ts" name="inline citation widgets &gt; renders carousel-mode citations with navigation controls" time="0.1067000003">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; filterMarkdownTokens exposes sibling children through the allowElement parent context" time="0.001676116">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" timestamp="2026-04-04T03:00:35.850Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.111">
-        <testcase classname="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" name="ported streamdown code block features &gt; shows line numbers by default and strips metastring from the language label" time="0.0741000004">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; renderMarkdownFragment applies urlTransform before serializing safe HTML" time="0.012513865">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" name="ported streamdown code block features &gt; hides line numbers when lineNumbers is disabled globally" time="0.0165999999">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" name="ported streamdown code block features &gt; hides line numbers for noLineNumbers fenced-code metadata" time="0.0177000003">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.test.ts" name="ported streamdown markdown filtering helpers &gt; renderHtmlToken escapes or removes raw HTML based on the filtering options" time="0.000217272">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/components.svelte.test.ts" timestamp="2026-04-04T03:00:35.851Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.1209000001">
-        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; supports reference-style components overrides for headings, paragraphs, links, images, tables, and inline code" time="0.1044000001">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; keeps snippet overrides ahead of components for the same token" time="0.0048000002">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; keeps block code overrides working while inlineCode only affects codespans" time="0.0101999998">
+    <testsuite name="tests/ported/streamdown/security/preprocess-custom-tags.test.ts" timestamp="2026-04-04T09:00:26.540Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.00285002">
+        <testcase classname="tests/ported/streamdown/security/preprocess-custom-tags.test.ts" name="ported streamdown security preprocess custom tags &gt; matches the frozen custom-tag preprocessing contract" time="0.002112526">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/core-props.svelte.test.ts" timestamp="2026-04-04T03:00:35.852Z" hostname="ddq-MS-7E17" tests="11" failures="0" errors="0" skipped="0" time="0.1184000001">
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; streaming mode completes incomplete markdown by default" time="0.0507999997">
+    <testsuite name="tests/ported/streamdown/security/url-policy.test.ts" timestamp="2026-04-04T09:00:26.541Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.002909645">
+        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; recognizes the reference relative URL forms" time="0.001036701">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; static mode leaves incomplete markdown unparsed" time="0.0034000001">
+        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; allows tel and mailto links under the wildcard link policy" time="0.000381631">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; parseIncompleteMarkdown={false} disables the streaming completion pass" time="0.0034000001">
+        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; allows data images under the wildcard image policy" time="0.000185775">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; dir=&quot;auto&quot; detects RTL text in static mode" time="0.0073000002">
+        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; blocks unsafe protocols even when wildcard prefixes are used" time="0.000218813">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; dir=&quot;auto&quot; applies per-block direction in streaming mode" time="0.0067999997">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; prefix prefixes root and internal Tailwind utility classes" time="0.0077999997">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; caret and isAnimating expose the active caret style" time="0.003">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; caret renders an empty placeholder when content is empty" time="0.0058000002">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; animated + isAnimating uses the animation compatibility layer" time="0.0045999999">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; animation callbacks track isAnimating transitions" time="0.0065">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; lineNumbers toggles the code line-number compatibility class" time="0.0175">
+        <testcase classname="tests/ported/streamdown/security/url-policy.test.ts" name="ported streamdown security URL policy &gt; preserves relative URLs after same-origin prefix checks" time="0.000139192">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/html-entities.svelte.test.ts" timestamp="2026-04-04T03:00:35.854Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0623999996">
-        <testcase classname="tests/ported/streamdown/rendering/html-entities.svelte.test.ts" name="ported streamdown html entities &gt; decodes html entities in plain text and link text without decoding code spans" time="0.0616999998">
+    <testsuite name="tests/ported/streamdown/basic-render.svelte.test.ts" timestamp="2026-04-04T09:00:26.542Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0835999999">
+        <testcase classname="tests/ported/streamdown/basic-render.svelte.test.ts" name="ported streamdown render helpers &gt; renders a fixture through shared DOM helpers" time="0.0833000002">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" timestamp="2026-04-04T03:00:35.854Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.1095">
-        <testcase classname="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" name="ported streamdown image and footnote rendering &gt; renders safe images with src and alt text" time="0.0507999997">
+    <testsuite name="tests/ported/streamdown/interactions/animation-surface.svelte.test.ts" timestamp="2026-04-04T09:00:26.542Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.0345">
+        <testcase classname="tests/ported/streamdown/interactions/animation-surface.svelte.test.ts" name="ported streamdown animation surface &gt; animated compatibility wraps words, preserves text flow, and skips inline code" time="0.0103000002">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" name="ported streamdown image and footnote rendering &gt; renders footnote references and definitions through a trailing footnotes section" time="0.045">
+        <testcase classname="tests/ported/streamdown/interactions/animation-surface.svelte.test.ts" name="ported streamdown animation surface &gt; animated=true uses the default 40ms stagger between words" time="0.0036999998">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" name="ported streamdown image and footnote rendering &gt; hides empty footnote items until definition content exists" time="0.0126999998">
+        <testcase classname="tests/ported/streamdown/interactions/animation-surface.svelte.test.ts" name="ported streamdown animation surface &gt; animated compatibility supports custom animation strings, easing, and staggered char delays" time="0.011">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" timestamp="2026-04-04T03:00:35.855Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.177">
-        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; activates the full code component through plugins.code" time="0.0704000001">
+        <testcase classname="tests/ported/streamdown/interactions/animation-surface.svelte.test.ts" name="ported streamdown animation surface &gt; local animation prop supports staggered character animation" time="0.0042000003">
         </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; renders KaTeX output when plugins.math is provided" time="0.0761000004">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; renders mermaid controls via plugins.mermaid without local component overrides" time="0.0098000002">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; uses plugins.renderers for matching fenced code blocks and forwards meta" time="0.0026999998">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; splits bare autolinks at CJK punctuation when plugins.cjk is enabled" time="0.0169000001">
+        <testcase classname="tests/ported/streamdown/interactions/animation-surface.svelte.test.ts" name="ported streamdown animation surface &gt; local animation prop preserves explicit zero duration" time="0.005">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/rendering/translations.svelte.test.ts" timestamp="2026-04-04T03:00:35.857Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.1835999999">
-        <testcase classname="tests/ported/streamdown/rendering/translations.svelte.test.ts" name="ported streamdown translations &gt; applies custom translations across code, table, mermaid, and image fallbacks" time="0.1829000001">
+    <testsuite name="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" timestamp="2026-04-04T09:00:26.543Z" hostname="ddq-MS-7E17" tests="9" failures="0" errors="0" skipped="0" time="0.6825">
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; closes on Escape pressed on the backdrop" time="0.1510999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; ignores non-Escape keys on the backdrop" time="0.0546999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; stops click propagation inside the modal content" time="0.0536000004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; stops Escape propagation inside the modal content" time="0.0542999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; locks body scroll while the modal is open and restores it on unmount" time="0.053">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; closes via the document Escape listener" time="0.1034000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; confirms the destination and closes the modal" time="0.1052000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; handles clipboard copy failures without closing the modal" time="0.0538999996">
+            <system-err>
+Failed to copy to clipboard: [Error: Copy failed]
+            </system-err>
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactions/link-modal-keyboard.svelte.test.ts" name="ported streamdown link safety modal keyboard interactions &gt; uses a scrollable URL container for long links" time="0.0522999997">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" timestamp="2026-04-04T03:00:35.858Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.4527999997">
-        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; copies and downloads code blocks through the local control surface" time="0.0385999999">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; supports granular code controls and disables code actions while streaming" time="0.0136999998">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; opens table menus and exports markdown and csv payloads" time="0.1343999996">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; aligns table wrapper, fullscreen, and menu formats with the reference surface" time="0.2577999997">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; supports per-control table configuration" time="0.0065999999">
+    <testsuite name="tests/ported/streamdown/interactions/scroll-lock.svelte.test.ts" timestamp="2026-04-04T09:00:26.546Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0007999997">
+        <testcase classname="tests/ported/streamdown/interactions/scroll-lock.svelte.test.ts" name="ported streamdown scroll lock utility &gt; reference-counts nested body locks and restores the original overflow after the final release" time="0.0005999999">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts" timestamp="2026-04-04T03:00:35.858Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.744">
-        <testcase classname="tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts" name="ported streamdown mermaid controls &gt; downloads mermaid source and rendered svg, then toggles fullscreen state" time="0.6374000001">
+    <testsuite name="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" timestamp="2026-04-04T09:00:26.547Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.1533000002">
+        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; fires animation lifecycle callbacks on streaming state transitions only" time="0.035">
         </testcase>
-        <testcase classname="tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts" name="ported streamdown mermaid controls &gt; supports granular controls and a custom mermaid error component" time="0.1050999999">
+        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; hides the caret for an incomplete code fence and restores it when the fence closes" time="0.0463000002">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" timestamp="2026-04-04T03:00:35.859Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.1154000001">
-        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; preserves explicitly allowed custom tags" time="0.0684000001">
+        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; keeps existing list item spans mounted when a new list group appears" time="0.0515999999">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; keeps allowed attributes and strips blocked ones" time="0.0105">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; strips unknown custom tags while preserving text content" time="0.0235999999">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; keeps multiline custom tags intact across blank lines" time="0.0053999996">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; keeps sibling multiline custom tag blocks separate in streaming mode" time="0.0065">
+        <testcase classname="tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts" name="ported streamdown streaming update behavior &gt; keeps existing animated characters at 0ms when streamed text grows" time="0.0195999999">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/email-addresses.svelte.test.ts" timestamp="2026-04-04T03:00:35.860Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0815">
-        <testcase classname="tests/ported/streamdown/security/email-addresses.svelte.test.ts" name="ported streamdown security email addresses &gt; renders a bare email address unchanged with incomplete-markdown repair enabled" time="0.0485">
+    <testsuite name="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" timestamp="2026-04-04T09:00:26.547Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.4536999998">
+        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; copies and downloads code blocks through the local control surface" time="0.0335">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/email-addresses.svelte.test.ts" name="ported streamdown security email addresses &gt; renders email addresses inside sentences and repeated addresses unchanged" time="0.022">
+        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; supports granular code controls and disables code actions while streaming" time="0.0190999999">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/email-addresses.svelte.test.ts" name="ported streamdown security email addresses &gt; preserves email addresses when incomplete-markdown repair is disabled" time="0.0103000002">
+        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; opens table menus and exports markdown and csv payloads" time="0.13">
         </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/streamdown/security/escape-html.svelte.test.ts" timestamp="2026-04-04T03:00:35.860Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.0479000001">
-        <testcase classname="tests/ported/streamdown/security/escape-html.svelte.test.ts" name="ported streamdown security escape HTML &gt; escapes raw HTML when renderHtml is disabled" time="0.0355999999">
+        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; aligns table wrapper, fullscreen, and menu formats with the reference surface" time="0.2579000001">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/escape-html.svelte.test.ts" name="ported streamdown security escape HTML &gt; renders raw HTML through the default security pipeline when renderHtml is enabled" time="0.0115999999">
+        <testcase classname="tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts" name="ported streamdown code and table controls &gt; supports per-control table configuration" time="0.0115">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" timestamp="2026-04-04T03:00:35.861Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.0654000001">
-        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; renders multiline content inside details elements" time="0.0455999999">
+    <testsuite name="tests/ported/streamdown/interactivity/code-block-controls.svelte.test.ts" timestamp="2026-04-04T09:00:26.548Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.0263000002">
+        <testcase classname="tests/ported/streamdown/interactivity/code-block-controls.svelte.test.ts" name="ported streamdown code block controls &gt; copies and downloads code blocks with the resolved file extension" time="0.0140999999">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; renders multiline content inside div elements" time="0.0047999997">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; keeps multiple paragraphs inside details blocks" time="0.006">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; preserves nested HTML block structure" time="0.0082000003">
+        <testcase classname="tests/ported/streamdown/interactivity/code-block-controls.svelte.test.ts" name="ported streamdown code block controls &gt; falls back to .txt for unknown code languages and disables actions while animating" time="0.0115">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/html-handling.svelte.test.ts" timestamp="2026-04-04T03:00:35.861Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.0834000001">
-        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; renders safe inline HTML through the default security pipeline" time="0.0364000001">
+    <testsuite name="tests/ported/streamdown/interactivity/incomplete-code-block.svelte.test.ts" timestamp="2026-04-04T09:00:26.550Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0300999999">
+        <testcase classname="tests/ported/streamdown/interactivity/incomplete-code-block.svelte.test.ts" name="ported streamdown incomplete code block handling &gt; useIsCodeFenceIncomplete returns true for an unclosed streamed fence" time="0.0050999999">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; renders multiline content inside details blocks" time="0.0139000001">
+        <testcase classname="tests/ported/streamdown/interactivity/incomplete-code-block.svelte.test.ts" name="ported streamdown incomplete code block handling &gt; useIsCodeFenceIncomplete stays false once the last streamed block is complete" time="0.0125">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; renders safe self-closing img HTML blocks" time="0.0104000001">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; preserves GFM tables inside details blocks" time="0.0122999997">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; reference normalizeHtmlIndentation renders indented HTML blocks as HTML" time="0.0097000003">
+        <testcase classname="tests/ported/streamdown/interactivity/incomplete-code-block.svelte.test.ts" name="ported streamdown incomplete code block handling &gt; marks only unclosed streamed code blocks with the data-incomplete attribute" time="0.012">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/literal-tag-content.svelte.test.ts" timestamp="2026-04-04T03:00:35.862Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0405">
-        <testcase classname="tests/ported/streamdown/security/literal-tag-content.svelte.test.ts" name="ported streamdown security literal tag rendering &gt; treats configured custom-tag content as literal text" time="0.0398999996">
+    <testsuite name="tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts" timestamp="2026-04-04T09:00:26.551Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.7402000003">
+        <testcase classname="tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts" name="ported streamdown mermaid controls &gt; downloads mermaid source and rendered svg, then toggles fullscreen state" time="0.6350999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts" name="ported streamdown mermaid controls &gt; supports granular controls and a custom mermaid error component" time="0.1039000001">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" timestamp="2026-04-04T03:00:35.862Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.0515">
-        <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; normalizes indented HTML tags inside HTML blocks" time="0.0007999997">
+    <testsuite name="tests/ported/streamdown/interactivity/mermaid-download.svelte.test.ts" timestamp="2026-04-04T09:00:26.552Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.5408000002">
+        <testcase classname="tests/ported/streamdown/interactivity/mermaid-download.svelte.test.ts" name="ported streamdown mermaid download controls &gt; toggles the download menu and exposes PNG, SVG, and MMD actions" time="0.2791000004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/mermaid-download.svelte.test.ts" name="ported streamdown mermaid download controls &gt; downloads Mermaid source, SVG markup, and PNG blobs" time="0.2604000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/interactivity/mermaid-fullscreen.svelte.test.ts" timestamp="2026-04-04T09:00:26.552Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.5285999999">
+        <testcase classname="tests/ported/streamdown/interactivity/mermaid-fullscreen.svelte.test.ts" name="ported streamdown mermaid fullscreen control &gt; toggles fullscreen state and exits on Escape" time="0.5279000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/interactivity/pan-zoom-interaction.svelte.test.ts" timestamp="2026-04-04T09:00:26.553Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0574000001">
+        <testcase classname="tests/ported/streamdown/interactivity/pan-zoom-interaction.svelte.test.ts" name="ported streamdown pan-zoom pointer interactions &gt; zooms on wheel input and pans on mouse drag" time="0.0571999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/interactivity/pan-zoom.svelte.test.ts" timestamp="2026-04-04T09:00:26.553Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.1285999999">
+        <testcase classname="tests/ported/streamdown/interactivity/pan-zoom.svelte.test.ts" name="ported streamdown pan-zoom controls &gt; renders zoom controls and updates the transform on button clicks" time="0.0745">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/pan-zoom.svelte.test.ts" name="ported streamdown pan-zoom controls &gt; hides pan-zoom controls when disabled" time="0.0531999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/interactivity/show-controls.svelte.test.ts" timestamp="2026-04-04T09:00:26.554Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.1712999997">
+        <testcase classname="tests/ported/streamdown/interactivity/show-controls.svelte.test.ts" name="ported streamdown controls prop &gt; shows controls by default and when controls is true" time="0.0845999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/show-controls.svelte.test.ts" name="ported streamdown controls prop &gt; hides code and table controls when controls is false" time="0.05">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/show-controls.svelte.test.ts" name="ported streamdown controls prop &gt; supports mixed object controls for table and code surfaces" time="0.0340999999">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/interactivity/table-controls.svelte.test.ts" timestamp="2026-04-04T09:00:26.555Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.3645">
+        <testcase classname="tests/ported/streamdown/interactivity/table-controls.svelte.test.ts" name="ported streamdown table controls &gt; opens copy and download menus with the local formats and payloads" time="0.1453000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/table-controls.svelte.test.ts" name="ported streamdown table controls &gt; toggles table fullscreen with escape, backdrop close, and body scroll locking" time="0.2105">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/interactivity/table-controls.svelte.test.ts" name="ported streamdown table controls &gt; disables fullscreen when the stream is animating" time="0.0075">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/caret.svelte.test.ts" timestamp="2026-04-04T09:00:26.555Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.016">
+        <testcase classname="tests/ported/streamdown/rendering/caret.svelte.test.ts" name="ported streamdown caret rendering &gt; renders block and circle carets while streaming animation is active" time="0.0080999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/caret.svelte.test.ts" name="ported streamdown caret rendering &gt; adds and removes caret styles as animation state changes" time="0.0028000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/caret.svelte.test.ts" name="ported streamdown caret rendering &gt; shows an empty caret placeholder for empty content" time="0.0023999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/caret.svelte.test.ts" name="ported streamdown caret rendering &gt; does not apply caret styles in static mode" time="0.0020999999">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/citations.svelte.test.ts" timestamp="2026-04-04T09:00:26.556Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.2200999999">
+        <testcase classname="tests/ported/streamdown/rendering/citations.svelte.test.ts" name="inline citation widgets &gt; renders list-mode citations with linked source entries" time="0.0995">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/citations.svelte.test.ts" name="inline citation widgets &gt; renders carousel-mode citations with navigation controls" time="0.1199000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/cjk-friendly.svelte.test.ts" timestamp="2026-04-04T09:00:26.558Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0285999999">
+        <testcase classname="tests/ported/streamdown/rendering/cjk-friendly.svelte.test.ts" name="ported streamdown CJK-friendly rendering &gt; splits autolinks at CJK boundary punctuation when plugins.cjk is enabled" time="0.0101000004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/cjk-friendly.svelte.test.ts" name="ported streamdown CJK-friendly rendering &gt; matches CJK autolinks when they are wrapped in opening punctuation" time="0.0033999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/cjk-friendly.svelte.test.ts" name="ported streamdown CJK-friendly rendering &gt; supports multiple CJK boundary characters without swallowing surrounding text" time="0.0149000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/code-block-context.svelte.test.ts" timestamp="2026-04-04T09:00:26.559Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0048000002">
+        <testcase classname="tests/ported/streamdown/rendering/code-block-context.svelte.test.ts" name="ported streamdown code block context analogue &gt; exposes the active streamdown context to custom code components through useStreamdown" time="0.0044000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" timestamp="2026-04-04T09:00:26.559Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.026">
+        <testcase classname="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" name="ported streamdown code block features &gt; shows line numbers by default and strips metastring from the language label" time="0.0132000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" name="ported streamdown code block features &gt; hides line numbers when lineNumbers is disabled globally" time="0.0046999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/code-block-features.svelte.test.ts" name="ported streamdown code block features &gt; hides line numbers for noLineNumbers fenced-code metadata" time="0.0074000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/code-block-parity.svelte.test.ts" timestamp="2026-04-04T09:00:26.561Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.1670999999">
+        <testcase classname="tests/ported/streamdown/rendering/code-block-parity.svelte.test.ts" name="ported streamdown code block rendering parity &gt; renders block code outside paragraphs while inline code stays inside paragraph content" time="0.0918999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/code-block-parity.svelte.test.ts" name="ported streamdown code block rendering parity &gt; exposes the code block body language and honors line-number metadata" time="0.0638999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/code-block-parity.svelte.test.ts" name="ported streamdown code block rendering parity &gt; keeps code readable before the highlighter is ready and renders no loading spinner" time="0.0086999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/components.svelte.test.ts" timestamp="2026-04-04T09:00:26.562Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.2013999996">
+        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; renders the default component map for headings, lists, links, blockquotes, and code" time="0.1542999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; supports reference-style components overrides for headings, paragraphs, links, images, tables, and inline code" time="0.0275">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; keeps snippet overrides ahead of components for the same token" time="0.004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/components.svelte.test.ts" name="ported streamdown component overrides &gt; keeps block code overrides working while inlineCode only affects codespans" time="0.0141999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/core-props.svelte.test.ts" timestamp="2026-04-04T09:00:26.563Z" hostname="ddq-MS-7E17" tests="11" failures="0" errors="0" skipped="0" time="0.1710999999">
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; streaming mode completes incomplete markdown by default" time="0.0684000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; static mode leaves incomplete markdown unparsed" time="0.0050999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; parseIncompleteMarkdown={false} disables the streaming completion pass" time="0.0027000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; dir=&quot;auto&quot; detects RTL text in static mode" time="0.0056999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; dir=&quot;auto&quot; applies per-block direction in streaming mode" time="0.0045">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; prefix prefixes root and internal Tailwind utility classes" time="0.0111000004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; caret and isAnimating expose the active caret style" time="0.0035999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; caret renders an empty placeholder when content is empty" time="0.0119000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; animated + isAnimating uses the animation compatibility layer" time="0.0129000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; animation callbacks track isAnimating transitions" time="0.0057999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/core-props.svelte.test.ts" name="ported streamdown core props &gt; lineNumbers toggles the code line-number compatibility class" time="0.0374000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" timestamp="2026-04-04T09:00:26.565Z" hostname="ddq-MS-7E17" tests="8" failures="0" errors="0" skipped="0" time="0.1078000002">
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; renders a custom renderer for a matching fenced language" time="0.0175">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; forwards language, code, and isIncomplete props to the renderer" time="0.0058000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; falls back to the default code block when no renderer matches" time="0.0352000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; supports multiple renderer entries independently" time="0.0051999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; supports array language matches for a single renderer entry" time="0.0031999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; preserves the default code block path when no renderers are configured" time="0.0302000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; forwards code fence meta to the custom renderer when present" time="0.008">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/custom-renderer.svelte.test.ts" name="ported streamdown custom renderer contract &gt; passes undefined meta when no metastring is present" time="0.0014000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/footnotes.svelte.test.ts" timestamp="2026-04-04T09:00:26.566Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0411999998">
+        <testcase classname="tests/ported/streamdown/rendering/footnotes.svelte.test.ts" name="ported streamdown footnote rendering &gt; renders footnote references and a trailing section with backrefs" time="0.0293000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/footnotes.svelte.test.ts" name="ported streamdown footnote rendering &gt; filters empty footnotes out of the rendered section" time="0.0047999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/footnotes.svelte.test.ts" name="ported streamdown footnote rendering &gt; keeps multi-line footnotes and excludes the synthetic placeholder entry" time="0.0068000002">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/html-entities.svelte.test.ts" timestamp="2026-04-04T09:00:26.572Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0165">
+        <testcase classname="tests/ported/streamdown/rendering/html-entities.svelte.test.ts" name="ported streamdown html entities &gt; decodes html entities in plain text and link text without decoding code spans" time="0.0162000003">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" timestamp="2026-04-04T09:00:26.584Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0400999999">
+        <testcase classname="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" name="ported streamdown image and footnote rendering &gt; renders safe images with src and alt text" time="0.0185">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" name="ported streamdown image and footnote rendering &gt; renders footnote references and definitions through a trailing footnotes section" time="0.0158000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts" name="ported streamdown image and footnote rendering &gt; hides empty footnote items until definition content exists" time="0.0054000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/images.svelte.test.ts" timestamp="2026-04-04T09:00:26.585Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.1577999997">
+        <testcase classname="tests/ported/streamdown/rendering/images.svelte.test.ts" name="ported streamdown image rendering &gt; keeps standalone images out of paragraph wrappers to avoid hydration mismatches" time="0.0733000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/images.svelte.test.ts" name="ported streamdown image rendering &gt; keeps inline images inside paragraph content" time="0.0132999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/images.svelte.test.ts" name="ported streamdown image rendering &gt; renders safe and relative images but blocks unsafe image urls" time="0.0199000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/images.svelte.test.ts" name="ported streamdown image rendering &gt; shows download controls after load and fallback content after error" time="0.0455999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/images.svelte.test.ts" name="ported streamdown image rendering &gt; treats already-complete cached images as loaded on mount" time="0.0046999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/inline-code.svelte.test.ts" timestamp="2026-04-04T09:00:26.588Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0295999999">
+        <testcase classname="tests/ported/streamdown/rendering/inline-code.svelte.test.ts" name="ported streamdown inline code contract &gt; renders custom inlineCode components for codespans" time="0.01">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/inline-code.svelte.test.ts" name="ported streamdown inline code contract &gt; does not apply inlineCode overrides to fenced code blocks" time="0.0103000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/inline-code.svelte.test.ts" name="ported streamdown inline code contract &gt; lets code and inlineCode be overridden independently" time="0.0084000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/math-rendering.svelte.test.ts" timestamp="2026-04-04T09:00:26.589Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.2526999998">
+        <testcase classname="tests/ported/streamdown/rendering/math-rendering.svelte.test.ts" name="ported streamdown math rendering &gt; renders block KaTeX output with display classes" time="0.1894000001">
+            <system-err>
+LaTeX-incompatible input and strict mode is set to &apos;warn&apos;: In LaTeX, \\ or \newline does nothing in display mode [newLineInDisplayMode]
+LaTeX-incompatible input and strict mode is set to &apos;warn&apos;: In LaTeX, \\ or \newline does nothing in display mode [newLineInDisplayMode]
+            </system-err>
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/math-rendering.svelte.test.ts" name="ported streamdown math rendering &gt; renders inline and block math with the local math plugin contract" time="0.0590999999">
+            <system-err>
+LaTeX-incompatible input and strict mode is set to &apos;warn&apos;: In LaTeX, \\ or \newline does nothing in display mode [newLineInDisplayMode]
+LaTeX-incompatible input and strict mode is set to &apos;warn&apos;: In LaTeX, \\ or \newline does nothing in display mode [newLineInDisplayMode]
+LaTeX-incompatible input and strict mode is set to &apos;warn&apos;: In LaTeX, \\ or \newline does nothing in display mode [newLineInDisplayMode]
+            </system-err>
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/math-rendering.svelte.test.ts" name="ported streamdown math rendering &gt; keeps matrix equations intact when preceded by text" time="0.001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/math-rendering.svelte.test.ts" name="ported streamdown math rendering &gt; renders matrix equations even when the closing $$ is incomplete" time="0.0015">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/mermaid-component.svelte.test.ts" timestamp="2026-04-04T09:00:26.591Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.2375999999">
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-component.svelte.test.ts" name="ported streamdown mermaid component &gt; renders accessible SVG output and forwards custom mermaid config" time="0.0752000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-component.svelte.test.ts" name="ported streamdown mermaid component &gt; renders fallback and custom mermaid error content" time="0.1073999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-component.svelte.test.ts" name="ported streamdown mermaid component &gt; keeps the last valid SVG when a rerender fails" time="0.0541999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/mermaid-utils.svelte.test.ts" timestamp="2026-04-04T09:00:26.593Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.0078999996">
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-utils.svelte.test.ts" name="ported streamdown mermaid utilities &gt; serializes SVG markup with XML namespaces and finds DOM-backed markup" time="0.0024000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-utils.svelte.test.ts" name="ported streamdown mermaid utilities &gt; prefers renderSvg when provided" time="0.0005999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-utils.svelte.test.ts" name="ported streamdown mermaid utilities &gt; converts SVG markup to PNG blobs with default and custom scale" time="0.0032999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/mermaid-utils.svelte.test.ts" name="ported streamdown mermaid utilities &gt; rejects when canvas creation or encoding fails" time="0.0014000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/mermaid.svelte.test.ts" timestamp="2026-04-04T09:00:26.594Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.0740999999">
+        <testcase classname="tests/ported/streamdown/rendering/mermaid.svelte.test.ts" name="ported streamdown mermaid rendering &gt; renders mermaid blocks through plugins.mermaid with local controls" time="0.0649000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/mermaid.svelte.test.ts" name="ported streamdown mermaid rendering &gt; renders the static Mermaid fallback when no renderer is configured" time="0.009">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/node-attribute-removed.svelte.test.ts" timestamp="2026-04-04T09:00:26.594Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0124000001">
+        <testcase classname="tests/ported/streamdown/rendering/node-attribute-removed.svelte.test.ts" name="ported streamdown node attribute removal regression &gt; removes the code-block incomplete attribute when a streamed fence becomes complete" time="0.0121999998">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" timestamp="2026-04-04T09:00:26.595Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.2197999997">
+        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; activates the full code component through plugins.code" time="0.0718999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; renders KaTeX output when plugins.math is provided" time="0.1143999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; renders mermaid controls via plugins.mermaid without local component overrides" time="0.0128999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; uses plugins.renderers for matching fenced code blocks and forwards meta" time="0.0027000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts" name="ported streamdown plugin contract &gt; splits bare autolinks at CJK punctuation when plugins.cjk is enabled" time="0.017">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" timestamp="2026-04-04T09:00:26.596Z" hostname="ddq-MS-7E17" tests="6" failures="0" errors="0" skipped="0" time="0.1935">
+        <testcase classname="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" name="ported streamdown root contract &gt; renders the core markdown surface in static mode" time="0.1414000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" name="ported streamdown root contract &gt; merges component overrides with the default rendering surface" time="0.0089000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" name="ported streamdown root contract &gt; parses incomplete markdown by default and leaves it raw when disabled" time="0.0114000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" name="ported streamdown root contract &gt; prefixes internal classes and preserves RTL direction helpers" time="0.0110999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" name="ported streamdown root contract &gt; fires animation lifecycle callbacks and animates streamed text from the root surface" time="0.0066999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/rendering/streamdown-root.svelte.test.ts" name="ported streamdown root contract &gt; renders allowlisted custom tags from the root component surface" time="0.013">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/rendering/translations.svelte.test.ts" timestamp="2026-04-04T09:00:26.597Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.2236999998">
+        <testcase classname="tests/ported/streamdown/rendering/translations.svelte.test.ts" name="ported streamdown translations &gt; applies custom translations across code, table, mermaid, and image fallbacks" time="0.2229000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" timestamp="2026-04-04T09:00:26.598Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.0930999999">
+        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; preserves explicitly allowed custom tags" time="0.0361999998">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; keeps allowed attributes and strips blocked ones" time="0.0158000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; strips unknown custom tags while preserving text content" time="0.0194000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; keeps multiline custom tags intact across blank lines" time="0.0082999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/allowed-tags.svelte.test.ts" name="ported streamdown security allowed tags &gt; keeps sibling multiline custom tag blocks separate in streaming mode" time="0.0127000003">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/email-addresses.svelte.test.ts" timestamp="2026-04-04T09:00:26.599Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0303999996">
+        <testcase classname="tests/ported/streamdown/security/email-addresses.svelte.test.ts" name="ported streamdown security email addresses &gt; renders a bare email address unchanged with incomplete-markdown repair enabled" time="0.0183000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/email-addresses.svelte.test.ts" name="ported streamdown security email addresses &gt; renders email addresses inside sentences and repeated addresses unchanged" time="0.0082999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/email-addresses.svelte.test.ts" name="ported streamdown security email addresses &gt; preserves email addresses when incomplete-markdown repair is disabled" time="0.0035">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/escape-html.svelte.test.ts" timestamp="2026-04-04T09:00:26.600Z" hostname="ddq-MS-7E17" tests="2" failures="0" errors="0" skipped="0" time="0.0105">
+        <testcase classname="tests/ported/streamdown/security/escape-html.svelte.test.ts" name="ported streamdown security escape HTML &gt; escapes raw HTML when renderHtml is disabled" time="0.0063999996">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/escape-html.svelte.test.ts" name="ported streamdown security escape HTML &gt; renders raw HTML through the default security pipeline when renderHtml is enabled" time="0.004">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" timestamp="2026-04-04T09:00:26.601Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.0326999998">
+        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; renders multiline content inside details elements" time="0.02">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; renders multiline content inside div elements" time="0.0049000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; keeps multiple paragraphs inside details blocks" time="0.0035999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-block-multiline.svelte.test.ts" name="ported streamdown security HTML block multiline &gt; preserves nested HTML block structure" time="0.0039000001">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/html-handling.svelte.test.ts" timestamp="2026-04-04T09:00:26.602Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.046">
+        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; renders safe inline HTML through the default security pipeline" time="0.0113000002">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; renders multiline content inside details blocks" time="0.0117999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; renders safe self-closing img HTML blocks" time="0.0095">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; preserves GFM tables inside details blocks" time="0.0067000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/html-handling.svelte.test.ts" name="ported streamdown security HTML handling &gt; reference normalizeHtmlIndentation renders indented HTML blocks as HTML" time="0.0065">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/link-safety.svelte.test.ts" timestamp="2026-04-04T09:00:26.604Z" hostname="ddq-MS-7E17" tests="6" failures="0" errors="0" skipped="0" time="0.3877000003">
+        <testcase classname="tests/ported/streamdown/security/link-safety.svelte.test.ts" name="ported streamdown security link safety &gt; renders a normal anchor when linkSafety is disabled" time="0.0631000004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/link-safety.svelte.test.ts" name="ported streamdown security link safety &gt; intercepts external links and shows the confirmation modal by default" time="0.0552999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/link-safety.svelte.test.ts" name="ported streamdown security link safety &gt; skips the modal when onLinkCheck allows the destination" time="0.0546000004">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/link-safety.svelte.test.ts" name="ported streamdown security link safety &gt; shows the modal when onLinkCheck rejects the destination" time="0.0535999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/link-safety.svelte.test.ts" name="ported streamdown security link safety &gt; opens the destination when the modal confirm button is clicked" time="0.1045999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/link-safety.svelte.test.ts" name="ported streamdown security link safety &gt; copies the destination URL from the modal" time="0.0555999999">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/literal-tag-content.svelte.test.ts" timestamp="2026-04-04T09:00:26.611Z" hostname="ddq-MS-7E17" tests="1" failures="0" errors="0" skipped="0" time="0.0212000003">
+        <testcase classname="tests/ported/streamdown/security/literal-tag-content.svelte.test.ts" name="ported streamdown security literal tag rendering &gt; treats configured custom-tag content as literal text" time="0.021">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" timestamp="2026-04-04T09:00:26.612Z" hostname="ddq-MS-7E17" tests="9" failures="0" errors="0" skipped="0" time="0.15">
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; defaultUrlTransform passes through URLs unchanged" time="0.0017000003">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; allowedElements keeps only the allowed markdown elements" time="0.0629000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; disallowedElements removes targeted elements" time="0.0075">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; allowElement filters elements with a callback" time="0.0077999997">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; allowElement receives parent children for sibling-aware filtering" time="0.02">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; unwrapDisallowed keeps children when a wrapper element is filtered" time="0.0040999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; skipHtml strips raw HTML tokens while keeping surrounding markdown text" time="0.0064000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; urlTransform rewrites image URLs before rendering" time="0.0194000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/markdown-filtering.svelte.test.ts" name="ported streamdown markdown filtering surface &gt; urlTransform can remove link href values without removing the anchor text" time="0.0188000002">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" timestamp="2026-04-04T09:00:26.614Z" hostname="ddq-MS-7E17" tests="4" failures="0" errors="0" skipped="0" time="0.0205">
+        <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; normalizes indented HTML tags inside HTML blocks" time="0.0004000001">
         </testcase>
         <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; leaves non-HTML markdown unchanged" time="0.0000999999">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; renders indented HTML blocks as HTML when the compatibility prop is enabled" time="0.0355">
+        <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; renders indented HTML blocks as HTML when the compatibility prop is enabled" time="0.0145">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; preserves complex nested HTML after normalization" time="0.0145">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/ported/streamdown/security/tel-links.svelte.test.ts" timestamp="2026-04-04T03:00:35.863Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0897999997">
-        <testcase classname="tests/ported/streamdown/security/tel-links.svelte.test.ts" name="ported streamdown security tel links &gt; renders tel links" time="0.0708000002">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/tel-links.svelte.test.ts" name="ported streamdown security tel links &gt; renders tel, mailto, and http links together" time="0.0125999999">
-        </testcase>
-        <testcase classname="tests/ported/streamdown/security/tel-links.svelte.test.ts" name="ported streamdown security tel links &gt; renders international tel links" time="0.0057000003">
+        <testcase classname="tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts" name="ported streamdown security normalize HTML indentation &gt; preserves complex nested HTML after normalization" time="0.0053000002">
         </testcase>
     </testsuite>
-    <testsuite name="tests/ported/streamdown/security/url-policy.svelte.test.ts" timestamp="2026-04-04T03:00:35.864Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.1130999999">
-        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; renders tel, mailto, and http links with the default wildcard policy" time="0.0715999999">
+    <testsuite name="tests/ported/streamdown/security/tel-links.svelte.test.ts" timestamp="2026-04-04T09:00:26.615Z" hostname="ddq-MS-7E17" tests="3" failures="0" errors="0" skipped="0" time="0.0244000001">
+        <testcase classname="tests/ported/streamdown/security/tel-links.svelte.test.ts" name="ported streamdown security tel links &gt; renders tel links" time="0.0113999996">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; preserves relative and fragment links" time="0.0129000001">
+        <testcase classname="tests/ported/streamdown/security/tel-links.svelte.test.ts" name="ported streamdown security tel links &gt; renders tel, mailto, and http links together" time="0.0095">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; blocks javascript links instead of rendering anchors" time="0.0080999999">
+        <testcase classname="tests/ported/streamdown/security/tel-links.svelte.test.ts" name="ported streamdown security tel links &gt; renders international tel links" time="0.0032999997">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; renders data images under the default wildcard image policy" time="0.0160999999">
+    </testsuite>
+    <testsuite name="tests/ported/streamdown/security/url-policy.svelte.test.ts" timestamp="2026-04-04T09:00:26.615Z" hostname="ddq-MS-7E17" tests="5" failures="0" errors="0" skipped="0" time="0.0434000001">
+        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; renders tel, mailto, and http links with the default wildcard policy" time="0.0230999999">
         </testcase>
-        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; blocks javascript images and renders the fallback text" time="0.0033000002">
+        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; preserves relative and fragment links" time="0.0079000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; blocks javascript links instead of rendering anchors" time="0.0039000001">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; renders data images under the default wildcard image policy" time="0.0050999999">
+        </testcase>
+        <testcase classname="tests/ported/streamdown/security/url-policy.svelte.test.ts" name="ported streamdown security URL rendering &gt; blocks javascript images and renders the fallback text" time="0.0032000003">
         </testcase>
     </testsuite>
 </testsuites>

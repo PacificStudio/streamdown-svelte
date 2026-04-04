@@ -1,14 +1,14 @@
 # Nightly Full Parity Summary
 
 - Overall status: success
-- Generated at: 2026-04-04T03:01:09.427Z
+- Generated at: 2026-04-04T09:01:43.997Z
 
 | Suite | Status | Duration | Failure stage |
 | --- | --- | --- | --- |
-| ported-tests | success | n/a | n/a |
-| playwright-parity | success | n/a | n/a |
-| pack-smoke | success | n/a | n/a |
-| dependency-audit | success | n/a | n/a |
+| ported-tests | success | 17.0s | n/a |
+| playwright-parity | success | 9.0s | n/a |
+| pack-smoke | success | 16.0s | n/a |
+| dependency-audit | success | 1.0s | n/a |
 
 ## Suite Artifacts
 

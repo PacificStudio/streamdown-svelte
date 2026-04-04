@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-04T03:02:43.260Z",
+  "generatedAt": "2026-04-04T09:02:02.792Z",
   "subject": {
     "name": "svelte-streamdown-3.0.1.tgz",
-    "sha256": "c1820303bca56d6230d68e9c244f4dabdb4b385dce2d020783bc614bd031e229"
+    "sha256": "1d8fd85f6806bca01955cf2d9f512babe2a0600a86db141092500c69e393b767"
   },
   "githubAttestation": {
     "supported": false,

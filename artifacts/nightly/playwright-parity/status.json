@@ -3,7 +3,7 @@
   "status": "success",
   "ok": true,
   "command": "pnpm exec playwright test tests/playwright/parity --reporter=line,html --output=artifacts/nightly/playwright-parity/test-results",
-  "durationMs": null,
+  "durationMs": 9000,
   "failureStage": null,
   "logFile": "artifacts/nightly/playwright-parity/output.log",
   "artifacts": [
@@ -29,5 +29,5 @@
     }
   ],
   "notes": [],
-  "generatedAt": "2026-04-04T03:00:29.798Z"
+  "generatedAt": "2026-04-04T09:01:22.781Z"
 }

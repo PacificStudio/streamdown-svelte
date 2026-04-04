@@ -1,126 +1,126 @@
-[1A[2K[2m[WebServer] [22m(node:2334470) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[2m[WebServer] [22m(node:449796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
 
-[1A[2K[2m[WebServer] [22m(node:2334508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[2m[WebServer] [22m(node:449813) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
 
-[1A[2K[2m[WebServer] [22m(node:2334674) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[2m[WebServer] [22m(node:449895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
 
-[1A[2K[2m[WebServer] [22m(node:2334707) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[2m[WebServer] [22m(node:449922) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
 
-[1A[2K[2m[WebServer] [22m[BABEL] Note: The code generator has deoptimised the styling of /home/yuzhong/.openase/workspace/test/cdn/ASE-20/svelte-streamdown/apps/parity-reference/.vite/deps/react-dom_client.js?v=0bead6c2 as it exceeds the max of 500KB.
+[1A[2K[2m[WebServer] [22m[BABEL] Note: The code generator has deoptimised the styling of /home/yuzhong/.openase/workspace/test/cdn/ASE-32/svelte-streamdown/apps/parity-reference/.vite/deps/react-dom_client.js?v=5ef16e1a as it exceeds the max of 500KB.
 
 
 Running 33 tests using 12 workers
 
-[1A[2K(node:2334896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450119) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334897) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450125) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334923) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450131) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334910) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334918) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450146) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334929) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450151) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450179) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334953) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450183) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334897) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450119) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450118) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334923) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450131) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450179) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334910) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450125) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334895) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K[1/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 04-blockquote.md in both parity apps
-[1A[2K[2/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 05-unordered-list.md in both parity apps
-[1A[2K(node:2334918) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450146) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334955) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[1/33] tests/playwright/parity/assert-dom-parity.spec.ts:50:2 › DOM parity helpers › formats normalized trees for readable diffs
+[1A[2K[2/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 02-ordered-task-list.md in both parity apps
+[1A[2K[3/33] tests/playwright/parity/assert-dom-parity.spec.ts:6:2 › DOM parity helpers › normalizes wrapper noise, class ordering, random ids, and hash links
+[1A[2K(node:450176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K[3/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 03-gfm-table.md in both parity apps
-[1A[2K(node:2334929) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450151) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K(node:2334952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K(node:450175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K[4/33] tests/playwright/parity/assert-dom-parity.spec.ts:50:2 › DOM parity helpers › formats normalized trees for readable diffs
-[1A[2K(node:2334953) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[1A[2K[4/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 05-unordered-list.md in both parity apps
+[1A[2K(node:450183) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 
-[1A[2K[5/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 08-blockquote-plain.md in both parity apps
-[1A[2K[6/33] tests/playwright/parity/assert-dom-parity.spec.ts:6:2 › DOM parity helpers › normalizes wrapper noise, class ordering, random ids, and hash links
-[1A[2K[7/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 06-code-fence.md in both parity apps
-[1A[2K[8/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 01-headings-and-inline.md in both parity apps
-[1A[2K[9/33] tests/playwright/parity/assert-dom-parity.spec.ts:86:2 › DOM parity helpers › surfaces semantic differences instead of wrapper noise
-[1A[2K[10/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 02-ordered-task-list.md in both parity apps
+[1A[2K[5/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 01-headings-and-inline.md in both parity apps
+[1A[2K[6/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 08-blockquote-plain.md in both parity apps
+[1A[2K[7/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 04-blockquote.md in both parity apps
+[1A[2K[8/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 03-gfm-table.md in both parity apps
+[1A[2K[9/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 06-code-fence.md in both parity apps
+[1A[2K[10/33] tests/playwright/parity/assert-dom-parity.spec.ts:86:2 › DOM parity helpers › surfaces semantic differences instead of wrapper noise
 [1A[2K[11/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 07-heading-and-emphasis.md in both parity apps
 [1A[2K[12/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 09-paragraphs.md in both parity apps
 [1A[2K[13/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 15-composite-playground.md in both parity apps
@@ -131,20 +131,20 @@ Running 33 tests using 12 workers
 [1A[2K[18/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 13-blocked-link-and-image.md in both parity apps
 [1A[2K[19/33] tests/playwright/parity/harness.spec.ts:19:2 › loads shared fixture 14-footnote-interaction.md in both parity apps
 [1A[2K[20/33] tests/playwright/parity/interactions.spec.ts:31:2 › interaction parity fixtures › tracks the planned interaction fixture set
-[1A[2K[21/33] tests/playwright/parity/interactions.spec.ts:41:2 › interaction parity fixtures › matches code copy and download intent
-[1A[2K[22/33] tests/playwright/parity/interactions.spec.ts:88:2 › interaction parity fixtures › matches table copy and download outcomes for shared formats
+[1A[2K[21/33] tests/playwright/parity/interactions.spec.ts:88:2 › interaction parity fixtures › matches table copy and download outcomes for shared formats
+[1A[2K[22/33] tests/playwright/parity/interactions.spec.ts:41:2 › interaction parity fixtures › matches code copy and download intent
 [1A[2K[23/33] tests/playwright/parity/interactions.spec.ts:157:2 › interaction parity fixtures › matches mermaid download formats, zoom controls, and fullscreen state
 [1A[2K[24/33] tests/playwright/parity/interactions.spec.ts:273:2 › interaction parity fixtures › matches blocked-link rendering and preserves the current blocked-image drift as evidence
 [1A[2K[25/33] tests/playwright/parity/interactions.spec.ts:301:2 › interaction parity fixtures › matches footnote section rendering and backref affordances
 [1A[2K[26/33] tests/playwright/parity/rendering.spec.ts:16:2 › expanded rendering parity fixtures › tracks the expanded rendering fixture set
-[1A[2K[27/33] tests/playwright/parity/rendering.spec.ts:33:3 › expanded rendering parity fixtures › matches targeted rendering parity for fixture 15-composite-playground.md
-[1A[2K[28/33] tests/playwright/parity/rendering.spec.ts:33:3 › expanded rendering parity fixtures › matches targeted rendering parity for fixture 16-html-entities-and-cjk.md
+[1A[2K[27/33] tests/playwright/parity/rendering.spec.ts:33:3 › expanded rendering parity fixtures › matches targeted rendering parity for fixture 16-html-entities-and-cjk.md
+[1A[2K[28/33] tests/playwright/parity/rendering.spec.ts:33:3 › expanded rendering parity fixtures › matches targeted rendering parity for fixture 15-composite-playground.md
 [1A[2K[29/33] tests/playwright/parity/visual.spec.ts:43:3 › visual parity secondary signal › matches the reference screenshot for fixture 05-unordered-list.md after DOM parity
 [1A[2K[30/33] tests/playwright/parity/visual.spec.ts:43:3 › visual parity secondary signal › matches the reference screenshot for fixture 07-heading-and-emphasis.md after DOM parity
 [1A[2K[31/33] tests/playwright/parity/visual.spec.ts:43:3 › visual parity secondary signal › matches the reference screenshot for fixture 08-blockquote-plain.md after DOM parity
 [1A[2K[32/33] tests/playwright/parity/visual.spec.ts:43:3 › visual parity secondary signal › matches the reference screenshot for fixture 09-paragraphs.md after DOM parity
 [1A[2K[33/33] tests/playwright/parity/visual.spec.ts:80:2 › visual parity secondary signal › matches code-block dark-theme styles for fixture 06-code-fence.md
-[1A[2K  33 passed (9.0s)
+[1A[2K  33 passed (8.6s)
 
 To open last HTML report run:
 [36m[39m

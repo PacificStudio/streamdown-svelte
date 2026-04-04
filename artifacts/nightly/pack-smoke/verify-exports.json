@@ -1,5 +1,5 @@
 
-> svelte-streamdown@3.0.1 verify:exports /home/yuzhong/.openase/workspace/test/cdn/ASE-20/svelte-streamdown
+> svelte-streamdown@3.0.1 verify:exports /home/yuzhong/.openase/workspace/test/cdn/ASE-32/svelte-streamdown
 > node scripts/verify-exports.mjs
 
 {
