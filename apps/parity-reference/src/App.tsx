@@ -1,5 +1,8 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { Streamdown } from 'streamdown';
+import { cjk } from '@streamdown/cjk';
+import { code } from '@streamdown/code';
+import { math } from '@streamdown/math';
 import { mermaid } from '@streamdown/mermaid';
 import type { ParityFixtureId } from '../../../fixtures/parity/fixture-registry.js';
 import { listParityFixtures, resolveParityFixture } from '../../parity-shared/fixtures.js';
@@ -71,7 +74,7 @@ export function App() {
 						<h2>Rendered Output</h2>
 						<p>{fixture.label}</p>
 						<div className="parity-rendered" data-parity-rendered>
-							<Streamdown mode="static" plugins={{ mermaid }}>
+							<Streamdown mode="static" plugins={{ code, math, mermaid, cjk }}>
 								{fixture.markdown}
 							</Streamdown>
 						</div>

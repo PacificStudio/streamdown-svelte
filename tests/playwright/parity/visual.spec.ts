@@ -76,6 +76,53 @@ test.describe('visual parity secondary signal', () => {
 			}
 		});
 	}
+
+	test('matches code-block dark-theme styles for fixture 06-code-fence.md', async ({ browser }) => {
+		const fixtureRoute = '/?fixture=06-code-fence.md';
+		const createContext = (colorScheme: 'light' | 'dark') =>
+			browser.newContext({
+				colorScheme,
+				deviceScaleFactor: 1,
+				reducedMotion: 'reduce',
+				timezoneId: 'UTC',
+				viewport
+			});
+		const [lightContext, darkContext] = await Promise.all([
+			createContext('light'),
+			createContext('dark')
+		]);
+		const [referenceLightPage, localLightPage] = await Promise.all([
+			lightContext.newPage(),
+			lightContext.newPage()
+		]);
+		const [referenceDarkPage, localDarkPage] = await Promise.all([
+			darkContext.newPage(),
+			darkContext.newPage()
+		]);
+
+		try {
+			await Promise.all([
+				openParityFixture(referenceLightPage, `${referenceBaseUrl}${fixtureRoute}`),
+				openParityFixture(localLightPage, `${localBaseUrl}${fixtureRoute}`),
+				openParityFixture(referenceDarkPage, `${referenceBaseUrl}${fixtureRoute}`),
+				openParityFixture(localDarkPage, `${localBaseUrl}${fixtureRoute}`)
+			]);
+
+			const [referenceLightStyles, localLightStyles, referenceDarkStyles, localDarkStyles] =
+				await Promise.all([
+					readCodeBlockColors(referenceLightPage),
+					readCodeBlockColors(localLightPage),
+					readCodeBlockColors(referenceDarkPage),
+					readCodeBlockColors(localDarkPage)
+				]);
+
+			expect(referenceDarkStyles).toEqual(localDarkStyles);
+			expect(localLightStyles).not.toEqual(localDarkStyles);
+			expect(referenceLightStyles).not.toEqual(referenceDarkStyles);
+		} finally {
+			await Promise.all([lightContext.close(), darkContext.close()]);
+		}
+	});
 });
 
 async function openParityFixture(page: Page, url: string): Promise<void> {
@@ -92,6 +139,30 @@ async function captureRenderedScreenshot(page: Page): Promise<Buffer> {
 	const locator = page.locator(renderedSelector);
 	await locator.scrollIntoViewIfNeeded();
 	return locator.screenshot(screenshotOptions);
+}
+
+async function readCodeBlockColors(page: Page): Promise<{
+	bodyBackgroundColor: string;
+	bodyBorderColor: string;
+	tokenColor: string;
+}> {
+	return page.locator(renderedSelector).evaluate((root) => {
+		const body = root.querySelector('[data-streamdown="code-block-body"]');
+		const token =
+			root.querySelector('[style*="--sdm-c"]') ?? root.querySelector('.sd-code-line span');
+
+		if (!body || !token) {
+			throw new Error('No visible code block found in rendered parity output.');
+		}
+
+		const bodyStyle = getComputedStyle(body);
+		const tokenStyle = getComputedStyle(token);
+		return {
+			bodyBackgroundColor: bodyStyle.backgroundColor,
+			bodyBorderColor: bodyStyle.borderColor,
+			tokenColor: tokenStyle.color
+		};
+	});
 }
 
 async function assertVisualParity(

@@ -87,6 +87,42 @@
 		return streamdown.dir;
 	});
 
+	const namedHtmlEntities: Record<string, string> = {
+		amp: '&',
+		apos: "'",
+		bull: '•',
+		copy: '©',
+		gt: '>',
+		hearts: '♥',
+		lt: '<',
+		mdash: '—',
+		nbsp: '\u00A0',
+		quot: '"'
+	};
+
+	const decodeHtmlEntities = (value: string): string =>
+		value.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]+);/g, (match, entity) => {
+			if (entity.startsWith('#x') || entity.startsWith('#X')) {
+				const codePoint = Number.parseInt(entity.slice(2), 16);
+				return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+			}
+
+			if (entity.startsWith('#')) {
+				const codePoint = Number.parseInt(entity.slice(1), 10);
+				return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+			}
+
+			return namedHtmlEntities[entity] ?? match;
+		});
+
+	const renderLeafText = (token: StreamdownToken): string => {
+		if (!('text' in token) || typeof token.text !== 'string') {
+			return '';
+		}
+
+		return token.type === 'text' ? decodeHtmlEntities(token.text) : token.text;
+	};
+
 	setContext('STREAMDOWN_BLOCK', {
 		get isIncompleteCodeFence() {
 			return isIncompleteCodeFence;
@@ -105,9 +141,9 @@
 				<Element {token} {isIncomplete}>
 					{#if isTextOnlyNode}
 						{#if streamdown.animation.enabled && !insidePopover && !isStatic}
-							<AnimatedText text={'text' in token ? token.text || '' : ''} />
+							<AnimatedText text={renderLeafText(token)} />
 						{:else}
-							{'text' in token ? token.text : ''}
+							{renderLeafText(token)}
 						{/if}
 					{:else}
 						{@render renderChildren(children)}
