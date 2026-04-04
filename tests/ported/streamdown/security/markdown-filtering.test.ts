@@ -56,6 +56,24 @@ describe('ported streamdown markdown filtering helpers', () => {
 		expect((filtered[1] as Tokens.Paragraph).type).toBe('paragraph');
 	});
 
+	test('filterMarkdownTokens exposes sibling children through the allowElement parent context', () => {
+		const filtered = filterMarkdownTokens(lex('- first\n- second'), {
+			allowElement: (element, index, parent) => {
+				if (element.tagName !== 'li') {
+					return true;
+				}
+
+				expect(parent?.tagName).toBe('ul');
+				expect(parent?.children?.map((child) => child.tagName)).toEqual(['li', 'li']);
+				return index > 0;
+			}
+		});
+		const list = filtered[0] as Extract<(typeof filtered)[number], { type: 'list' }>;
+
+		expect(list.tokens).toHaveLength(1);
+		expect(list.tokens[0]?.text).toContain('second');
+	});
+
 	test('renderMarkdownFragment applies urlTransform before serializing safe HTML', () => {
 		const html = renderMarkdownFragment('<a href="https://example.com">link</a>', {
 			urlTransform: (url) => url.replace('https://example.com', 'https://proxy.test')

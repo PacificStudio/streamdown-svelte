@@ -47,6 +47,26 @@ describeInBrowser('ported streamdown markdown filtering surface', () => {
 		expect(screen.container.querySelector('h2')).toBeNull();
 	});
 
+	testInBrowser('allowElement receives parent children for sibling-aware filtering', () => {
+		const allowElement = vi.fn((element, index, parent) => {
+			if (element.tagName !== 'li') {
+				return true;
+			}
+
+			return parent?.children?.length === 2 ? index > 0 : true;
+		});
+		const screen = render(Streamdown, {
+			allowElement,
+			content: '- first\n- second',
+			static: true
+		});
+
+		expect(allowElement).toHaveBeenCalled();
+		expect(screen.container.querySelectorAll('li')).toHaveLength(1);
+		expect(screen.container.textContent).toContain('second');
+		expect(screen.container.textContent).not.toContain('first');
+	});
+
 	testInBrowser('unwrapDisallowed keeps children when a wrapper element is filtered', () => {
 		const screen = render(Streamdown, {
 			content: '**bold text**',

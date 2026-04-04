@@ -40,6 +40,11 @@ type ParsedMarkdownFilteringOptions = {
 	unwrapDisallowed: boolean;
 };
 
+type FilteredMarkdownTokens = {
+	elements: MarkdownParent[];
+	tokens: StreamdownToken[];
+};
+
 const normalizeElementSet = (elements?: readonly string[]): ReadonlySet<string> | undefined => {
 	if (!elements || elements.length === 0) {
 		return undefined;
@@ -156,6 +161,30 @@ const getTokenProperties = (token: StreamdownToken): Record<string, unknown> => 
 	switch (token.type) {
 		case 'heading':
 			return { depth: token.depth };
+		case 'paragraph':
+			return {
+				text: token.text
+			};
+		case 'code':
+			return {
+				lang: token.lang ?? undefined,
+				text: token.text
+			};
+		case 'list':
+			return {
+				listType: token.listType ?? undefined,
+				loose: token.loose,
+				ordered: token.ordered,
+				start: token.start ?? undefined
+			};
+		case 'list_item':
+			return {
+				checked: token.checked,
+				loose: token.loose,
+				task: token.task,
+				text: token.text,
+				value: token.value
+			};
 		case 'link':
 			return {
 				href: token.href,
@@ -197,8 +226,12 @@ const filterTokens = (
 	tokens: StreamdownToken[],
 	options: ParsedMarkdownFilteringOptions,
 	parent?: Readonly<MarkdownParent>
-): StreamdownToken[] => {
-	const filtered: StreamdownToken[] = [];
+): FilteredMarkdownTokens => {
+	const prepared: Array<{
+		element?: MarkdownParent;
+		filteredChildren: FilteredMarkdownTokens | undefined;
+		token: StreamdownToken;
+	}> = [];
 
 	for (let index = 0; index < tokens.length; index += 1) {
 		const token = tokens[index];
@@ -211,11 +244,12 @@ const filterTokens = (
 		}
 
 		const tagName = getTokenTagName(token);
+		const elementProperties = getTokenProperties(token);
 		const currentElement = tagName
-			? createMarkdownElement(tagName, getTokenProperties(token))
+			? createMarkdownElement(tagName, elementProperties)
 			: undefined;
 		const hasChildTokens = Array.isArray((token as { tokens?: StreamdownToken[] }).tokens);
-		const childTokens = hasChildTokens
+		const filteredChildren = hasChildTokens
 			? filterTokens(
 					(token as { tokens: StreamdownToken[] }).tokens,
 					options,
@@ -223,26 +257,55 @@ const filterTokens = (
 				)
 			: undefined;
 		const nextToken = hasChildTokens
-			? ({ ...token, tokens: childTokens ?? [] } as StreamdownToken)
+			? ({ ...token, tokens: filteredChildren?.tokens ?? [] } as StreamdownToken)
 			: token;
+		const nextElement = tagName
+			? createMarkdownElement(
+					tagName,
+					getTokenProperties(nextToken),
+					filteredChildren?.elements
+				)
+			: undefined;
+
+		prepared.push({
+			element: nextElement,
+			filteredChildren,
+			token: nextToken
+		});
+	}
+
+	const siblingElements = prepared.flatMap((entry) => (entry.element ? [entry.element] : []));
+	const resolvedParent = parent
+		? createMarkdownElement(parent.tagName, parent.properties, siblingElements)
+		: undefined;
+	const filtered: FilteredMarkdownTokens = {
+		elements: [],
+		tokens: []
+	};
+
+	for (let index = 0; index < prepared.length; index += 1) {
+		const entry = prepared[index];
+		if (!entry) {
+			continue;
+		}
 
 		if (
-			currentElement &&
-			shouldRemoveElement(
-				createMarkdownElement(currentElement.tagName, getTokenProperties(nextToken)),
-				index,
-				parent,
-				options
-			)
+			entry.element &&
+			shouldRemoveElement(entry.element, index, resolvedParent, options)
 		) {
-			if (options.unwrapDisallowed && childTokens && childTokens.length > 0) {
-				filtered.push(...childTokens);
+			if (options.unwrapDisallowed && entry.filteredChildren) {
+				filtered.elements.push(...entry.filteredChildren.elements);
+				filtered.tokens.push(...entry.filteredChildren.tokens);
 			}
 
 			continue;
 		}
 
-		filtered.push(nextToken);
+		if (entry.element) {
+			filtered.elements.push(entry.element);
+		}
+
+		filtered.tokens.push(entry.token);
 	}
 
 	return filtered;
@@ -263,5 +326,5 @@ export const filterMarkdownTokens = (
 		return tokens;
 	}
 
-	return filterTokens(tokens, parsedOptions);
+	return filterTokens(tokens, parsedOptions).tokens;
 };
