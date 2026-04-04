@@ -244,7 +244,7 @@ This is the canonical category and next-action index for every inventory row who
 | `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/table-utils.test.ts`               |
 | `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/translations.test.tsx`             |
 | `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/use-deferred-render.test.tsx`      |
-| `package/export boundaries`   | `implement`       | `packages/streamdown/__tests__/utils.test.ts`                     |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/utils.test.ts`                     |
 | `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-memo.test.tsx`          |
 | `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-rerender.test.tsx`      |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/coverage-final.test.tsx`           |
