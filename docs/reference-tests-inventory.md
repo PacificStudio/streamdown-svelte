@@ -189,9 +189,9 @@ This is the canonical category and next-action index for every inventory row who
 | Parity category               | Next action       | Reference file                                                         |
 | ----------------------------- | ----------------- | ---------------------------------------------------------------------- |
 | `parser`                      | `add/port test`   | `packages/remend/__tests__/coverage-gaps.test.ts`                      |
-| `package/export boundaries`   | `implement`       | `packages/remend/__tests__/custom-handlers.test.ts`                    |
+| `package/export boundaries`   | `accepted drift`  | `packages/remend/__tests__/custom-handlers.test.ts`                    |
 | `parser`                      | `add/port test`   | `packages/remend/__tests__/edge-cases.test.ts`                         |
-| `package/export boundaries`   | `implement`       | `packages/remend/__tests__/utils.test.ts`                              |
+| `package/export boundaries`   | `accepted drift`  | `packages/remend/__tests__/utils.test.ts`                              |
 | `security`                    | `release blocker` | `packages/streamdown/__tests__/allowed-tags.test.tsx`                  |
 | `security`                    | `add/port test`   | `packages/streamdown/__tests__/email-addresses.test.tsx`               |
 | `security`                    | `release blocker` | `packages/streamdown/__tests__/escape-html.test.ts`                    |
@@ -219,12 +219,12 @@ This is the canonical category and next-action index for every inventory row who
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/components.test.tsx`                    |
 | `interactions`                | `add/port test`   | `packages/streamdown/__tests__/copy-dropdown.test.tsx`                 |
 | `plugins`                     | `add/port test`   | `packages/streamdown/__tests__/custom-renderer.test.tsx`               |
-| `package/export boundaries`   | `implement`       | `packages/streamdown/__tests__/detect-direction.test.ts`               |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/detect-direction.test.ts`               |
 | `parser`                      | `add/port test`   | `packages/streamdown/__tests__/dollar-sign.test.tsx`                   |
 | `interactions`                | `add/port test`   | `packages/streamdown/__tests__/download-dropdown.test.tsx`             |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/footnote-section.test.tsx`              |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/footnotes.test.tsx`                     |
-| `package/export boundaries`   | `implement`       | `packages/streamdown/__tests__/icon-context.test.tsx`                  |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/icon-context.test.tsx`                  |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-cached.test.tsx`                  |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-edge-cases.test.tsx`              |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/image-hydration.test.tsx`               |
@@ -255,7 +255,7 @@ This is the canonical category and next-action index for every inventory row who
 | `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/table-utils.test.ts`                    |
 | `package/export boundaries`   | `add/port test`   | `packages/streamdown/__tests__/translations.test.tsx`                  |
 | `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/use-deferred-render.test.tsx`           |
-| `package/export boundaries`   | `implement`       | `packages/streamdown/__tests__/utils.test.ts`                          |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown/__tests__/utils.test.ts`                          |
 | `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-memo.test.tsx`               |
 | `performance/framework drift` | `accepted drift`  | `packages/streamdown/__tests__/components-rerender.test.tsx`           |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/coverage-final.test.tsx`                |
@@ -265,10 +265,10 @@ This is the canonical category and next-action index for every inventory row who
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/node-attribute-removed.test.tsx`        |
 | `rendering`                   | `add/port test`   | `packages/streamdown/__tests__/remaining-coverage.test.tsx`            |
 | `interactions`                | `add/port test`   | `packages/streamdown/__tests__/scroll-lock.test.ts`                    |
-| `package/export boundaries`   | `implement`       | `packages/streamdown-cjk/__tests__/index.test.ts`                      |
-| `package/export boundaries`   | `implement`       | `packages/streamdown-code/__tests__/index.test.ts`                     |
-| `package/export boundaries`   | `implement`       | `packages/streamdown-math/__tests__/index.test.ts`                     |
-| `package/export boundaries`   | `implement`       | `packages/streamdown-mermaid/__tests__/index.test.ts`                  |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-cjk/__tests__/index.test.ts`                      |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-code/__tests__/index.test.ts`                     |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-math/__tests__/index.test.ts`                     |
+| `package/export boundaries`   | `accepted drift`  | `packages/streamdown-mermaid/__tests__/index.test.ts`                  |
 
 ## Harness Support Files
 
