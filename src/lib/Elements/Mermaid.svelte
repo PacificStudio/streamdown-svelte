@@ -37,6 +37,7 @@
 	});
 
 	const panzoom = usePanzoom({
+		activateMouseWheel: true,
 		minZoom: 0.5,
 		maxZoom: 4,
 		zoomSpeed: 1

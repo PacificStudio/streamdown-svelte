@@ -1,0 +1,8 @@
+@import '../../src/app.css';
+
+@source '../../src/lib';
+@source '../../references/streamdown/packages/streamdown';
+@source '../../references/streamdown/packages/streamdown-code';
+@source '../../references/streamdown/packages/streamdown-mermaid';
+@source '../../references/streamdown/packages/streamdown-cjk';
+@source '../../references/streamdown/packages/streamdown-math';

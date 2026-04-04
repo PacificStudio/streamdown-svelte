@@ -231,6 +231,32 @@ test.describe('interaction parity fixtures', () => {
 			expect(localAfterZoom).not.toBe(localBeforeZoom);
 
 			await Promise.all([
+				dragMermaidCanvas(referencePage, '[data-streamdown="mermaid"] [role="application"]'),
+				dragMermaidCanvas(localPage, '[data-streamdown-mermaid] [data-mermaid-svg]')
+			]);
+
+			const [referenceAfterDrag, localAfterDrag] = await Promise.all([
+				readTransform(referencePage, '[data-streamdown="mermaid"] [role="application"]'),
+				readTransform(localPage, '[data-streamdown-mermaid] [data-mermaid-svg]')
+			]);
+
+			expect(referenceAfterDrag).not.toBe(referenceAfterZoom);
+			expect(localAfterDrag).not.toBe(localAfterZoom);
+
+			await Promise.all([
+				wheelMermaidCanvas(referencePage, '[data-streamdown="mermaid"] [role="application"]'),
+				wheelMermaidCanvas(localPage, '[data-streamdown-mermaid] [data-mermaid-svg]')
+			]);
+
+			const [referenceAfterWheel, localAfterWheel] = await Promise.all([
+				readTransform(referencePage, '[data-streamdown="mermaid"] [role="application"]'),
+				readTransform(localPage, '[data-streamdown-mermaid] [data-mermaid-svg]')
+			]);
+
+			expect(referenceAfterWheel).not.toBe(referenceAfterDrag);
+			expect(localAfterWheel).not.toBe(localAfterDrag);
+
+			await Promise.all([
 				referencePage.getByTitle('View fullscreen').click(),
 				localPage.getByTitle('View fullscreen').click()
 			]);
@@ -523,11 +549,39 @@ async function downloadFromMermaidMenu(page: Page, title: string): Promise<void>
 	await getByExactTitle(page, title).click();
 }
 
+async function dragMermaidCanvas(page: Page, selector: string): Promise<void> {
+	const canvas = page.locator(selector).first();
+	await expect(canvas).toBeVisible();
+	const box = await canvas.boundingBox();
+	if (!box) {
+		throw new Error(`Unable to drag Mermaid canvas for selector ${selector}.`);
+	}
+
+	const startX = box.x + box.width / 2;
+	const startY = box.y + box.height / 2;
+	await page.mouse.move(startX, startY);
+	await page.mouse.down();
+	await page.mouse.move(startX + 40, startY + 24);
+	await page.mouse.up();
+}
+
 async function waitForMermaidReady(page: Page): Promise<void> {
 	const mermaidSvg = page.locator(
 		'[data-streamdown="mermaid"] [role="img"] > svg, [data-streamdown-mermaid] [data-mermaid-svg]'
 	);
 	await expect(mermaidSvg.first()).toBeVisible();
+}
+
+async function wheelMermaidCanvas(page: Page, selector: string): Promise<void> {
+	const canvas = page.locator(selector).first();
+	await expect(canvas).toBeVisible();
+	const box = await canvas.boundingBox();
+	if (!box) {
+		throw new Error(`Unable to wheel Mermaid canvas for selector ${selector}.`);
+	}
+
+	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+	await page.mouse.wheel(0, -160);
 }
 
 async function readTransform(page: Page, selector: string): Promise<string | null> {

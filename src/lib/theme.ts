@@ -264,15 +264,16 @@ export const shadcnTheme = {
 		checkbox: ' mr-2'
 	},
 	code: {
-		base: 'my-4 w-full overflow-hidden rounded-lg border border-border flex flex-col',
-		container: 'relative overflow-visible bg-muted p-2 font-mono text-sm',
-		header: 'flex items-center justify-between bg-muted/80 px-2 py-1 text-muted-foreground text-xs',
-		buttons: 'flex items-center gap-2',
+		base: 'my-4 flex w-full flex-col gap-2 rounded-xl border border-border bg-sidebar p-2',
+		container: 'overflow-x-auto rounded-md border border-border bg-background p-4 text-sm',
+		header: 'flex h-8 items-center text-muted-foreground text-xs',
+		buttons:
+			'flex shrink-0 items-center gap-2 rounded-md border border-sidebar bg-sidebar/80 px-1.5 py-1 supports-[backdrop-filter]:bg-sidebar/70 supports-[backdrop-filter]:backdrop-blur',
 
 		language: 'ml-1 font-mono lowercase',
 		skeleton:
 			'block rounded-md font-mono text-transparent bg-border/80 scale-y-90 w-fit animate-pulse whitespace-nowrap',
-		pre: 'overflow-x-auto font-mono p-0 bg-muted/40',
+		pre: 'overflow-x-auto bg-[var(--sdm-bg,inherit)] p-0 font-mono dark:bg-[var(--shiki-dark-bg,var(--sdm-bg,inherit))]',
 		line: 'block '
 	},
 	codespan: {
