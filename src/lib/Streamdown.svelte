@@ -4,6 +4,7 @@
 	import {
 		normalizeMermaidControls,
 		StreamdownContext,
+		type ResolvedAnimationConfig,
 		type StreamdownProps
 	} from './context.svelte.js';
 	import { getThemeName } from './plugins.js';
@@ -29,15 +30,7 @@
 		fadeIn: 'fade',
 		slideUp: 'slideUp'
 	} as const;
-	type LocalAnimationConfig = { enabled: boolean } & NonNullable<StreamdownProps['animation']>;
-	type AnimationTimingFunction = NonNullable<LocalAnimationConfig['timingFunction']>;
-	const supportedTimingFunctions = new Set<AnimationTimingFunction>([
-		'ease',
-		'ease-in',
-		'ease-out',
-		'ease-in-out',
-		'linear'
-	]);
+	type LocalAnimationConfig = ResolvedAnimationConfig;
 	const defaultLinkSafetyConfig = {
 		enabled: true
 	} as const;
@@ -60,15 +53,20 @@
 				type: 'fade' as const,
 				duration: 150,
 				timingFunction: 'ease' as const,
-				tokenize: 'word' as const
+				tokenize: 'word' as const,
+				stagger: 40
 			};
 		}
 
 		const animationName =
-			animationNameMap[animated.animation as keyof typeof animationNameMap] ?? 'fade';
-		const timingFunction = supportedTimingFunctions.has(animated.easing as AnimationTimingFunction)
-			? (animated.easing as AnimationTimingFunction)
-			: 'ease';
+			(typeof animated.animation === 'string' && animated.animation.length > 0
+				? (animationNameMap[animated.animation as keyof typeof animationNameMap] ??
+					animated.animation)
+				: undefined) ?? 'fade';
+		const timingFunction =
+			typeof animated.easing === 'string' && animated.easing.trim().length > 0
+				? animated.easing
+				: 'ease';
 
 		return {
 			enabled: true,
@@ -76,7 +74,8 @@
 			type: animationName,
 			duration: animated.duration ?? 150,
 			timingFunction,
-			tokenize: animated.sep ?? 'word'
+			tokenize: animated.sep ?? 'word',
+			stagger: animated.stagger ?? 40
 		} as const;
 	};
 	let {
@@ -153,9 +152,10 @@
 				enabled: true,
 				animateOnMount: animation.animateOnMount ?? false,
 				type: animation.type || 'blur',
-				duration: animation.duration || 500,
+				duration: animation.duration ?? 500,
 				timingFunction: animation.timingFunction || 'ease-in',
-				tokenize: animation.tokenize || 'word'
+				tokenize: animation.tokenize || 'word',
+				stagger: animation.stagger ?? 0
 			};
 		}
 
