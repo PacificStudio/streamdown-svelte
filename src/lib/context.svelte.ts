@@ -21,8 +21,8 @@ export interface AnimateOptions {
 }
 
 export interface LinkSafetyModalProps {
-	href: string;
-	open: boolean;
+	url: string;
+	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: () => void;
 }
