@@ -439,6 +439,13 @@
 			"default": null
 		},
 		{
+			"name": "BlockComponent",
+			"optional": true,
+			"type": "Component<BlockProps,any,any>",
+			"source": "src/lib/context.svelte.ts",
+			"default": null
+		},
+		{
 			"name": "blockquote",
 			"optional": true,
 			"type": "Snippet<[{children:Snippet;token:Tokens.Blockquote;}]>",
@@ -497,7 +504,7 @@
 		{
 			"name": "components",
 			"optional": true,
-			"type": "StreamdownComponents",
+			"type": "Components",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
@@ -513,7 +520,7 @@
 			"optional": true,
 			"type": "StreamdownControlsConfig",
 			"source": "src/lib/context.svelte.ts",
-			"default": null
+			"default": "true"
 		},
 		{
 			"name": "defaultOrigin",
@@ -623,7 +630,7 @@
 		{
 			"name": "icons",
 			"optional": true,
-			"type": "{copy?:Snippet;download?:Snippet;fullscreen?:Snippet;zoomIn?:Snippet;zoomOut?:Snippet;fitView?:Snippet;note?:Snippet;tip?:Snippet;warning?:Snippet;caution?:Snippet;important?:Snippet;chevronLeft?:Snippet;chevronRight?:Snippet;check?:Snippet;}",
+			"type": "Partial<IconMap>",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
@@ -749,7 +756,7 @@
 		{
 			"name": "mermaid",
 			"optional": true,
-			"type": "Snippet<[{children:Snippet;token:Tokens.Code;}]>",
+			"type": "MermaidOptions",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
@@ -847,7 +854,7 @@
 		{
 			"name": "shikiTheme",
 			"optional": true,
-			"type": "string",
+			"type": "ThemeInput|[ThemeInput,ThemeInput]",
 			"source": "src/lib/context.svelte.ts",
 			"default": null
 		},
