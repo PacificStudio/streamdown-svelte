@@ -439,7 +439,7 @@ jobs:
         run: |
           start=$(date +%s)
           set +e
-          pnpm verify:dependency-policy >"$SUITE_DIR/dependency-policy.json" 2>"$SUITE_DIR/dependency-policy.stderr.log"
+          pnpm --silent verify:dependency-policy >"$SUITE_DIR/dependency-policy.json" 2>"$SUITE_DIR/dependency-policy.stderr.log"
           exit_code=$?
           end=$(date +%s)
           echo "duration_ms=$(((end - start) * 1000))" >> "$GITHUB_OUTPUT"
@@ -479,7 +479,7 @@ jobs:
             --json-file
             "$SUITE_DIR/status.json"
             --command
-            "pnpm verify:dependency-policy"
+            "pnpm --silent verify:dependency-policy"
             --artifact
             "summary=$SUITE_DIR/summary.md"
             --artifact
@@ -488,6 +488,8 @@ jobs:
             "report=$SUITE_DIR/dependency-policy.json"
             --artifact
             "stderr=$SUITE_DIR/dependency-policy.stderr.log"
+            --artifact
+            "reviewed-production-exceptions=$SUITE_DIR/reviewed-production-exceptions.md"
           )
 
           if [ -n "${{ steps.suite.outputs.duration_ms }}" ]; then

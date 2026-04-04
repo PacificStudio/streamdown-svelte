@@ -47,6 +47,7 @@ Current production allowlist:
 - `MIT`
 - `ISC`
 - `Apache-2.0`
+- `BSD-2-Clause`
 - `BSD-3-Clause`
 - `(MPL-2.0 OR Apache-2.0)`
 - `Unlicense`
@@ -64,7 +65,7 @@ Every exception must include:
 - the exact advisory ID or package name plus license string
 - a concrete reason for acceptance
 - a review deadline or removal trigger
-- for license exceptions, an evidence path showing why the missing SPDX metadata is acceptable
+- for license exceptions, a repo-hosted evidence path showing why the missing SPDX metadata is acceptable
 
 Rules for adding an exception:
 
@@ -83,12 +84,23 @@ Rules for removing an exception:
 
 Current baseline approvals are intentionally explicit:
 
-- one production `high` advisory on `lodash-es`, inherited transitively through `mermaid`
-- one production package-level `BSD-2-Clause` exception for `entities`, inherited transitively through `rehype-raw` and kept package-specific pending broader license-policy review
-- repository-baseline development `high` advisories in the current SvelteKit, Vite, Playwright, Wrangler, and Vitest tooling graph
-- one production license metadata exception for `khroma`, whose installed package ships an MIT license file but omits SPDX metadata in `package.json`
+- one production `high` advisory on `lodash-es`, inherited transitively through `mermaid`; this is still a trusted-release blocker until the production graph upgrades past `lodash-es < 4.18.0`
+- repository-baseline development `high` advisories in the current SvelteKit, Vite, Playwright, Wrangler, and Vitest tooling graph; these remain reviewed debt, but they are not first-release blockers by themselves because they do not ship in the published package
+- one production license metadata exception for `khroma`, whose npm tarball ships MIT license text even though the published package metadata still reports `Unknown`
+
+The prior package-specific `entities` exception has been removed. `BSD-2-Clause` is now allowlisted at the policy level for production dependencies.
 
 The presence of an approval does not mean the issue is harmless. It means the issue is known, reviewable, and prevented from disappearing into CI noise until the dependency graph is upgraded.
+
+## Production Exception Decisions
+
+Reviewed on `2026-04-04` for `ASE-40`.
+
+| Item | Decision | Release impact | Evidence | Removal trigger |
+| --- | --- | --- | --- | --- |
+| `lodash-es` advisory `1115805` via `mermaid@11.11.0` | Keep the advisory exception visible in `config/dependency-policy.json`. | Still blocks the first trusted release. | `config/dependency-policy.json`; `artifacts/nightly/dependency-audit/dependency-policy.json`; `artifacts/nightly/dependency-audit/reviewed-production-exceptions.md` | Remove before the first trusted release by upgrading the `mermaid` / `lodash-es` chain. |
+| `entities@6.0.1` `BSD-2-Clause` | Remove the package-specific exception and allowlist `BSD-2-Clause` for production dependencies. | No longer blocks the first trusted release. | `config/dependency-policy.json`; `artifacts/nightly/dependency-audit/reviewed-production-exceptions.md` | Re-review only if the repository tightens the production allowlist or the graph introduces a materially different license concern. |
+| `khroma@2.1.0` `Unknown` license metadata | Keep a package-specific metadata exception because the reviewed npm tarball ships MIT license text while package metadata still omits SPDX. | Does not block the first trusted release while `khroma@2.1.0` remains the reviewed package. | `config/dependency-policy.json`; `artifacts/nightly/dependency-audit/reviewed-production-exceptions.md#khroma-2-1-0-license-metadata` | Remove when `khroma` publishes SPDX metadata or leaves the production graph. |
 
 ## Validation Commands
 
