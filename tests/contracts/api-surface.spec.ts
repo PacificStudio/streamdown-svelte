@@ -132,8 +132,7 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'TableDownloadButtonProps',
 			'TableDownloadDropdown',
 			'TableDownloadDropdownProps',
-			'ThemeRegistrationAny',
-			'useIsCodeFenceIncomplete'
+			'ThemeRegistrationAny'
 		],
 		// drift-01
 		extraInLocal: [
@@ -164,6 +163,8 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'createMermaidPlugin',
 			'findCustomRenderer',
 			'getThemeName',
+			'hasIncompleteCodeFence',
+			'hasTable',
 			'math',
 			'mermaid'
 		],
