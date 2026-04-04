@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-04T03:02:43.260Z",
+  "subject": {
+    "name": "svelte-streamdown-3.0.1.tgz",
+    "sha256": "c1820303bca56d6230d68e9c244f4dabdb4b385dce2d020783bc614bd031e229"
+  },
+  "githubAttestation": {
+    "supported": false,
+    "repository": "BetterAndBetterII/svelte-streamdown",
+    "signerWorkflow": null,
+    "verifyCommand": null,
+    "attestationUrl": null
+  },
+  "npmProvenance": {
+    "expectedWhenTrustedPublishing": false,
+    "publishCommand": "npm publish ./artifacts/release/svelte-streamdown-3.0.1.tgz",
+    "requirements": {
+      "publicRepository": true,
+      "publicPackage": true,
+      "githubHostedRunner": true,
+      "trustedPublisherWorkflow": "release.yml"
+    },
+    "published": false
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-04T03:02:43.075Z",
+  "package": {
+    "name": "svelte-streamdown",
+    "version": "3.0.1"
+  },
+  "source": {
+    "repository": "BetterAndBetterII/svelte-streamdown",
+    "commitSha": "032f7b4dc867d6f2d9efe14985aa6dd086b81a54",
+    "ref": null,
+    "refName": null,
+    "eventName": null,
+    "workflow": null,
+    "workflowRef": null,
+    "job": null,
+    "runId": null,
+    "runAttempt": null,
+    "runUrl": null,
+    "actor": null
+  },
+  "build": {
+    "ciProvider": "local",
+    "nodeVersion": "v22.22.1",
+    "pnpmVersion": "10.32.1",
+    "platform": "linux",
+    "arch": "x64"
+  }
+}

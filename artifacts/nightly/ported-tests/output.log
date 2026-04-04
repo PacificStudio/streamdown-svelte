@@ -1,0 +1,55 @@
+📝 Copied README.md to src folder
+📝 Copied README.md to src folder
+📝 Copied README.md to src folder
+
+ RUN  v3.2.4 /home/yuzhong/.openase/workspace/test/cdn/ASE-20/svelte-streamdown
+
+The following Vite config options will be overridden by SvelteKit:
+  - base
+📝 Copied README.md to src folder
+ ✓ |client (chromium)| tests/ported/streamdown/security/normalize-html-indentation.svelte.test.ts (4 tests) 52ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/escape-html.svelte.test.ts (2 tests) 48ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/html-entities.svelte.test.ts (1 test) 62ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/email-addresses.svelte.test.ts (3 tests) 82ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/html-handling.svelte.test.ts (5 tests) 83ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/literal-tag-content.svelte.test.ts (1 test) 41ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/html-block-multiline.svelte.test.ts (4 tests) 65ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/tel-links.svelte.test.ts (3 tests) 90ms
+ ✓ |client (chromium)| tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts (3 tests) 105ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/image-and-footnotes.svelte.test.ts (3 tests) 110ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/url-policy.svelte.test.ts (5 tests) 113ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/code-block-features.svelte.test.ts (3 tests) 111ms
+ ✓ |client (chromium)| tests/ported/streamdown/basic-render.svelte.test.ts (1 test) 115ms
+ ✓ |client (chromium)| tests/ported/streamdown/security/allowed-tags.svelte.test.ts (5 tests) 115ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/core-props.svelte.test.ts (11 tests) 118ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/components.svelte.test.ts (3 tests) 121ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/plugin-contract.svelte.test.ts (5 tests) 177ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/citations.svelte.test.ts (2 tests) 207ms
+ ✓ |client (chromium)| tests/ported/streamdown/rendering/translations.svelte.test.ts (1 test) 184ms
+ ✓ |server| tests/ported/streamdown/security/literal-tag-content.test.ts (1 test) 2ms
+ ✓ |server| tests/ported/remend/comparison-operators.test.ts (3 tests) 3ms
+ ✓ |server| tests/ported/streamdown/security/preprocess-custom-tags.test.ts (1 test) 2ms
+ ✓ |server| tests/ported/remend/mixed-formatting.test.ts (5 tests) 6ms
+ ✓ |server| tests/ported/remend/streaming.test.ts (3 tests) 4ms
+ ✓ |server| tests/ported/remend/bold-italic.test.ts (3 tests) 4ms
+ ✓ |server| tests/ported/remend/broken-markdown-variants.test.ts (2 tests) 5ms
+ ✓ |server| tests/ported/remend/underscore-bug.test.ts (3 tests) 4ms
+ ✓ |server| tests/ported/streamdown/security/url-policy.test.ts (5 tests) 2ms
+ ✓ |server| tests/ported/remend/coverage-gaps.test.ts (1 test) 5ms
+ ✓ |server| tests/ported/remend/html-tags.test.ts (3 tests) 4ms
+ ✓ |server| tests/ported/remend/single-tilde.test.ts (3 tests) 4ms
+ ✓ |server| tests/ported/remend/edge-cases.test.ts (1 test) 6ms
+ ✓ |server| tests/ported/remend/setext-heading.test.ts (3 tests) 4ms
+ ✓ |client (chromium)| tests/ported/streamdown/interactivity/code-and-table-controls.svelte.test.ts (5 tests) 453ms
+ ✓ |client (chromium)| tests/ported/streamdown/interactivity/mermaid-controls.svelte.test.ts (2 tests) 744ms
+   ✓ ported streamdown mermaid controls > downloads mermaid source and rendered svg, then toggles fullscreen state  637ms
+
+ Test Files  35 passed (35)
+      Tests  109 passed (109)
+   Start at  04:00:31
+   Duration  4.72s (transform 2.39s, setup 311ms, collect 86.26s, tests 3.25s, environment 2ms, prepare 56.25s)
+
+JUNIT report written to /home/yuzhong/.openase/workspace/test/cdn/ASE-20/svelte-streamdown/artifacts/nightly/ported-tests/junit.xml
+close timed out after 10000ms
+Tests closed successfully but something prevents the main process from exiting
+You can try to identify the cause by enabling "hanging-process" reporter. See https://vitest.dev/config/#reporters

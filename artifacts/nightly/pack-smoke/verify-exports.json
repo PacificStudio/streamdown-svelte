@@ -1,0 +1,20 @@
+
+> svelte-streamdown@3.0.1 verify:exports /home/yuzhong/.openase/workspace/test/cdn/ASE-20/svelte-streamdown
+> node scripts/verify-exports.mjs
+
+{
+  "tarball": "svelte-streamdown-3.0.1.tgz",
+  "exportsChecked": [
+    ".",
+    "./code",
+    "./mermaid",
+    "./math"
+  ],
+  "runtimeImportsSmoked": [
+    ".",
+    "./code",
+    "./mermaid",
+    "./math"
+  ],
+  "fixture": "tests/pack-smoke"
+}
