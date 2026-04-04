@@ -48,7 +48,7 @@
 					{
 						"id": "1115969",
 						"module": "defu",
-						"reason": "Transitive via the current Cloudflare dev-tooling stack through wrangler/unenv; removal requires a coordinated toolchain upgrade outside ASE-29.",
+						"reason": "Transitive through unenv/@cloudflare-unenv-preset in the current wrangler 4.34.0 toolchain; removal requires a coordinated Cloudflare tooling upgrade outside the animation parity scope.",
 						"reviewBy": "before the first trusted release"
 					},
 					{

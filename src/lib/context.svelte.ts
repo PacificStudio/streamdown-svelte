@@ -34,10 +34,26 @@ export interface LinkSafetyConfig {
 	renderModal?: (props: LinkSafetyModalProps) => unknown;
 }
 
+export interface ResolvedAnimationConfig {
+	enabled: boolean;
+	animateOnMount?: boolean;
+	type?: string;
+	duration?: number;
+	timingFunction?: string;
+	tokenize?: 'word' | 'char';
+	stagger?: number;
+}
+
 export interface StreamdownContext
 	extends Omit<
 		StreamdownProps,
-		keyof Snippets | 'class' | 'theme' | 'shikiTheme' | 'inlineCitationsMode' | 'translations'
+		| keyof Snippets
+		| 'animation'
+		| 'class'
+		| 'theme'
+		| 'shikiTheme'
+		| 'inlineCitationsMode'
+		| 'translations'
 	> {
 	snippets: Snippets;
 	shikiTheme: string;
@@ -57,14 +73,18 @@ export interface StreamdownContext
 	};
 	inlineCitationsMode: 'list' | 'carousel';
 	mode: 'static' | 'streaming';
-	animation: {
-		enabled: boolean;
-	} & StreamdownProps['animation'];
+	animation: ResolvedAnimationConfig;
 }
 
 type StreamdownContextInit<Source extends Record<string, any> = Record<string, any>> = Omit<
 	StreamdownProps<Source>,
-	keyof Snippets<Source> | 'class' | 'theme' | 'shikiTheme' | 'inlineCitationsMode' | 'translations'
+	| keyof Snippets<Source>
+	| 'animation'
+	| 'class'
+	| 'theme'
+	| 'shikiTheme'
+	| 'inlineCitationsMode'
+	| 'translations'
 > & {
 	snippets: Snippets<Source>;
 	shikiTheme: string;
@@ -82,9 +102,7 @@ type StreamdownContextInit<Source extends Record<string, any> = Record<string, a
 		download: boolean;
 	};
 	inlineCitationsMode: 'list' | 'carousel';
-	animation: {
-		enabled: boolean;
-	} & StreamdownProps<Source>['animation'];
+	animation: ResolvedAnimationConfig;
 };
 export class StreamdownContext<Source extends Record<string, any> = Record<string, any>> {
 	footnotes = {

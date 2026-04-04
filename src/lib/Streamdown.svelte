@@ -4,6 +4,7 @@
 	import {
 		normalizeMermaidControls,
 		StreamdownContext,
+		type ResolvedAnimationConfig,
 		type StreamdownProps
 	} from './context.svelte.js';
 	import { getThemeName } from './plugins.js';
@@ -29,7 +30,7 @@
 		fadeIn: 'fade',
 		slideUp: 'slideUp'
 	} as const;
-	type LocalAnimationConfig = { enabled: boolean } & NonNullable<StreamdownProps['animation']>;
+	type LocalAnimationConfig = ResolvedAnimationConfig;
 
 	const resolveCompatAnimation = (
 		animated: StreamdownProps<Source>['animated'],
