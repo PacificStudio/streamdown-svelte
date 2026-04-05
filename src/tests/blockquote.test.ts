@@ -56,7 +56,6 @@ describe('tokenization', () => {
 		const paragraphToken = nestedTokens.find((t: any) => t.type === 'paragraph');
 		expect(paragraphToken).toBeDefined();
 
-		console.log({ paragraphToken, nestedTokens });
 		const paragraphTokens = paragraphToken.tokens || [];
 		const strongTokens = paragraphTokens.filter((t: { type: string }) => t.type === 'strong');
 		const emTokens = paragraphTokens.filter((t: { type: string }) => t.type === 'em');

@@ -189,14 +189,17 @@ function main() {
 			'exec',
 			'vitest',
 			'run',
+			'--reporter=dot',
+			'--silent=passed-only',
 			'--coverage.enabled=true',
 			'--coverage.provider=v8',
-			'--coverage.reporter=text',
+			'--coverage.reporter=text-summary',
 			'--coverage.reporter=json-summary',
 			'--coverage.reporter=html',
 			`--coverage.reportsDirectory=${relative(repoRoot, reportsDirectory)}`,
 			...coverageSourceInclude.map((pattern) => `--coverage.include=${pattern}`),
 			...coverageSourceExclude.map((pattern) => `--coverage.exclude=${pattern}`),
+			...(suite.projects.includes('client') ? ['--maxWorkers=1'] : []),
 			...suite.projects.map((project) => `--project=${project}`),
 			...testFiles
 		];

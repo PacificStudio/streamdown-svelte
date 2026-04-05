@@ -338,6 +338,28 @@ function evaluateLicenseScope(scopeName, policyScope) {
 	};
 }
 
+function summarizeAuditScope(scope) {
+	return {
+		threshold: scope.threshold,
+		relevantCount: scope.relevantCount,
+		approvedCount: scope.approvedCount,
+		unapprovedCount: scope.unapprovedCount,
+		approvedRefs: scope.approved.map(
+			({ id, module, severity }) => `${id}:${module}:${severity}`
+		),
+		unapproved: scope.unapproved
+	};
+}
+
+function summarizeLicenseScope(scope) {
+	return {
+		approvedCount: scope.approvedCount,
+		unapprovedCount: scope.unapprovedCount,
+		approvedRefs: scope.approved.map(({ name, license }) => `${name}:${license}`),
+		unapproved: scope.unapproved
+	};
+}
+
 function main() {
 	const policy = parsePolicy(readJsonFile(policyPath, 'dependency policy'));
 	const audit = Object.fromEntries(
@@ -365,8 +387,15 @@ function main() {
 		JSON.stringify(
 			{
 				policyPath: 'config/dependency-policy.json',
-				audit,
-				licenses,
+				audit: Object.fromEntries(
+					Object.entries(audit).map(([scopeName, scope]) => [scopeName, summarizeAuditScope(scope)])
+				),
+				licenses: Object.fromEntries(
+					Object.entries(licenses).map(([scopeName, scope]) => [
+						scopeName,
+						summarizeLicenseScope(scope)
+					])
+				),
 				ok: failures.length === 0,
 				failures
 			},

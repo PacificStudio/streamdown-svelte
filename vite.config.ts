@@ -8,6 +8,8 @@ import { copyFileSync, watchFile, unwatchFile } from 'node:fs';
 import { resolve } from 'node:path';
 import { coverageSourceExclude, coverageSourceInclude } from './config/coverage-suites.mjs';
 
+const isTestMode = process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
+
 // Plugin to copy README.md from root to src folder
 function copyReadmePlugin() {
 	const rootReadme = resolve('README.md');
@@ -16,7 +18,6 @@ function copyReadmePlugin() {
 	const copyReadme = () => {
 		try {
 			copyFileSync(rootReadme, srcReadme);
-			console.log('📝 Copied README.md to src folder');
 		} catch (error) {
 			console.error('❌ Failed to copy README.md:', error);
 		}
@@ -29,6 +30,10 @@ function copyReadmePlugin() {
 			copyReadme();
 		},
 		configureServer(server: ViteDevServer) {
+			if (isTestMode || server.config.mode === 'test') {
+				return;
+			}
+
 			// Watch and copy during development
 			const onReadmeChange = (curr: Stats, prev: Stats) => {
 				if (curr.mtime !== prev.mtime) {
@@ -49,14 +54,17 @@ function copyReadmePlugin() {
 }
 
 export default defineConfig({
+	logLevel: isTestMode ? 'error' : undefined,
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), copyReadmePlugin()],
 	assetsInclude: ['**/*.md'],
 	test: {
 		expect: { requireAssertions: true },
+		reporters: ['dot'],
+		silent: 'passed-only',
 		coverage: {
 			all: true,
 			provider: 'v8',
-			reporter: ['text', 'json-summary', 'html'],
+			reporter: ['text-summary', 'json-summary', 'html'],
 			reportsDirectory: './coverage/default',
 			include: coverageSourceInclude,
 			exclude: coverageSourceExclude

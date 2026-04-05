@@ -17,7 +17,6 @@ describe('tokenizing', () => {
 
 		expect(listToken).toBeDefined();
 		expect(listItemToken).toBeDefined();
-		console.dir(listItemToken.tokens[0], { depth: null });
 		expect(listItemToken.tokens[0].tokens[0].type).toBe('strong');
 		expect(listItemToken.tokens[0].tokens[1].type).not.toBe('description');
 	});

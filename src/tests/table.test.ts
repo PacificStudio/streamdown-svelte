@@ -88,8 +88,6 @@ describe('tokenization', () => {
 		expect(tableHeader).toBeDefined();
 		expect(tableFirstRow).toBeDefined();
 		expect(tableCells.length).toBe(3);
-		console.log(tableHeader);
-
 		expect(tableCells[0].align).toBe('left');
 		expect(tableCells[1].align).toBe('center');
 		expect(tableCells[2].align).toBe('right');

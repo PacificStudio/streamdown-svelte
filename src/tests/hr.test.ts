@@ -70,8 +70,6 @@ describe('tokenization', () => {
 		const tokens = lex('- - -');
 		const hrToken = getFirstTokenByType(tokens, 'hr');
 
-		console.log(tokens);
-
 		expect(hrToken).toBeDefined();
 		expect(hrToken.type).toBe('hr');
 		expect(hrToken.raw).toBe('- - -');
@@ -276,7 +274,6 @@ describe('incomplete markdown', () => {
 		const input = 'Text before\n\n---\n\n***\n\n___\n\nText after';
 		const result = parseIncompleteMarkdown(input);
 
-		console.log({ result });
 		// Should leave valid horizontal rules unchanged
 		expect(result).toBe('Text before\n\n---\n\n***\n\n___\n\nText after');
 	});

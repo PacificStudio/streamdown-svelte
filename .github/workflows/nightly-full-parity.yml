@@ -59,7 +59,7 @@ jobs:
         run: |
           start=$(date +%s)
           set +e
-          pnpm exec vitest run tests/ported --reporter=default --reporter=junit --outputFile="$SUITE_DIR/junit.xml" 2>&1 | tee "$SUITE_DIR/output.log"
+          pnpm exec vitest run tests/ported --reporter=dot --reporter=junit --silent=passed-only --outputFile="$SUITE_DIR/junit.xml" 2>&1 | tee "$SUITE_DIR/output.log"
           exit_code=${PIPESTATUS[0]}
           end=$(date +%s)
           echo "duration_ms=$(((end - start) * 1000))" >> "$GITHUB_OUTPUT"
@@ -103,7 +103,7 @@ jobs:
             --json-file
             "$SUITE_DIR/status.json"
             --command
-            "pnpm exec vitest run tests/ported --reporter=default --reporter=junit --outputFile=$SUITE_DIR/junit.xml"
+            "pnpm exec vitest run tests/ported --reporter=dot --reporter=junit --silent=passed-only --outputFile=$SUITE_DIR/junit.xml"
             --log-file
             "$SUITE_DIR/output.log"
             --artifact
@@ -194,7 +194,7 @@ jobs:
           start=$(date +%s)
           set +e
           PLAYWRIGHT_HTML_OUTPUT_DIR="$SUITE_DIR/html-report" \
-            pnpm exec playwright test tests/playwright/parity --reporter=line,html --output="$SUITE_DIR/test-results" 2>&1 | tee "$SUITE_DIR/output.log"
+            pnpm exec playwright test tests/playwright/parity --reporter=dot,html --quiet --output="$SUITE_DIR/test-results" 2>&1 | tee "$SUITE_DIR/output.log"
           exit_code=${PIPESTATUS[0]}
           end=$(date +%s)
 
@@ -239,7 +239,7 @@ jobs:
             --json-file
             "$SUITE_DIR/status.json"
             --command
-            "pnpm exec playwright test tests/playwright/parity --reporter=line,html --output=$SUITE_DIR/test-results"
+            "pnpm exec playwright test tests/playwright/parity --reporter=dot,html --quiet --output=$SUITE_DIR/test-results"
             --log-file
             "$SUITE_DIR/output.log"
             --artifact

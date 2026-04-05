@@ -44,6 +44,11 @@
 				? streamdown.katexConfig(token.isInline)
 				: streamdown.katexConfig || {})
 		};
+
+		if (config.strict === undefined && import.meta.env.MODE === 'test') {
+			config.strict = 'ignore';
+		}
+
 		const code = token.text;
 
 		try {
