@@ -14,7 +14,7 @@ import {
 import { getPublishablePackages, repoRoot } from './lib/publishable-packages.mjs';
 
 function createPackArgs(pkg, packDestination, packageName) {
-	return pkg.dir === repoRoot
+	return pkg.isRoot
 		? ['pack', '--pack-destination', packDestination]
 		: ['--filter', packageName, 'pack', '--pack-destination', packDestination];
 }
@@ -22,12 +22,7 @@ function createPackArgs(pkg, packDestination, packageName) {
 function packWorkspacePackage(pkg, packDestination) {
 	const packageJson = readJson(join(pkg.dir, 'package.json'));
 
-	runCommand(
-		'pnpm',
-		createPackArgs(pkg, packDestination, packageJson.name),
-		'pnpm pack',
-		repoRoot
-	);
+	runCommand('pnpm', createPackArgs(pkg, packDestination, packageJson.name), 'pnpm pack', repoRoot);
 
 	return {
 		exportEntries: parseExportEntries(packageJson),
@@ -47,9 +42,9 @@ function verifyPackage(pkg) {
 
 		const tarballPaths = [tarballPath];
 
-		if (pkg.dir === repoRoot) {
+		if (pkg.isRoot) {
 			for (const dependencyPkg of getPublishablePackages()) {
-				if (dependencyPkg.dir === repoRoot) {
+				if (dependencyPkg.isRoot) {
 					continue;
 				}
 
@@ -76,7 +71,7 @@ function verifyPackage(pkg) {
 
 		return {
 			package: packageJson.name,
-			directory: pkg.dir === repoRoot ? '.' : pkg.dir.replace(`${repoRoot}/`, ''),
+			directory: pkg.relativeDir,
 			exportsChecked: exportEntries.map((entry) => entry.specifier),
 			runtimeImportsSmoked: exportEntries
 				.filter((entry) => entry.runtimePaths.length > 0)

@@ -1,4 +1,3 @@
-import { relative } from 'node:path';
 import {
 	assertExports,
 	assertMetadataPath,
@@ -35,7 +34,7 @@ const FORBIDDEN_PACK_ENTRY_PATTERNS = [
 ];
 
 function createPackArgs(pkg, packDestination, packageName) {
-	return pkg.dir === repoRoot
+	return pkg.isRoot
 		? ['pack', '--pack-destination', packDestination]
 		: ['--filter', packageName, 'pack', '--pack-destination', packDestination];
 }
@@ -76,13 +75,11 @@ function assertNoForbiddenEntries(packFiles) {
 
 function verifyPackage(pkg) {
 	const packDestination = createPackDestination(`${pkg.id}-pack-verify-`);
-	const packageJsonPath = `${pkg.dir}/package.json`;
 
 	try {
-		const packageJson = JSON.parse(runCommand('cat', [packageJsonPath], 'cat package.json', repoRoot));
 		runCommand(
 			'pnpm',
-			createPackArgs(pkg, packDestination, packageJson.name),
+			createPackArgs(pkg, packDestination, pkg.packageName),
 			'pnpm pack',
 			repoRoot
 		);
@@ -101,7 +98,7 @@ function verifyPackage(pkg) {
 
 		return {
 			package: tarballPackageJson.name,
-			directory: relative(repoRoot, pkg.dir) || '.',
+			directory: pkg.relativeDir,
 			tarball: tarballPath,
 			exportsChecked: exportEntries.map((entry) => entry.specifier)
 		};

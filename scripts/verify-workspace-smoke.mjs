@@ -13,7 +13,7 @@ import {
 import { getPublishablePackages, repoRoot } from './lib/publishable-packages.mjs';
 
 function createPackArgs(pkg, outputDirectory, packageName) {
-	return pkg.dir === repoRoot
+	return pkg.isRoot
 		? ['pack', '--pack-destination', outputDirectory]
 		: ['--filter', packageName, 'pack', '--pack-destination', outputDirectory];
 }
