@@ -786,13 +786,13 @@ This phase tracks the execution split created after the `2026-04-04` release re-
 
 #### P6-04 Execution Map
 
-| Execution ticket | Focus                                                                 | Platform status in this pass | Depends on                   | Unblocks               |
-| ---------------- | --------------------------------------------------------------------- | ---------------------------- | ---------------------------- | ---------------------- |
-| `ASE-47`         | Strictly close remaining parser and CJK partial rows                  | `done`                       | `ASE-44` umbrella            | `ASE-48`, `ASE-46`     |
-| `ASE-45`         | Strictly close remaining prop and rendering partial rows              | `done`                       | `ASE-44` umbrella            | `ASE-48`, `ASE-46`     |
-| `ASE-48`         | Port remaining aggregate regression coverage files                    | `done`                       | `ASE-45`, `ASE-47`           | `ASE-46`               |
-| `ASE-46`         | Final strict-closeout doc, audit, and platform-status synchronization | in progress                  | `ASE-45`, `ASE-47`, `ASE-48` | final strict closeout  |
-| `ASE-44`         | Umbrella closeout and canonical backlog cleanup                       | `done`                       | parallel branch completion   | strict-closeout review |
+| Execution ticket | Focus                                                                 | Closeout state on this revision                                     | Depends on                   | Unblocks               |
+| ---------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------- | ---------------------- |
+| `ASE-47`         | Strictly close remaining parser and CJK partial rows                  | `done`                                                              | `ASE-44` umbrella            | `ASE-48`, `ASE-46`     |
+| `ASE-45`         | Strictly close remaining prop and rendering partial rows              | `done`                                                              | `ASE-44` umbrella            | `ASE-48`, `ASE-46`     |
+| `ASE-48`         | Port remaining aggregate regression coverage files                    | `done`                                                              | `ASE-45`, `ASE-47`           | `ASE-46`               |
+| `ASE-46`         | Final strict-closeout doc, audit, and platform-status synchronization | remaining follow-on sync ticket until this ticket closes            | `ASE-45`, `ASE-47`, `ASE-48` | final strict closeout  |
+| `ASE-44`         | Umbrella closeout and canonical backlog cleanup                       | already `Done` in OpenASE; `ASE-46` is the last follow-on sync pass | parallel branch completion   | strict-closeout review |
 
 #### P6-04 Execution Order
 
