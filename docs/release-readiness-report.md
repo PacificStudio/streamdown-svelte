@@ -70,7 +70,7 @@ Audit target:
 - The current nightly evidence is still materially representative of the reviewed head.
   - Inference: `git diff --name-only 4dbd7b3..850b5ab` shows only release-workflow, release-artifact, release-doc, and release-script changes after the green nightly run; no shipped runtime, parser, or parity-test files changed in that range.
 - The migration tracker no longer reports unresolved `P0` or missing reference files:
-  - `docs/test-migration-status.md` now reports `51` files passing via ported upstream file, `15` with documented port gaps, and `16` via local analogue only
+  - `docs/test-migration-status.md` now reports `54` files passing via ported upstream file, `12` with documented port gaps, and `16` via local analogue only
   - the remaining unresolved inventory is down to `3` partial files, `0` missing files, `16` blocked files, and `0` remaining `P0` files not yet passing via a ported upstream file or local analogue
 - The platform closeout tree is now closed through `ASE-42`:
   - `ASE-15`, `ASE-34`, and `ASE-35` through `ASE-42` are all already `Done`
