@@ -10,7 +10,9 @@ interface CjkPlugin {
     remarkPluginsBefore: Pluggable[];
     type: 'cjk';
 }
-declare function createCjkPlugin(): CjkPlugin;
+declare function createCjkPlugin$1(): CjkPlugin;
+
+declare const createCjkPlugin: typeof createCjkPlugin$1;
 declare const cjk: CjkPlugin;
 
 export { type CjkPlugin, cjk, createCjkPlugin };

@@ -91,7 +91,11 @@ function createCjkPlugin() {
   };
 }
 var cjk = createCjkPlugin();
+
+// index.ts
+var createCjkPlugin2 = createCjkPlugin;
+var cjk2 = cjk;
 export {
-  cjk,
-  createCjkPlugin
+  cjk2 as cjk,
+  createCjkPlugin2 as createCjkPlugin
 };
