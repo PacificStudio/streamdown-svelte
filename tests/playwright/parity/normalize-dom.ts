@@ -198,13 +198,13 @@ export async function normalizeDom(locator: Locator): Promise<NormalizedDomFragm
 				attributes[attributeName] = normalizedValue;
 			}
 
-			for (const attributeName of booleanAttributeNames) {
-				const booleanValue =
-					attributeName in element
-						? Boolean((element as Record<string, unknown>)[attributeName])
-						: element.hasAttribute(attributeName);
-				if (booleanValue) {
-					attributes[attributeName] = true;
+				for (const attributeName of booleanAttributeNames) {
+					const booleanValue =
+						attributeName in element
+							? Boolean((element as unknown as Record<string, unknown>)[attributeName])
+							: element.hasAttribute(attributeName);
+					if (booleanValue) {
+						attributes[attributeName] = true;
 				}
 			}
 

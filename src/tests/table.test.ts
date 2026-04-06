@@ -33,8 +33,12 @@ describe('tokenization', () => {
 		const tokens = lex('| Left |');
 
 		expect(getFirstTokenByType(tokens, 'table')).toBeUndefined();
-		expect(tokens[0]?.type).toBe('paragraph');
-		expect(tokens[0]?.raw).toBe('| Left |');
+		expect(tokens[0]).toEqual(
+			expect.objectContaining({
+				type: 'paragraph',
+				raw: '| Left |'
+			})
+		);
 	});
 
 	test('should parse table header and verify header properties', () => {

@@ -37,20 +37,7 @@
 	let retryCount = $state(0);
 	let shouldRender = $state(false);
 
-	onMount(async () => {
-		if (!mermaidPlugin) {
-			try {
-				mermaid = (await import('mermaid')).default;
-			} catch (err) {
-				error = err instanceof Error ? err.message : 'Mermaid library not available';
-			}
-		}
-
-		if (import.meta.env.MODE === 'test') {
-			shouldRender = true;
-			return;
-		}
-
+	onMount(() => {
 		const requestIdleCallbackWrapper =
 			typeof window !== 'undefined' && 'requestIdleCallback' in window
 				? (
@@ -128,7 +115,22 @@
 			}
 		);
 
-		observer.observe(container);
+		void (async () => {
+			if (!mermaidPlugin) {
+				try {
+					mermaid = (await import('mermaid')).default;
+				} catch (err) {
+					error = err instanceof Error ? err.message : 'Mermaid library not available';
+				}
+			}
+
+			if (import.meta.env.MODE === 'test') {
+				shouldRender = true;
+				return;
+			}
+
+			observer.observe(container);
+		})();
 
 		return () => {
 			clearPendingRenders();
