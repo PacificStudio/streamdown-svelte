@@ -375,6 +375,42 @@
 		],
 		"plugins": [
 			{
+				"packageName": "@streamdown/cjk",
+				"packageVersion": "1.0.3",
+				"exports": [
+					{
+						"subpath": ".",
+						"target": {
+							"types": "./dist/index.d.ts",
+							"import": "./dist/index.js"
+						}
+					}
+				],
+				"entryFile": "references/streamdown/packages/streamdown-cjk/index.ts",
+				"defaultEntry": "cjk",
+				"createEntry": "createCjkPlugin",
+				"exportedSymbols": [
+					{
+						"name": "CjkPlugin",
+						"kind": "type",
+						"source": null,
+						"importedName": "CjkPlugin"
+					},
+					{
+						"name": "cjk",
+						"kind": "value",
+						"source": null,
+						"importedName": "cjk"
+					},
+					{
+						"name": "createCjkPlugin",
+						"kind": "value",
+						"source": null,
+						"importedName": "createCjkPlugin"
+					}
+				]
+			},
+			{
 				"packageName": "@streamdown/code",
 				"packageVersion": "1.1.1",
 				"exports": [
@@ -435,6 +471,48 @@
 				]
 			},
 			{
+				"packageName": "@streamdown/math",
+				"packageVersion": "1.0.2",
+				"exports": [
+					{
+						"subpath": ".",
+						"target": {
+							"types": "./dist/index.d.ts",
+							"import": "./dist/index.js"
+						}
+					}
+				],
+				"entryFile": "references/streamdown/packages/streamdown-math/index.ts",
+				"defaultEntry": "math",
+				"createEntry": "createMathPlugin",
+				"exportedSymbols": [
+					{
+						"name": "MathPlugin",
+						"kind": "type",
+						"source": null,
+						"importedName": "MathPlugin"
+					},
+					{
+						"name": "MathPluginOptions",
+						"kind": "type",
+						"source": null,
+						"importedName": "MathPluginOptions"
+					},
+					{
+						"name": "createMathPlugin",
+						"kind": "value",
+						"source": null,
+						"importedName": "createMathPlugin"
+					},
+					{
+						"name": "math",
+						"kind": "value",
+						"source": null,
+						"importedName": "math"
+					}
+				]
+			},
+			{
 				"packageName": "@streamdown/mermaid",
 				"packageVersion": "1.0.2",
 				"exports": [
@@ -485,84 +563,6 @@
 						"kind": "value",
 						"source": null,
 						"importedName": "mermaid"
-					}
-				]
-			},
-			{
-				"packageName": "@streamdown/math",
-				"packageVersion": "1.0.2",
-				"exports": [
-					{
-						"subpath": ".",
-						"target": {
-							"types": "./dist/index.d.ts",
-							"import": "./dist/index.js"
-						}
-					}
-				],
-				"entryFile": "references/streamdown/packages/streamdown-math/index.ts",
-				"defaultEntry": "math",
-				"createEntry": "createMathPlugin",
-				"exportedSymbols": [
-					{
-						"name": "MathPlugin",
-						"kind": "type",
-						"source": null,
-						"importedName": "MathPlugin"
-					},
-					{
-						"name": "MathPluginOptions",
-						"kind": "type",
-						"source": null,
-						"importedName": "MathPluginOptions"
-					},
-					{
-						"name": "createMathPlugin",
-						"kind": "value",
-						"source": null,
-						"importedName": "createMathPlugin"
-					},
-					{
-						"name": "math",
-						"kind": "value",
-						"source": null,
-						"importedName": "math"
-					}
-				]
-			},
-			{
-				"packageName": "@streamdown/cjk",
-				"packageVersion": "1.0.3",
-				"exports": [
-					{
-						"subpath": ".",
-						"target": {
-							"types": "./dist/index.d.ts",
-							"import": "./dist/index.js"
-						}
-					}
-				],
-				"entryFile": "references/streamdown/packages/streamdown-cjk/index.ts",
-				"defaultEntry": "cjk",
-				"createEntry": "createCjkPlugin",
-				"exportedSymbols": [
-					{
-						"name": "CjkPlugin",
-						"kind": "type",
-						"source": null,
-						"importedName": "CjkPlugin"
-					},
-					{
-						"name": "cjk",
-						"kind": "value",
-						"source": null,
-						"importedName": "cjk"
-					},
-					{
-						"name": "createCjkPlugin",
-						"kind": "value",
-						"source": null,
-						"importedName": "createCjkPlugin"
 					}
 				]
 			}

@@ -4,6 +4,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+import { listStandalonePluginPackages } from './lib/workspace-packages.mjs';
 
 const scriptFile = fileURLToPath(import.meta.url);
 const repoRoot = resolve(dirname(scriptFile), '..');
@@ -422,36 +423,30 @@ function collectPackageExports(packageJson) {
 }
 
 function collectPluginEntryPoints() {
-	const pluginPackageDirs = [
-		'streamdown-code',
-		'streamdown-mermaid',
-		'streamdown-math',
-		'streamdown-cjk'
-	];
-	return pluginPackageDirs.map((directoryName) => {
-		const packageDir = join(referencePackagesRoot, directoryName);
-		const packageJson = readJson(join(packageDir, 'package.json'));
-		const entryFile = join(packageDir, 'index.ts');
-		const packageExports = extractExports(entryFile);
-		const runtimeEntries = packageExports
-			.filter((entry) => entry.kind === 'value' && !entry.source)
-			.map((entry) => entry.name)
-			.sort((left, right) => left.localeCompare(right));
-		const defaultEntry = runtimeEntries.find((entry) => !entry.startsWith('create')) ?? null;
-		const createEntry =
-			runtimeEntries.find((entry) => entry.startsWith('create') && entry.endsWith('Plugin')) ??
-			null;
+	return listStandalonePluginPackages(referenceRoot)
+		.map(({ dir: packageDir, packageJson }) => {
+			const entryFile = join(packageDir, 'index.ts');
+			const packageExports = extractExports(entryFile);
+			const runtimeEntries = packageExports
+				.filter((entry) => entry.kind === 'value' && !entry.source)
+				.map((entry) => entry.name)
+				.sort((left, right) => left.localeCompare(right));
+			const defaultEntry = runtimeEntries.find((entry) => !entry.startsWith('create')) ?? null;
+			const createEntry =
+				runtimeEntries.find((entry) => entry.startsWith('create') && entry.endsWith('Plugin')) ??
+				null;
 
-		return {
-			packageName: packageJson.name,
-			packageVersion: packageJson.version,
-			exports: collectPackageExports(packageJson),
-			entryFile: relativePath(entryFile),
-			defaultEntry,
-			createEntry,
-			exportedSymbols: packageExports
-		};
-	});
+			return {
+				packageName: packageJson.name,
+				packageVersion: packageJson.version,
+				exports: collectPackageExports(packageJson),
+				entryFile: relativePath(entryFile),
+				defaultEntry,
+				createEntry,
+				exportedSymbols: packageExports
+			};
+		})
+		.sort((left, right) => left.packageName.localeCompare(right.packageName));
 }
 
 function buildPluginConfigEntries() {

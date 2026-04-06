@@ -10,7 +10,7 @@ type CapabilityBacklogRow = {
 	matrixRow: string;
 };
 
-type BacklogRow = {
+type CategorizedRow = {
 	category: string;
 	nextAction: string;
 	referenceFile: string;
@@ -126,13 +126,13 @@ function collectCapabilityBacklogRows(markdown: string): CapabilityBacklogRow[] 
 	return rows;
 }
 
-function collectRemainingBacklogRows(markdown: string): BacklogRow[] {
-	const rows: BacklogRow[] = [];
+function collectCategorizedRows(markdown: string, heading: string): CategorizedRow[] {
+	const rows: CategorizedRow[] = [];
 	let inSection = false;
 
 	for (const line of markdown.split('\n')) {
 		if (line.startsWith('## ')) {
-			inSection = line.trim() === '## Categorized Remaining Test Backlog';
+			inSection = line.trim() === heading;
 			continue;
 		}
 
@@ -153,6 +153,14 @@ function collectRemainingBacklogRows(markdown: string): BacklogRow[] {
 	}
 
 	return rows;
+}
+
+function collectRemainingBacklogRows(markdown: string): CategorizedRow[] {
+	return collectCategorizedRows(markdown, '## Categorized Remaining Test Backlog');
+}
+
+function collectAcceptedDriftRows(markdown: string): CategorizedRow[] {
+	return collectCategorizedRows(markdown, '## Reviewed Accepted Drift');
 }
 
 function collectDriftRows(markdown: string): DriftRow[] {
@@ -392,7 +400,7 @@ describe('parity boundary documentation', () => {
 	});
 
 	test('keeps performance accepted-drift backlog items out of the implement bucket once they are classified drift', () => {
-		const backlogRows = collectRemainingBacklogRows(readDoc('docs/reference-tests-inventory.md'));
+		const backlogRows = collectAcceptedDriftRows(readDoc('docs/reference-tests-inventory.md'));
 		const performanceAcceptedDriftFiles = new Set([
 			'packages/streamdown/__tests__/code-block-memo.test.tsx',
 			'packages/streamdown/__tests__/components-memo.test.tsx',
@@ -429,7 +437,7 @@ describe('parity boundary documentation', () => {
 			const inventoryRow = inventoryRows.get(sourceFile);
 			expect(inventoryRow, `Missing inventory row for ${sourceFile}`).toBeDefined();
 			expect(inventoryRow?.migrationStatus, `Unexpected migration status for ${sourceFile}`).toBe(
-				'blocked_by_missing_surface'
+				'accepted_drift'
 			);
 			expect(inventoryRow?.evidence, `Missing drift rationale for ${sourceFile}`).toMatch(
 				/drift-\d+/
