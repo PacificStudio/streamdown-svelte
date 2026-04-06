@@ -725,7 +725,7 @@ Success criteria:
 
 ## Phase 6: Release Re-Audit Closeout
 
-This phase tracks the execution split created after the `2026-04-04` release re-audit confirmed that refreshed evidence landed, but several trusted-release and parity-backed-release blockers remained open. The closeout sequence is now complete, and the statuses below reflect the final `ASE-43` synchronization pass on `2026-04-04`.
+This phase tracks the execution split created after the `2026-04-04` release re-audit confirmed that refreshed evidence landed, but several trusted-release and parity-backed-release blockers remained open. `ASE-43` completed the first release-audit synchronization pass on `2026-04-04`, and the later strict-closeout cleanup in `ASE-44` through `ASE-48` removed the remaining implicit partial backlog. The statuses below now reflect the final `ASE-46` synchronization pass on `2026-04-06`.
 
 ### Issue P6-01: Close Remaining Parity Gaps
 
@@ -770,6 +770,35 @@ This phase tracks the execution split created after the `2026-04-04` release re-
 3. Rebuild repo-hosted nightly parity evidence on the reviewed head through `ASE-41`.
 4. After nightly evidence, lint hygiene, baseline tests, and dependency decisions agreed, produce repo-hosted release provenance in `ASE-42`.
 5. After the blocker tickets above closed, perform final document and platform status synchronization in `ASE-43`.
+
+### Issue P6-04: Strict Partial Closeout And Canonical Backlog Cleanup
+
+- Status: `done`
+- Goal: Eliminate the last partial parity and migration rows instead of carrying them as implicit closeout debt, then perform a final strict-closeout synchronization pass across the docs, release audit, and platform state.
+- Deliverables:
+- execution tickets `ASE-44` through `ASE-48`
+- refreshed `PLAN.md`, `docs/parity-matrix.md`, `docs/test-migration-status.md`, and `docs/release-readiness-report.md`
+- strict-closeout platform-state alignment with no stale partial counts or uncatalogued backlog
+- Acceptance:
+- `docs/test-migration-status.md` reports `Partial local coverage = 0`
+- the canonical unresolved backlog in `docs/parity-matrix.md` matches the actual unresolved rows exactly
+- the strict-closeout umbrella and child statuses match the landed evidence tree
+
+#### P6-04 Execution Map
+
+| Execution ticket | Focus                                                                 | Platform status in this pass | Depends on                   | Unblocks               |
+| ---------------- | --------------------------------------------------------------------- | ---------------------------- | ---------------------------- | ---------------------- |
+| `ASE-47`         | Strictly close remaining parser and CJK partial rows                  | `done`                       | `ASE-44` umbrella            | `ASE-48`, `ASE-46`     |
+| `ASE-45`         | Strictly close remaining prop and rendering partial rows              | `done`                       | `ASE-44` umbrella            | `ASE-48`, `ASE-46`     |
+| `ASE-48`         | Port remaining aggregate regression coverage files                    | `done`                       | `ASE-45`, `ASE-47`           | `ASE-46`               |
+| `ASE-46`         | Final strict-closeout doc, audit, and platform-status synchronization | in progress                  | `ASE-45`, `ASE-47`, `ASE-48` | final strict closeout  |
+| `ASE-44`         | Umbrella closeout and canonical backlog cleanup                       | `done`                       | parallel branch completion   | strict-closeout review |
+
+#### P6-04 Execution Order
+
+1. Split the strict closeout into the two implementation branches that removed the remaining parity partials: `ASE-45` and `ASE-47`.
+2. After those rows were no longer partial, port the last aggregate regression coverage files in `ASE-48` so the migration tracker could reach `Partial local coverage = 0`.
+3. Once the matrix and migration tracker were both strictly closed, perform the final document and platform synchronization pass in `ASE-46`.
 
 ## Suggested Execution Order
 
