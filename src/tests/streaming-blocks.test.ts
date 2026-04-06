@@ -54,4 +54,26 @@ describe('streaming block segmentation parity', () => {
 		expect(blocks[0]).toContain('echo $$');
 		expect(blocks[1].trim()).toBe('$$\nmath here\n$$');
 	});
+
+	test('treats void html tags as self-contained blocks instead of merging later content into them', () => {
+		const expectVoidHtmlSplit = (
+			markdown: string,
+			expectedVoidBlock: string,
+			expectedFollowingBlock: string
+		) => {
+			const blocks = parseBlocks(markdown);
+
+			expect(blocks).toHaveLength(2);
+			expect(blocks[0].trim()).toBe(expectedVoidBlock);
+			expect(blocks[1].trim()).toBe(expectedFollowingBlock);
+		};
+
+		expectVoidHtmlSplit('<br>\n\nSome text after the break.', '<br>', 'Some text after the break.');
+		expectVoidHtmlSplit(
+			'<img src="test.png">\n\nParagraph after image.',
+			'<img src="test.png">',
+			'Paragraph after image.'
+		);
+		expectVoidHtmlSplit('<hr>\n\nContent after hr.', '<hr>', 'Content after hr.');
+	});
 });
