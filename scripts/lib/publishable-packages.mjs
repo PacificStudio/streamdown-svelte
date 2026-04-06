@@ -3,25 +3,43 @@ import { fileURLToPath } from 'node:url';
 
 export const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
 
+const shared = {
+	smokeFixtureDir: join(repoRoot, 'tests', 'pack-smoke'),
+	requiredRootFiles: ['LICENSE', 'README.md', 'package.json'],
+	allowedTopLevelDirectories: ['dist']
+};
+
 export function getPublishablePackages() {
 	return [
 		{
 			id: 'svelte-streamdown',
 			dir: repoRoot,
-			sourceDir: join(repoRoot, 'src', 'lib'),
-			distDir: 'dist',
-			smokeFixtureDir: join(repoRoot, 'tests', 'pack-smoke'),
-			requiredRootFiles: ['LICENSE', 'README.md', 'package.json'],
-			allowedTopLevelDirectories: ['dist']
+			...shared
 		},
 		{
 			id: 'remend',
 			dir: join(repoRoot, 'packages', 'remend'),
-			sourceDir: join(repoRoot, 'src', 'lib', 'utils'),
-			distDir: 'dist',
-			smokeFixtureDir: join(repoRoot, 'tests', 'pack-smoke'),
-			requiredRootFiles: ['LICENSE', 'README.md', 'package.json'],
-			allowedTopLevelDirectories: ['dist']
+			...shared
+		},
+		{
+			id: 'streamdown-code',
+			dir: join(repoRoot, 'packages', 'streamdown-code'),
+			...shared
+		},
+		{
+			id: 'streamdown-math',
+			dir: join(repoRoot, 'packages', 'streamdown-math'),
+			...shared
+		},
+		{
+			id: 'streamdown-mermaid',
+			dir: join(repoRoot, 'packages', 'streamdown-mermaid'),
+			...shared
+		},
+		{
+			id: 'streamdown-cjk',
+			dir: join(repoRoot, 'packages', 'streamdown-cjk'),
+			...shared
 		}
 	];
 }

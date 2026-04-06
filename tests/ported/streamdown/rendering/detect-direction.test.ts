@@ -3,18 +3,21 @@ import { describeInNode, testInNode } from '../../../helpers/index.js';
 import { detectTextDirection } from '../../../../src/lib/detect-direction.js';
 
 describeInNode('ported streamdown detect direction helper', () => {
-	testInNode(
-		'treats markdown headings, emphasis, and links as transparent when finding rtl text',
-		() => {
-			expect(detectTextDirection('# **مرحبا** [link](https://example.com)')).toBe('rtl');
-		}
-	);
-
-	testInNode('falls back to ltr when the first visible letters are latin', () => {
+	testInNode('matches the frozen first-strong-character direction heuristics', () => {
+		expect(detectTextDirection('Hello world')).toBe('ltr');
+		expect(detectTextDirection('مرحبا بالعالم')).toBe('rtl');
+		expect(detectTextDirection('שלום עולם')).toBe('rtl');
+		expect(detectTextDirection('## مرحبا')).toBe('rtl');
+		expect(detectTextDirection('123. مرحبا')).toBe('rtl');
+		expect(detectTextDirection('**שלום**')).toBe('rtl');
+		expect(detectTextDirection('')).toBe('ltr');
+		expect(detectTextDirection('12345')).toBe('ltr');
+		expect(detectTextDirection('Hello مرحبا')).toBe('ltr');
+		expect(detectTextDirection('مرحبا Hello')).toBe('rtl');
+		expect(detectTextDirection('ދިވެހި')).toBe('rtl');
+		expect(detectTextDirection('`code` مرحبا')).toBe('rtl');
+		expect(detectTextDirection('# **مرحبا** [link](https://example.com)')).toBe('rtl');
 		expect(detectTextDirection('> `const x = 1` English then עברית')).toBe('ltr');
-	});
-
-	testInNode('defaults to ltr for punctuation-only content', () => {
 		expect(detectTextDirection('--- ... ###')).toBe('ltr');
 	});
 });

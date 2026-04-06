@@ -10,6 +10,7 @@ import type { AllowedTags } from './security/types.js';
 import { carets } from './streaming.js';
 import type { PluginConfig, ThemeInput } from './plugins.js';
 import type { AllowElement, UrlTransform } from './markdown.js';
+import type { RemendOptions } from 'remend';
 import { STREAMDOWN_CONTEXT_KEY } from './context-key.js';
 
 export type { AllowedTags } from './security/types.js';
@@ -181,6 +182,7 @@ export const useStreamdown = <
 	}
 	return context;
 };
+export type StreamdownContextType = StreamdownContext;
 
 export type TableControlsConfig =
 	| boolean
@@ -433,6 +435,7 @@ export type StreamdownProps<Source extends Record<string, any> = Record<string, 
 	class?: string;
 	className?: string;
 	parseIncompleteMarkdown?: boolean;
+	remend?: RemendOptions;
 	// Security props
 	defaultOrigin?: string;
 	allowedLinkPrefixes?: string[];

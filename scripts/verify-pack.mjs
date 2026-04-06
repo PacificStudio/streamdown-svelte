@@ -1,4 +1,4 @@
-import { join, relative } from 'node:path';
+import { relative } from 'node:path';
 import {
 	assertExports,
 	assertMetadataPath,
@@ -33,6 +33,12 @@ const FORBIDDEN_PACK_ENTRY_PATTERNS = [
 		reason: 'demo application files'
 	}
 ];
+
+function createPackArgs(pkg, packDestination, packageName) {
+	return pkg.dir === repoRoot
+		? ['pack', '--pack-destination', packDestination]
+		: ['--filter', packageName, 'pack', '--pack-destination', packDestination];
+}
 
 function assertPackLayout(packFiles, pkg) {
 	const missingRootFiles = pkg.requiredRootFiles.filter((file) => !packFiles.has(file));
@@ -70,13 +76,20 @@ function assertNoForbiddenEntries(packFiles) {
 
 function verifyPackage(pkg) {
 	const packDestination = createPackDestination(`${pkg.id}-pack-verify-`);
+	const packageJsonPath = `${pkg.dir}/package.json`;
 
 	try {
-		runCommand('pnpm', ['pack', '--pack-destination', packDestination], 'pnpm pack', pkg.dir);
+		const packageJson = JSON.parse(runCommand('cat', [packageJsonPath], 'cat package.json', repoRoot));
+		runCommand(
+			'pnpm',
+			createPackArgs(pkg, packDestination, packageJson.name),
+			'pnpm pack',
+			repoRoot
+		);
 
 		const tarballPath = findTarball(packDestination);
-		const packFiles = new Set(listTarballFiles(tarballPath, pkg.dir));
-		const tarballPackageJson = readTarballPackageJson(tarballPath, pkg.dir);
+		const packFiles = new Set(listTarballFiles(tarballPath, repoRoot));
+		const tarballPackageJson = readTarballPackageJson(tarballPath, repoRoot);
 		const exportEntries = assertExports(packFiles, tarballPackageJson);
 
 		assertPackLayout(packFiles, pkg);
@@ -89,7 +102,7 @@ function verifyPackage(pkg) {
 		return {
 			package: tarballPackageJson.name,
 			directory: relative(repoRoot, pkg.dir) || '.',
-			tarball: join(relative(repoRoot, packDestination), tarballPath.split('/').at(-1)),
+			tarball: tarballPath,
 			exportsChecked: exportEntries.map((entry) => entry.specifier)
 		};
 	} finally {

@@ -36,6 +36,7 @@ type LocalSnapshot = {
 	packageSubpaths: string[];
 	rootExports: ExportEntry[];
 	streamdownProps: PropEntry[];
+	pluginPackages: PluginPackageEntry[];
 	pluginConfigKeys: string[];
 };
 
@@ -92,7 +93,7 @@ const FROZEN_REFERENCE_COMMIT = '5f6475139a87dee8af08fcf7b01475292bc064d2';
 
 const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 	packageSubpaths: {
-		// api-07, drift-02, drift-04, drift-05
+		// api-07, drift-02
 		missingFromLocal: ['./styles.css'],
 		extraInLocal: [
 			'./code',
@@ -103,7 +104,8 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'./plugin-context',
 			'./plugins',
 			'./remend',
-			'./url-policy'
+			'./url-policy',
+			'./utils'
 		]
 	},
 	rootExports: {
@@ -134,32 +136,56 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 		],
 		// drift-01
 		extraInLocal: [
+			'cn',
+			'defaultIcons',
 			'Extension',
 			'HighlightResult',
 			'HighlightToken',
+			'IconComponent',
+			'IconContext',
+			'IconProvider',
 			'IncompleteMarkdownParser',
 			'isPathRelativeUrl',
 			'LanguageInfo',
 			'lex',
+			'LinkMode',
 			'mergeTheme',
 			'mergeTranslations',
+			'MermaidControls',
 			'MermaidInstance',
+			'NormalizedMermaidControls',
 			'parseBlocks',
 			'parseIncompleteMarkdown',
 			'parseUrl',
 			'Plugin',
+			'PluginContext',
+			'PluginProvider',
+			'RemendHandler',
+			'RemendOptions',
+			'save',
 			'shadcnTheme',
 			'STREAMDOWN_CONTEXT_KEY',
+			'StreamdownComponents',
+			'StreamdownControlsConfig',
 			'StreamdownToken',
 			'theme',
 			'Theme',
+			'TableControlsConfig',
 			'transformUrl',
 			'TransformUrlOptions',
 			'UrlPolicyKind',
 			'useStreamdown',
+			'useCjkPlugin',
+			'useCodePlugin',
+			'useCustomRenderer',
+			'useIcons',
+			'useMathPlugin',
+			'useMermaidPlugin',
+			'usePlugins',
 			'bundledLanguagesInfo',
 			'cjk',
 			'code',
+			'CodeControlsConfig',
 			'createCjkPlugin',
 			'createCodePlugin',
 			'createLanguageSet',
@@ -177,7 +203,11 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 	streamdownProps: {
 		// prop-04, prop-09,
 		// prop-17, prop-18, prop-20, api-01
-		missingFromLocal: ['rehypePlugins', 'remarkPlugins', 'remarkRehypeOptions', 'remend'],
+		missingFromLocal: [
+			'rehypePlugins',
+			'remarkPlugins',
+			'remarkRehypeOptions'
+		],
 		// api-01, prop-19, prop-22, prop-24
 		extraInLocal: [
 			'alert',
@@ -308,29 +338,7 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 		optionalMismatches: []
 	},
 	pluginPackages: {
-		// plugin-02, plugin-03, plugin-04, plugin-05
-		missingFromLocal: [
-			{
-				packageName: '@streamdown/cjk',
-				defaultEntry: 'cjk',
-				createEntry: 'createCjkPlugin'
-			},
-			{
-				packageName: '@streamdown/code',
-				defaultEntry: 'code',
-				createEntry: 'createCodePlugin'
-			},
-			{
-				packageName: '@streamdown/math',
-				defaultEntry: 'math',
-				createEntry: 'createMathPlugin'
-			},
-			{
-				packageName: '@streamdown/mermaid',
-				defaultEntry: 'mermaid',
-				createEntry: 'createMermaidPlugin'
-			}
-		]
+		missingFromLocal: []
 	},
 	pluginConfig: {
 		// plugin-01
@@ -498,6 +506,11 @@ function parseLocalSnapshot(raw: unknown): LocalSnapshot {
 			'localSnapshot.streamdownProps',
 			parsePropEntry
 		).sort(comparePropEntries),
+		pluginPackages: parseArray(
+			exports.plugins,
+			'localSnapshot.exports.plugins',
+			parsePluginPackageEntry
+		).sort(comparePluginPackages),
 		pluginConfigKeys: parsePluginConfigKeys(root.pluginConfig, 'localSnapshot.pluginConfig')
 	};
 }
@@ -577,6 +590,7 @@ function collectApiSurfaceDiffs(
 	const localRootExports = new Map(local.rootExports.map((entry) => [entry.name, entry]));
 	const referenceProps = new Map(reference.streamdownProps.map((entry) => [entry.name, entry]));
 	const localProps = new Map(local.streamdownProps.map((entry) => [entry.name, entry]));
+	const localPluginPackages = new Map(local.pluginPackages.map((entry) => [entry.packageName, entry]));
 
 	const rootExportKindMismatches: ExportDiff[] = [];
 	for (const [name, referenceEntry] of referenceRootExports) {
@@ -649,7 +663,16 @@ function collectApiSurfaceDiffs(
 			optionalMismatches: propOptionalMismatches.sort(comparePropOptionalDiffs)
 		},
 		pluginPackages: {
-			missingFromLocal: [...reference.pluginPackages].sort(comparePluginPackages)
+			missingFromLocal: reference.pluginPackages
+				.filter((referenceEntry) => {
+					const localEntry = localPluginPackages.get(referenceEntry.packageName);
+					return (
+						!localEntry ||
+						localEntry.defaultEntry !== referenceEntry.defaultEntry ||
+						localEntry.createEntry !== referenceEntry.createEntry
+					);
+				})
+				.sort(comparePluginPackages)
 		},
 		pluginConfig: {
 			missingFromLocal: listDifference(reference.pluginConfigKeys, new Set(local.pluginConfigKeys))

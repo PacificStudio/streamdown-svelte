@@ -7,8 +7,8 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"prepack": "pnpm build:packages && pnpm package:root",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"check": "pnpm build:packages && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "pnpm build:packages && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
 		"test:ui": "vitest --ui",
@@ -54,6 +54,10 @@
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
 		},
+		"./code": {
+			"types": "./dist/Elements/Code.svelte.d.ts",
+			"svelte": "./dist/Elements/Code.svelte"
+		},
 		"./detect-direction": {
 			"types": "./dist/detect-direction.d.ts",
 			"import": "./dist/detect-direction.js"
@@ -62,17 +66,13 @@
 			"types": "./dist/icon-context.d.ts",
 			"import": "./dist/icon-context.js"
 		},
-		"./code": {
-			"types": "./dist/Elements/Code.svelte.d.ts",
-			"svelte": "./dist/Elements/Code.svelte"
+		"./math": {
+			"types": "./dist/Elements/Math.svelte.d.ts",
+			"svelte": "./dist/Elements/Math.svelte"
 		},
 		"./mermaid": {
 			"types": "./dist/Elements/Mermaid.svelte.d.ts",
 			"svelte": "./dist/Elements/Mermaid.svelte"
-		},
-		"./math": {
-			"types": "./dist/Elements/Math.svelte.d.ts",
-			"svelte": "./dist/Elements/Math.svelte"
 		},
 		"./plugin-context": {
 			"types": "./dist/plugin-context.d.ts",
@@ -89,6 +89,10 @@
 		"./url-policy": {
 			"types": "./dist/url-policy.d.ts",
 			"import": "./dist/url-policy.js"
+		},
+		"./utils": {
+			"types": "./dist/utils/index.d.ts",
+			"import": "./dist/utils/index.js"
 		}
 	},
 	"peerDependencies": {
@@ -138,7 +142,14 @@
 		"vite-plugin-devtools-json": "^1.0.0",
 		"vitest": "^3.2.3",
 		"vitest-browser-svelte": "^0.1.0",
-		"wrangler": "^4.34.0"
+		"wrangler": "^4.34.0",
+		"@streamdown/cjk": "workspace:*",
+		"@streamdown/code": "workspace:*",
+		"@streamdown/math": "workspace:*",
+		"@streamdown/mermaid": "workspace:*",
+		"@types/unist": "^3.0.3",
+		"remark-stringify": "^11.0.0",
+		"tsup": "^8.5.0"
 	},
 	"license": "MIT",
 	"repository": {
@@ -170,7 +181,8 @@
 		"remark-rehype": "^11.1.2",
 		"shiki": "^3.13.0",
 		"tailwind-merge": "^3.3.1",
-		"unified": "^11.0.5"
+		"unified": "^11.0.5",
+		"remend": "workspace:*"
 	},
 	"packageManager": "pnpm@10.32.1",
 	"volta": {

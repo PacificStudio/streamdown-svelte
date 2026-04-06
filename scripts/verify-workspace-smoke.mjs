@@ -10,7 +10,13 @@ import {
 	runCommand,
 	runPackSmoke
 } from './lib/package-verification.mjs';
-import { getPublishablePackages } from './lib/publishable-packages.mjs';
+import { getPublishablePackages, repoRoot } from './lib/publishable-packages.mjs';
+
+function createPackArgs(pkg, outputDirectory, packageName) {
+	return pkg.dir === repoRoot
+		? ['pack', '--pack-destination', outputDirectory]
+		: ['--filter', packageName, 'pack', '--pack-destination', outputDirectory];
+}
 
 const publishablePackages = getPublishablePackages();
 const packDestination = createPackDestination('workspace-smoke-');
@@ -20,8 +26,13 @@ try {
 	const packaged = publishablePackages.map((pkg) => {
 		const packageJson = readJson(join(pkg.dir, 'package.json'));
 		const outputDirectory = join(packDestination, pkg.id);
-		runCommand('mkdir', ['-p', outputDirectory], 'mkdir -p', pkg.dir);
-		runCommand('pnpm', ['pack', '--pack-destination', outputDirectory], 'pnpm pack', pkg.dir);
+		runCommand('mkdir', ['-p', outputDirectory], 'mkdir -p', repoRoot);
+		runCommand(
+			'pnpm',
+			createPackArgs(pkg, outputDirectory, packageJson.name),
+			'pnpm pack',
+			repoRoot
+		);
 
 		return {
 			packageName: packageJson.name,
@@ -41,7 +52,7 @@ try {
 	runPackSmoke(
 		fixtureDirectory,
 		packaged.map((entry) => entry.tarballPath),
-		publishablePackages[0].dir
+		repoRoot
 	);
 
 	console.log(

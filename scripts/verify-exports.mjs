@@ -11,7 +11,13 @@ import {
 	runCommand,
 	runPackSmoke
 } from './lib/package-verification.mjs';
-import { getPublishablePackages } from './lib/publishable-packages.mjs';
+import { getPublishablePackages, repoRoot } from './lib/publishable-packages.mjs';
+
+function createPackArgs(pkg, packDestination, packageName) {
+	return pkg.dir === repoRoot
+		? ['pack', '--pack-destination', packDestination]
+		: ['--filter', packageName, 'pack', '--pack-destination', packDestination];
+}
 
 function verifyPackage(pkg) {
 	const packageJson = readJson(join(pkg.dir, 'package.json'));
@@ -20,7 +26,12 @@ function verifyPackage(pkg) {
 	const fixtureDirectory = join(packDestination, 'pack-smoke');
 
 	try {
-		runCommand('pnpm', ['pack', '--pack-destination', packDestination], 'pnpm pack', pkg.dir);
+		runCommand(
+			'pnpm',
+			createPackArgs(pkg, packDestination, packageJson.name),
+			'pnpm pack',
+			repoRoot
+		);
 		assertBuildOutputExists(pkg.dir, exportEntries);
 
 		const tarballPath = findTarball(packDestination);
@@ -35,10 +46,11 @@ function verifyPackage(pkg) {
 				}
 			])
 		});
-		runPackSmoke(fixtureDirectory, [tarballPath], pkg.dir);
+		runPackSmoke(fixtureDirectory, [tarballPath], repoRoot);
 
 		return {
 			package: packageJson.name,
+			directory: pkg.dir === repoRoot ? '.' : pkg.dir.replace(`${repoRoot}/`, ''),
 			exportsChecked: exportEntries.map((entry) => entry.specifier),
 			runtimeImportsSmoked: exportEntries
 				.filter((entry) => entry.runtimePaths.length > 0)

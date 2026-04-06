@@ -1,6 +1,6 @@
 {
   "name": "remend",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js"
     }
   },
   "files": [
@@ -20,14 +24,11 @@
     "build": "tsup --config tsup.config.ts",
     "prepack": "pnpm build"
   },
+  "description": "Self-healing markdown parser contract for svelte-streamdown workspace parity.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/BetterAndBetterII/svelte-streamdown.git",
     "directory": "packages/remend"
-  },
-  "devDependencies": {
-    "tsup": "^8.5.1",
-    "typescript": "^5.0.0"
   }
 }
