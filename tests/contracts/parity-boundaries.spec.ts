@@ -20,6 +20,11 @@ type DriftRow = {
 	id: string;
 };
 
+type TicketTreeRow = {
+	ticket: string;
+	gate: string;
+};
+
 type InventoryRow = {
 	sourceFile: string;
 	migrationStatus: string;
@@ -195,6 +200,39 @@ function collectReferencedDriftIds(markdown: string): string[] {
 	return [...new Set(markdown.match(/drift-\d+/g) ?? [])];
 }
 
+function collectTicketTreeRows(markdown: string): Map<string, TicketTreeRow> {
+	const rows = new Map<string, TicketTreeRow>();
+	let inSection = false;
+
+	for (const line of markdown.split('\n')) {
+		if (line.startsWith('## ')) {
+			inSection = line.trim() === '## Strict Closeout Ticket Tree';
+			continue;
+		}
+
+		if (!inSection || !line.startsWith('|')) {
+			continue;
+		}
+
+		const cells = parseMarkdownRow(line);
+		if (cells.length < 4 || cells[0] === 'Ticket' || /^-+$/.test(cells[0])) {
+			continue;
+		}
+
+		const ticket = unwrapCode(cells[0]);
+		if (!/^ASE-\d+$/.test(ticket)) {
+			continue;
+		}
+
+		rows.set(ticket, {
+			ticket,
+			gate: cells[3]
+		});
+	}
+
+	return rows;
+}
+
 function collectInventoryRows(markdown: string): Map<string, InventoryRow> {
 	const rows = new Map<string, InventoryRow>();
 
@@ -365,6 +403,24 @@ describe('parity boundary documentation', () => {
 
 		expect(unresolvedIds).toHaveLength(0);
 		expect(backlogIds).toHaveLength(0);
+	});
+
+	test('marks ASE-56 as a cleared final closeout gate instead of a pending ASE-55 dependency', () => {
+		const ticketRows = collectTicketTreeRows(readDoc('docs/parity-matrix.md'));
+		const ase56 = ticketRows.get('ASE-56');
+
+		expect(ase56, 'Missing strict closeout row for ASE-56').toBeDefined();
+		expect(ase56?.gate, 'ASE-56 should be cleared after final closeout').toContain('Cleared');
+		expect(ase56?.gate, 'ASE-56 should record the 10-file package-architecture closeout').toContain(
+			'10 files once frozen by missing package/export/plugin surfaces'
+		);
+		expect(
+			ase56?.gate,
+			'ASE-56 should distinguish remaining framework drift from package-architecture debt'
+		).toContain('framework drift rather than package-architecture debt');
+		expect(ase56?.gate, 'ASE-56 should not remain blocked on ASE-55').not.toContain(
+			'Blocked on `ASE-55`'
+		);
 	});
 
 	test('removes the resolved package/export backlog items from the unresolved bucket', () => {
