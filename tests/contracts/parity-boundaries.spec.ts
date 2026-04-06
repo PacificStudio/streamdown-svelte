@@ -6,6 +6,12 @@ type MatrixRow = {
 	status: string;
 };
 
+type CapabilityBacklogRow = {
+	category: string;
+	matrixRows: string[];
+	nextAction: string;
+};
+
 type BacklogRow = {
 	category: string;
 	nextAction: string;
@@ -95,10 +101,8 @@ function collectMatrixRows(markdown: string): MatrixRow[] {
 	return rows;
 }
 
-function collectCapabilityBacklogRows(
-	markdown: string
-): Map<string, { category: string; nextAction: string }> {
-	const rows = new Map<string, { category: string; nextAction: string }>();
+function collectCapabilityBacklogRows(markdown: string): CapabilityBacklogRow[] {
+	const rows: CapabilityBacklogRow[] = [];
 	let inSection = false;
 
 	for (const line of markdown.split('\n')) {
@@ -116,16 +120,14 @@ function collectCapabilityBacklogRows(
 			continue;
 		}
 
-		const category = unwrapCode(cells[0]);
-		const nextAction = unwrapCode(cells[1]);
-		const ids = cells[2]
-			.split(',')
-			.map((cell) => unwrapCode(cell.trim()))
-			.filter((cell) => cell.length > 0);
-
-		for (const id of ids) {
-			rows.set(id, { category, nextAction });
-		}
+		rows.push({
+			category: unwrapCode(cells[0]),
+			nextAction: unwrapCode(cells[1]),
+			matrixRows: cells[2]
+				.split(',')
+				.map((cell) => unwrapCode(cell.trim()))
+				.filter(Boolean)
+		});
 	}
 
 	return rows;
@@ -273,7 +275,10 @@ describe('parity boundary documentation', () => {
 			['plugin-03', 'different_by_design'],
 			['plugin-04', 'different_by_design'],
 			['plugin-05', 'different_by_design'],
-			['plugin-06', 'done']
+			['plugin-06', 'done'],
+			['parser-02', 'done'],
+			['parser-03', 'different_by_design'],
+			['render-11', 'done']
 		]);
 
 		for (const [id, expectedStatus] of expectedStatuses) {
@@ -285,7 +290,9 @@ describe('parity boundary documentation', () => {
 		const matrixRows = new Map(
 			collectMatrixRows(readDoc('docs/parity-matrix.md')).map((row) => [row.id, row.status])
 		);
-		const backlogRows = collectCapabilityBacklogRows(readDoc('docs/parity-matrix.md'));
+		const backlogIds = collectCapabilityBacklogRows(readDoc('docs/parity-matrix.md')).flatMap(
+			(row) => row.matrixRows
+		);
 		const closedRows = new Map<string, string>([
 			['prop-01', 'done'],
 			['prop-02', 'done'],
@@ -299,21 +306,17 @@ describe('parity boundary documentation', () => {
 
 		for (const [id, expectedStatus] of closedRows) {
 			expect(matrixRows.get(id), `Unexpected matrix status for ${id}`).toBe(expectedStatus);
-			expect(backlogRows.has(id), `${id} should not remain in the unresolved backlog`).toBe(false);
+			expect(backlogIds).not.toContain(id);
 		}
 
 		const remainingPropRenderPartials = [...matrixRows.entries()].filter(
 			([id, status]) => /^(prop|render)-\d+$/.test(id) && status === 'partial'
 		);
 
+		expect(remainingPropRenderPartials).toHaveLength(0);
 		for (const [id] of remainingPropRenderPartials) {
-			expect(backlogRows.has(id), `Missing canonical backlog entry for ${id}`).toBe(true);
+			expect(backlogIds, `Missing canonical backlog entry for ${id}`).toContain(id);
 		}
-
-		expect(backlogRows.get('render-11')).toEqual({
-			category: 'rendering',
-			nextAction: 'add/port test'
-		});
 	});
 
 	test('parses individually backticked backlog IDs in multi-ID cells', () => {
@@ -325,14 +328,42 @@ describe('parity boundary documentation', () => {
 | \`rendering\` | \`add/port test\` | \`render-11\`, \`render-12\` | Sample backlog |
 `);
 
-		expect(rows.get('render-11')).toEqual({
-			category: 'rendering',
-			nextAction: 'add/port test'
-		});
-		expect(rows.get('render-12')).toEqual({
-			category: 'rendering',
-			nextAction: 'add/port test'
-		});
+		expect(rows).toEqual([
+			{
+				category: 'rendering',
+				nextAction: 'add/port test',
+				matrixRows: ['render-11', 'render-12']
+			}
+		]);
+	});
+
+	test('lists every unresolved non-drift matrix row exactly once in the canonical capability backlog', () => {
+		const matrixRows = collectMatrixRows(readDoc('docs/parity-matrix.md'));
+		const matrixStatusById = new Map(matrixRows.map((row) => [row.id, row.status]));
+		const unresolvedIds = matrixRows
+			.filter((row) => row.status === 'partial' || row.status === 'missing')
+			.map((row) => row.id);
+		const backlogIds = collectCapabilityBacklogRows(readDoc('docs/parity-matrix.md')).flatMap(
+			(row) => row.matrixRows
+		);
+
+		for (const id of unresolvedIds) {
+			expect(
+				backlogIds.filter((backlogId) => backlogId === id),
+				`Expected exactly one capability backlog entry for ${id}`
+			).toHaveLength(1);
+		}
+
+		for (const id of backlogIds) {
+			expect(
+				matrixStatusById.get(id),
+				`Capability backlog references unknown matrix row ${id}`
+			).toBeDefined();
+			expect(
+				matrixStatusById.get(id),
+				`Capability backlog should not include done matrix row ${id}`
+			).not.toBe('done');
+		}
 	});
 
 	test('keeps package/export backlog items out of the implement bucket once they are accepted drift', () => {
