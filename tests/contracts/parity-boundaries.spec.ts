@@ -367,10 +367,6 @@ describe('parity boundary documentation', () => {
 
 		const acceptedDriftFiles = new Set([
 			'packages/remend/__tests__/custom-handlers.test.ts',
-			'packages/remend/__tests__/utils.test.ts',
-			'packages/streamdown/__tests__/detect-direction.test.ts',
-			'packages/streamdown/__tests__/icon-context.test.tsx',
-			'packages/streamdown/__tests__/utils.test.ts',
 			'packages/streamdown-cjk/__tests__/index.test.ts',
 			'packages/streamdown-code/__tests__/index.test.ts',
 			'packages/streamdown-math/__tests__/index.test.ts',
@@ -392,15 +388,40 @@ describe('parity boundary documentation', () => {
 		).toBe(false);
 	});
 
-	test('keeps plugin accepted-drift backlog items out of the implement bucket once they are classified drift', () => {
+	test('removes compatibility helper rows from the backlog once the shared public surface exists', () => {
 		const backlogRows = collectRemainingBacklogRows(readDoc('docs/reference-tests-inventory.md'));
-		const pluginContextRow = backlogRows.find(
-			(row) => row.referenceFile === 'packages/streamdown/__tests__/plugin-context.test.tsx'
-		);
+		const inventoryRows = collectInventoryRows(readDoc('docs/reference-tests-inventory.md'));
+		const statusRows = collectMigrationStatusRows(readDoc('docs/test-migration-status.md'));
+		const implementedCompatFiles = [
+			'packages/remend/__tests__/utils.test.ts',
+			'packages/streamdown/__tests__/detect-direction.test.ts',
+			'packages/streamdown/__tests__/plugin-context.test.tsx',
+			'packages/streamdown/__tests__/icon-context.test.tsx',
+			'packages/streamdown/__tests__/utils.test.ts'
+		];
 
-		expect(pluginContextRow).toBeDefined();
-		expect(pluginContextRow?.category).toBe('plugins');
-		expect(pluginContextRow?.nextAction).toBe('accepted drift');
+		for (const sourceFile of implementedCompatFiles) {
+			expect(
+				backlogRows.find((row) => row.referenceFile === sourceFile),
+				`${sourceFile} should not stay in the remaining backlog once the public compatibility surface exists`
+			).toBeUndefined();
+
+			const inventoryRow = inventoryRows.get(sourceFile);
+			expect(inventoryRow, `Missing inventory row for ${sourceFile}`).toBeDefined();
+			expect(inventoryRow?.migrationStatus, `Unexpected migration status for ${sourceFile}`).toBe(
+				'mapped_to_local_tests'
+			);
+			expect(inventoryRow?.evidence, `Missing local evidence path for ${sourceFile}`).toMatch(
+				/`(?:src|tests)\/[^`]+`/
+			);
+
+			const statusRow = statusRows.get(sourceFile);
+			expect(statusRow, `Missing generated status row for ${sourceFile}`).toBeDefined();
+			expect(
+				statusRow?.localDestination,
+				`Generated tracker still lacks local evidence for ${sourceFile}`
+			).not.toBe('-');
+		}
 	});
 
 	test('keeps performance accepted-drift backlog items out of the implement bucket once they are classified drift', () => {
@@ -428,11 +449,6 @@ describe('parity boundary documentation', () => {
 	test('documents every targeted accepted-drift row with explicit rationale and generated local evidence', () => {
 		const targetFiles = [
 			'packages/remend/__tests__/custom-handlers.test.ts',
-			'packages/remend/__tests__/utils.test.ts',
-			'packages/streamdown/__tests__/detect-direction.test.ts',
-			'packages/streamdown/__tests__/plugin-context.test.tsx',
-			'packages/streamdown/__tests__/icon-context.test.tsx',
-			'packages/streamdown/__tests__/utils.test.ts',
 			'packages/streamdown/__tests__/code-block-memo.test.tsx',
 			'packages/streamdown/__tests__/components-memo.test.tsx',
 			'packages/streamdown/__tests__/components-rerender.test.tsx',

@@ -23,6 +23,20 @@
 					}
 				},
 				{
+					"subpath": "./detect-direction",
+					"target": {
+						"types": "./dist/detect-direction.d.ts",
+						"import": "./dist/detect-direction.js"
+					}
+				},
+				{
+					"subpath": "./icon-context",
+					"target": {
+						"types": "./dist/icon-context.d.ts",
+						"import": "./dist/icon-context.js"
+					}
+				},
+				{
 					"subpath": "./math",
 					"target": {
 						"types": "./dist/Elements/Math.svelte.d.ts",
@@ -34,6 +48,34 @@
 					"target": {
 						"types": "./dist/Elements/Mermaid.svelte.d.ts",
 						"svelte": "./dist/Elements/Mermaid.svelte"
+					}
+				},
+				{
+					"subpath": "./plugin-context",
+					"target": {
+						"types": "./dist/plugin-context.d.ts",
+						"import": "./dist/plugin-context.js"
+					}
+				},
+				{
+					"subpath": "./plugins",
+					"target": {
+						"types": "./dist/plugins.d.ts",
+						"import": "./dist/plugins.js"
+					}
+				},
+				{
+					"subpath": "./remend",
+					"target": {
+						"types": "./dist/remend.d.ts",
+						"import": "./dist/remend.js"
+					}
+				},
+				{
+					"subpath": "./url-policy",
+					"target": {
+						"types": "./dist/url-policy.d.ts",
+						"import": "./dist/url-policy.js"
 					}
 				}
 			]
@@ -54,6 +96,18 @@
 				"importedName": "AllowElement"
 			},
 			{
+				"name": "AnimateOptions",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "AnimateOptions"
+			},
+			{
+				"name": "BlockProps",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "BlockProps"
+			},
+			{
 				"name": "CjkPlugin",
 				"kind": "type",
 				"source": "./plugins.js",
@@ -64,6 +118,18 @@
 				"kind": "type",
 				"source": "./plugins.js",
 				"importedName": "CodeHighlighterPlugin"
+			},
+			{
+				"name": "Components",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "Components"
+			},
+			{
+				"name": "ControlsConfig",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "ControlsConfig"
 			},
 			{
 				"name": "CustomRenderer",
@@ -108,10 +174,28 @@
 				"importedName": "HighlightToken"
 			},
 			{
+				"name": "IconMap",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "IconMap"
+			},
+			{
 				"name": "LanguageInfo",
 				"kind": "type",
 				"source": "./utils/bundledLanguages.js",
 				"importedName": "LanguageInfo"
+			},
+			{
+				"name": "LinkSafetyConfig",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "LinkSafetyConfig"
+			},
+			{
+				"name": "LinkSafetyModalProps",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "LinkSafetyModalProps"
 			},
 			{
 				"name": "MathPlugin",
@@ -120,15 +204,27 @@
 				"importedName": "MathPlugin"
 			},
 			{
+				"name": "MermaidErrorComponentProps",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "MermaidErrorComponentProps"
+			},
+			{
 				"name": "MermaidInstance",
 				"kind": "type",
 				"source": "./plugins.js",
 				"importedName": "MermaidInstance"
 			},
 			{
+				"name": "MermaidOptions",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "MermaidOptions"
+			},
+			{
 				"name": "Plugin",
 				"kind": "type",
-				"source": "./utils/parse-incomplete-markdown.js",
+				"source": "./remend.js",
 				"importedName": "Plugin"
 			},
 			{
@@ -138,9 +234,15 @@
 				"importedName": "PluginConfig"
 			},
 			{
+				"name": "StreamdownContextType",
+				"kind": "type",
+				"source": "./plugin-context.js",
+				"importedName": "StreamdownContextType"
+			},
+			{
 				"name": "StreamdownProps",
 				"kind": "type",
-				"source": "./context.svelte.js",
+				"source": "./plugin-context.js",
 				"importedName": "StreamdownProps"
 			},
 			{
@@ -172,6 +274,18 @@
 				"kind": "type",
 				"source": "./plugins.js",
 				"importedName": "ThemeInput"
+			},
+			{
+				"name": "TransformUrlOptions",
+				"kind": "type",
+				"source": "./url-policy.js",
+				"importedName": "TransformUrlOptions"
+			},
+			{
+				"name": "UrlPolicyKind",
+				"kind": "type",
+				"source": "./url-policy.js",
+				"importedName": "UrlPolicyKind"
 			},
 			{
 				"name": "UrlTransform",
@@ -240,6 +354,12 @@
 				"importedName": "defaultUrlTransform"
 			},
 			{
+				"name": "detectTextDirection",
+				"kind": "value",
+				"source": "./detect-direction.js",
+				"importedName": "detectTextDirection"
+			},
+			{
 				"name": "extractTableDataFromElement",
 				"kind": "value",
 				"source": "./utils/table.js",
@@ -272,8 +392,14 @@
 			{
 				"name": "IncompleteMarkdownParser",
 				"kind": "value",
-				"source": "./utils/parse-incomplete-markdown.js",
+				"source": "./remend.js",
 				"importedName": "IncompleteMarkdownParser"
+			},
+			{
+				"name": "isPathRelativeUrl",
+				"kind": "value",
+				"source": "./url-policy.js",
+				"importedName": "isPathRelativeUrl"
 			},
 			{
 				"name": "lex",
@@ -320,8 +446,14 @@
 			{
 				"name": "parseIncompleteMarkdown",
 				"kind": "value",
-				"source": "./utils/parse-incomplete-markdown.js",
+				"source": "./remend.js",
 				"importedName": "parseIncompleteMarkdown"
+			},
+			{
+				"name": "parseUrl",
+				"kind": "value",
+				"source": "./url-policy.js",
+				"importedName": "parseUrl"
 			},
 			{
 				"name": "shadcnTheme",
@@ -334,6 +466,18 @@
 				"kind": "value",
 				"source": "./Streamdown.svelte",
 				"importedName": "default"
+			},
+			{
+				"name": "STREAMDOWN_CONTEXT_KEY",
+				"kind": "value",
+				"source": "./plugin-context.js",
+				"importedName": "STREAMDOWN_CONTEXT_KEY"
+			},
+			{
+				"name": "StreamdownContext",
+				"kind": "value",
+				"source": "./plugin-context.js",
+				"importedName": "StreamdownContext"
 			},
 			{
 				"name": "tableDataToCSV",
@@ -360,6 +504,12 @@
 				"importedName": "theme"
 			},
 			{
+				"name": "transformUrl",
+				"kind": "value",
+				"source": "./url-policy.js",
+				"importedName": "transformUrl"
+			},
+			{
 				"name": "useIsCodeFenceIncomplete",
 				"kind": "value",
 				"source": "./incomplete-code.js",
@@ -368,7 +518,7 @@
 			{
 				"name": "useStreamdown",
 				"kind": "value",
-				"source": "./context.svelte.js",
+				"source": "./plugin-context.js",
 				"importedName": "useStreamdown"
 			}
 		],
@@ -1069,6 +1219,24 @@
 			]
 		},
 		{
+			"subpath": "./detect-direction",
+			"target": {
+				"types": "./dist/detect-direction.d.ts",
+				"import": "./dist/detect-direction.js"
+			},
+			"entryFile": null,
+			"props": []
+		},
+		{
+			"subpath": "./icon-context",
+			"target": {
+				"types": "./dist/icon-context.d.ts",
+				"import": "./dist/icon-context.js"
+			},
+			"entryFile": null,
+			"props": []
+		},
+		{
 			"subpath": "./math",
 			"target": {
 				"types": "./dist/Elements/Math.svelte.d.ts",
@@ -1122,6 +1290,42 @@
 					"default": null
 				}
 			]
+		},
+		{
+			"subpath": "./plugin-context",
+			"target": {
+				"types": "./dist/plugin-context.d.ts",
+				"import": "./dist/plugin-context.js"
+			},
+			"entryFile": null,
+			"props": []
+		},
+		{
+			"subpath": "./plugins",
+			"target": {
+				"types": "./dist/plugins.d.ts",
+				"import": "./dist/plugins.js"
+			},
+			"entryFile": null,
+			"props": []
+		},
+		{
+			"subpath": "./remend",
+			"target": {
+				"types": "./dist/remend.d.ts",
+				"import": "./dist/remend.js"
+			},
+			"entryFile": null,
+			"props": []
+		},
+		{
+			"subpath": "./url-policy",
+			"target": {
+				"types": "./dist/url-policy.d.ts",
+				"import": "./dist/url-policy.js"
+			},
+			"entryFile": null,
+			"props": []
 		}
 	]
 }
