@@ -3,10 +3,10 @@
 	"version": "3.0.1",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && npm run prepack",
+		"build": "pnpm build:packages && vite build && pnpm package:root",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"prepack": "svelte-kit sync && svelte-package && publint",
+		"prepack": "pnpm build:packages && pnpm package:root",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
@@ -33,7 +33,10 @@
 		"verify:clean-build": "node scripts/verify-clean-build.mjs",
 		"verify:dependency-policy": "node scripts/verify-dependency-policy.mjs",
 		"release:metadata": "node scripts/release-metadata.mjs",
-		"verify:release-metadata": "node scripts/verify-release-metadata.mjs"
+		"verify:release-metadata": "node scripts/verify-release-metadata.mjs",
+		"build:packages": "pnpm -r --filter './packages/*' build",
+		"package:root": "svelte-kit sync && svelte-package && publint",
+		"verify:workspace-smoke": "node scripts/verify-workspace-smoke.mjs"
 	},
 	"files": [
 		"dist",
