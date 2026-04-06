@@ -4,7 +4,7 @@ export interface Plugin {
 	pattern?: RegExp;
 	handler?: (payload: HandlerPayload) => string;
 	skipInBlockTypes?: string[]; // block types where this plugin should be skipped
-	stopProcessingOnChange?: boolean;
+	stopProcessingOnChange?: boolean | ((previousLine: string, nextLine: string) => boolean);
 	preprocess?: (payload: HookPayload) => string | { text: string; state: Partial<ParseState> };
 	postprocess?: (payload: HookPayload) => string;
 }
@@ -120,7 +120,11 @@ export class IncompleteMarkdownParser {
 							setState: this.setState
 						});
 
-						if (plugin.stopProcessingOnChange && line !== previousLine) {
+						const shouldStop =
+							typeof plugin.stopProcessingOnChange === 'function'
+								? plugin.stopProcessingOnChange(previousLine, line)
+								: plugin.stopProcessingOnChange && line !== previousLine;
+						if (shouldStop) {
 							break;
 						}
 					}
@@ -297,6 +301,20 @@ export class IncompleteMarkdownParser {
 				}
 			},
 			{
+				name: 'footnoteRef',
+				pattern: /\[\^[^\]\s,]*/,
+				skipInBlockTypes: ['code', 'math'],
+				handler: ({ line }) => replaceIncompleteFootnoteRefs(line)
+			},
+			{
+				name: 'links',
+				pattern: /\[/,
+				skipInBlockTypes: ['code', 'math'],
+				stopProcessingOnChange: (_previousLine, nextLine) =>
+					nextLine !== _previousLine && nextLine.includes('streamdown:incomplete-link'),
+				handler: ({ line }) => handleIncompleteLinksAndImages(line, 'links')
+			},
+			{
 				name: 'boldItalic',
 				pattern: /\*\*\*/,
 				skipInBlockTypes: ['code', 'math'],
@@ -315,16 +333,16 @@ export class IncompleteMarkdownParser {
 				handler: ({ line }) => handleIncompleteDoubleUnderscoreItalic(line)
 			},
 			{
-				name: 'strikethrough',
-				pattern: /~~/,
-				skipInBlockTypes: ['code', 'math'],
-				handler: ({ line }) => handleIncompleteStrikethrough(line)
-			},
-			{
 				name: 'singleAsteriskItalic',
 				pattern: /[\s\S]*/,
 				skipInBlockTypes: ['code', 'math'],
 				handler: ({ line }) => handleIncompleteSingleAsteriskItalic(line)
+			},
+			{
+				name: 'singleUnderscoreItalic',
+				pattern: /[\s\S]*/,
+				skipInBlockTypes: ['code', 'math'],
+				handler: ({ line }) => handleIncompleteSingleUnderscoreItalic(line)
 			},
 			{
 				name: 'inlineCode',
@@ -378,22 +396,16 @@ export class IncompleteMarkdownParser {
 				}
 			},
 			{
-				name: 'singleUnderscoreItalic',
-				pattern: /[\s\S]*/,
+				name: 'strikethrough',
+				pattern: /~~/,
 				skipInBlockTypes: ['code', 'math'],
-				handler: ({ line }) => handleIncompleteSingleUnderscoreItalic(line)
+				handler: ({ line }) => handleIncompleteStrikethrough(line)
 			},
 			{
 				name: 'subscript',
 				pattern: /~/,
 				skipInBlockTypes: ['code', 'math'],
 				handler: ({ line }) => line
-			},
-			{
-				name: 'footnoteRef',
-				pattern: /\[\^[^\]\s,]*/,
-				skipInBlockTypes: ['code', 'math'],
-				handler: ({ line }) => replaceIncompleteFootnoteRefs(line)
 			},
 			{
 				name: 'inlineCitation',
@@ -580,10 +592,10 @@ export class IncompleteMarkdownParser {
 				}
 			},
 			{
-				name: 'linksAndImages',
+				name: 'images',
 				pattern: /\[/,
 				skipInBlockTypes: ['code', 'math'],
-				handler: ({ line }) => handleIncompleteLinksAndImages(line)
+				handler: ({ line }) => handleIncompleteLinksAndImages(line, 'images')
 			},
 			{
 				name: 'alignmentBlocks',
@@ -1575,7 +1587,13 @@ const findMatchingClosingBracket = (text: string, openIndex: number): number => 
 	return -1;
 };
 
-const handleIncompleteUrl = (text: string, lastParenIndex: number): string | null => {
+type IncompleteRecoveryTarget = 'all' | 'images' | 'links';
+
+const handleIncompleteUrl = (
+	text: string,
+	lastParenIndex: number,
+	target: IncompleteRecoveryTarget
+): string | null => {
 	const afterParen = text.slice(lastParenIndex + 2);
 	if (afterParen.includes(')')) {
 		return null;
@@ -1590,6 +1608,9 @@ const handleIncompleteUrl = (text: string, lastParenIndex: number): string | nul
 	}
 
 	const isImage = openBracketIndex > 0 && text[openBracketIndex - 1] === '!';
+	if ((isImage && target === 'links') || (!isImage && target === 'images')) {
+		return null;
+	}
 	const startIndex = isImage ? openBracketIndex - 1 : openBracketIndex;
 	const beforeLink = text.slice(0, startIndex);
 	const linkText = text.slice(openBracketIndex + 1, lastParenIndex);
@@ -1604,8 +1625,15 @@ const handleIncompleteUrl = (text: string, lastParenIndex: number): string | nul
 		: `${beforeLink}[${linkText}](streamdown:incomplete-link)`;
 };
 
-const handleIncompleteTextLink = (text: string, index: number): string | null => {
+const handleIncompleteTextLink = (
+	text: string,
+	index: number,
+	target: IncompleteRecoveryTarget
+): string | null => {
 	const isImage = index > 0 && text[index - 1] === '!';
+	if ((isImage && target === 'links') || (!isImage && target === 'images')) {
+		return null;
+	}
 	const openIndex = isImage ? index - 1 : index;
 	const closingIndex = findMatchingClosingBracket(text, index);
 	const placeholderProtocol = isImage
@@ -1614,6 +1642,21 @@ const handleIncompleteTextLink = (text: string, index: number): string | null =>
 	const incompleteText = text.slice(index + 1);
 
 	if (closingIndex === -1) {
+		if (!isImage && looksLikeInlineCitationText(incompleteText)) {
+			return null;
+		}
+
+		if (!isImage) {
+			const nestedCitationMatch = incompleteText.match(/^(.*)\[(.*)$/);
+			if (
+				nestedCitationMatch &&
+				looksLikeInlineCitationText(nestedCitationMatch[1]) &&
+				looksLikeInlineCitationText(nestedCitationMatch[2])
+			) {
+				return null;
+			}
+		}
+
 		if (!isImage) {
 			const lineStart = text.lastIndexOf('\n', index - 1) + 1;
 			const prefix = text.slice(lineStart, index);
@@ -1626,19 +1669,22 @@ const handleIncompleteTextLink = (text: string, index: number): string | null =>
 		}
 
 		if (!isImage) {
-			const prevBracketEnd = text.lastIndexOf(']', openIndex - 1);
-			if (prevBracketEnd !== -1) {
-				const prevBracketStart = findMatchingOpeningBracket(text, prevBracketEnd);
-				if (prevBracketStart !== -1) {
-					const prevBracketText = text.slice(prevBracketStart + 1, prevBracketEnd).trim();
-					const betweenGroups = text.slice(prevBracketEnd + 1, openIndex);
-					const trimmedIncompleteText = incompleteText.trim();
+					const prevBracketEnd = text.lastIndexOf(']', openIndex - 1);
+					if (prevBracketEnd !== -1) {
+						const prevBracketStart = findMatchingOpeningBracket(text, prevBracketEnd);
+						if (prevBracketStart !== -1) {
+							const prevBracketText = text.slice(prevBracketStart + 1, prevBracketEnd).trim();
+							const previousGroupIsLink =
+								text[prevBracketEnd + 1] === '(' && text.indexOf(')', prevBracketEnd + 2) !== -1;
+							const betweenGroups = text.slice(prevBracketEnd + 1, openIndex);
+							const trimmedIncompleteText = incompleteText.trim();
 
-					if (
-						prevBracketText.length > 0 &&
-						/^(?:\([^)\n]*\))?\s+and\s+$/.test(betweenGroups) &&
-						/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/.test(trimmedIncompleteText)
-					) {
+							if (
+								!previousGroupIsLink &&
+								prevBracketText.length > 0 &&
+								/^(?:\([^)\n]*\))?\s+and\s+$/.test(betweenGroups) &&
+								/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/.test(trimmedIncompleteText)
+							) {
 						return `${text}]`;
 					}
 				}
@@ -1707,10 +1753,13 @@ const handleIncompleteTextLink = (text: string, index: number): string | null =>
 	return null;
 };
 
-const handleIncompleteLinksAndImages = (text: string): string => {
+const handleIncompleteLinksAndImages = (
+	text: string,
+	target: IncompleteRecoveryTarget = 'all'
+): string => {
 	const lastParenIndex = text.lastIndexOf('](');
 	if (lastParenIndex !== -1 && !isInsideCodeBlock(text, lastParenIndex)) {
-		const result = handleIncompleteUrl(text, lastParenIndex);
+		const result = handleIncompleteUrl(text, lastParenIndex, target);
 		if (result !== null) {
 			return result;
 		}
@@ -1721,7 +1770,7 @@ const handleIncompleteLinksAndImages = (text: string): string => {
 			text[i] === '[' &&
 			(!isInsideCodeBlock(text, i) || isInsideUnclosedInlineCode(text, i))
 		) {
-			const result = handleIncompleteTextLink(text, i);
+			const result = handleIncompleteTextLink(text, i, target);
 			if (result !== null) {
 				return result;
 			}

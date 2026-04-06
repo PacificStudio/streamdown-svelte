@@ -5,6 +5,27 @@ import { createCjkPlugin } from '../../../../src/lib/index.js';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
 
 describeInBrowser('ported streamdown CJK-friendly rendering', () => {
+	testInBrowser('renders emphasis and strikethrough text with CJK punctuation when plugins.cjk is enabled', () => {
+		const cases = [
+			'**この文は太字になります（This sentence will be bolded）。**この文が後に続いても大丈夫です。',
+			'*这是斜体文字（带括号）。*后续内容',
+			'***重要な情報（詳細）***続き',
+			'~~削除されたテキスト（括弧付き）。~~'
+		];
+
+		for (const content of cases) {
+			const screen = render(Streamdown, {
+				content,
+				static: true,
+				plugins: {
+					cjk: createCjkPlugin()
+				}
+			});
+
+			expect(screen.container.textContent?.trim()).toBe(content.replaceAll('**', '').replaceAll('*', '').replaceAll('~~', ''));
+		}
+	});
+
 	testInBrowser('splits autolinks at CJK boundary punctuation when plugins.cjk is enabled', () => {
 		const screen = render(Streamdown, {
 			content: '请访问 https://example.com。谢谢',
