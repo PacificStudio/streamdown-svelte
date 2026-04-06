@@ -7,9 +7,7 @@ type MatrixRow = {
 };
 
 type CapabilityBacklogRow = {
-	category: string;
-	matrixRows: string[];
-	nextAction: string;
+	matrixRow: string;
 };
 
 type BacklogRow = {
@@ -54,23 +52,24 @@ function collectMatrixRows(markdown: string): MatrixRow[] {
 	const rows: MatrixRow[] = [];
 
 	for (const line of markdown.split('\n')) {
-		if (!line.startsWith('|')) {
+		if (!line.startsWith('| `')) {
 			continue;
 		}
 
-		const cells = parseMarkdownRow(line);
-		if (cells.length < 3 || cells[0] === 'ID' || /^-+$/.test(cells[0])) {
+		const id = line.match(/^\| `([^`]+)` /)?.[1];
+		const status = line.match(
+			/\| `(done|tracked_follow_up|missing|different_by_design|partial)`\s+\|/
+		)?.[1];
+		if (!id || !status) {
 			continue;
 		}
-
-		const id = unwrapCode(cells[0]);
 		if (!/^(api|prop|plugin|parser|render|interact|sec)-\d+$/.test(id)) {
 			continue;
 		}
 
 		rows.push({
 			id,
-			status: unwrapCode(cells[2])
+			status
 		});
 	}
 
@@ -83,7 +82,7 @@ function collectCapabilityBacklogRows(markdown: string): CapabilityBacklogRow[] 
 
 	for (const line of markdown.split('\n')) {
 		if (line.startsWith('## ')) {
-			inSection = line.trim() === '## Categorized Unresolved Capability Backlog';
+			inSection = line.trim() === '## Canonical Unresolved Capability Backlog';
 			continue;
 		}
 
@@ -92,17 +91,12 @@ function collectCapabilityBacklogRows(markdown: string): CapabilityBacklogRow[] 
 		}
 
 		const cells = parseMarkdownRow(line);
-		if (cells.length < 4 || cells[0] === 'Parity category' || /^-+$/.test(cells[0])) {
+		if (cells.length < 1 || cells[0] === 'Matrix row' || /^-+$/.test(cells[0])) {
 			continue;
 		}
 
 		rows.push({
-			category: unwrapCode(cells[0]),
-			nextAction: unwrapCode(cells[1]),
-			matrixRows: cells[2]
-				.split(',')
-				.map((cell) => unwrapCode(cell.trim()))
-				.filter(Boolean)
+			matrixRow: unwrapCode(cells[0])
 		});
 	}
 
@@ -266,10 +260,10 @@ describe('parity boundary documentation', () => {
 		const matrixRows = collectMatrixRows(readDoc('docs/parity-matrix.md'));
 		const matrixStatusById = new Map(matrixRows.map((row) => [row.id, row.status]));
 		const unresolvedIds = matrixRows
-			.filter((row) => row.status === 'partial' || row.status === 'missing')
+			.filter((row) => row.status === 'tracked_follow_up' || row.status === 'missing')
 			.map((row) => row.id);
-		const backlogIds = collectCapabilityBacklogRows(readDoc('docs/parity-matrix.md')).flatMap(
-			(row) => row.matrixRows
+		const backlogIds = collectCapabilityBacklogRows(readDoc('docs/parity-matrix.md')).map(
+			(row) => row.matrixRow
 		);
 
 		for (const id of unresolvedIds) {
