@@ -118,9 +118,9 @@ function collectCapabilityBacklogRows(
 
 		const category = unwrapCode(cells[0]);
 		const nextAction = unwrapCode(cells[1]);
-		const ids = unwrapCode(cells[2])
+		const ids = cells[2]
 			.split(',')
-			.map((cell) => cell.trim())
+			.map((cell) => unwrapCode(cell.trim()))
 			.filter((cell) => cell.length > 0);
 
 		for (const id of ids) {
@@ -311,6 +311,25 @@ describe('parity boundary documentation', () => {
 		}
 
 		expect(backlogRows.get('render-11')).toEqual({
+			category: 'rendering',
+			nextAction: 'add/port test'
+		});
+	});
+
+	test('parses individually backticked backlog IDs in multi-ID cells', () => {
+		const rows = collectCapabilityBacklogRows(`
+## Categorized Unresolved Capability Backlog
+
+| Parity category | Next action | Matrix rows | Remaining work |
+| --- | --- | --- | --- |
+| \`rendering\` | \`add/port test\` | \`render-11\`, \`render-12\` | Sample backlog |
+`);
+
+		expect(rows.get('render-11')).toEqual({
+			category: 'rendering',
+			nextAction: 'add/port test'
+		});
+		expect(rows.get('render-12')).toEqual({
 			category: 'rendering',
 			nextAction: 'add/port test'
 		});
