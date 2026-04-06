@@ -135,7 +135,7 @@ The comparison may ignore:
 Specific normalization rules:
 
 - Incomplete links must preserve the frozen reference behavior of `streamdown:incomplete-link` or the documented `text-only` fallback when that mode is explicitly enabled.
-- Incomplete images follow the frozen `remend` contract: they are removed instead of rendered with a placeholder URL.
+- Incomplete images follow the frozen `remend` removal contract unless the approved `drift-12` placeholder adaptation is in effect for the local streaming surface.
 - Single-dollar math, single-tilde escaping, setext-heading prevention, HTML tail stripping, and comparison-operator escaping follow the frozen `remend` option defaults, not local heuristics.
 - Whitespace-only separator blocks emitted by the frozen `parseMarkdownIntoBlocks()` helper may be ignored when the local block splitter preserves the same renderable block order and incomplete-block behavior.
 - Footnote definitions may live outside the per-block parser IR only when the approved `drift-11` rule applies and the rendered footnote refs, definitions, backrefs, and empty-footnote streaming behavior still match the frozen reference outcomes.
@@ -216,6 +216,7 @@ Only the differences listed here count as approved `different_by_design` drift t
 | `drift-09` | No exported upstream plugin context/provider helpers; plugin wiring stays on the root `plugins` prop                                 | Allowed only as explicit plugin-contract drift. Missing plugin-context helpers and providers must remain documented as accepted drift rather than being implied to be pending implementation.                                                        |
 | `drift-10` | React-specific memo/comparator and deferred-render internals stay unported; Svelte parity is judged on observable DOM behavior       | Allowed only for reference suites whose assertions depend on `React.memo`, custom comparator call patterns, rerender counts, or deferred-render hook timing. Equivalent DOM or interaction outcomes still require coverage elsewhere.                |
 | `drift-11` | Footnote definitions stay in Svelte footnote state instead of appearing as frozen-reference parser IR nodes                          | Allowed only when the rendered refs, definitions, backrefs, and streaming empty-footnote suppression remain parity-equivalent. This drift does not waive visible footnote or interaction regressions; it only documents the parser-shape difference. |
+| `drift-12` | Incomplete images keep the local `streamdown:incomplete-image` placeholder instead of being removed like frozen `remend`            | Allowed only as an explicit streaming-surface adaptation. It does not waive incomplete-link precedence regressions, and it must stay documented alongside direct local evidence for the placeholder protocol.                                         |
 
 No other drift is implicitly approved.
 
