@@ -92,16 +92,24 @@ const FROZEN_REFERENCE_COMMIT = '5f6475139a87dee8af08fcf7b01475292bc064d2';
 
 const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 	packageSubpaths: {
-		// api-07, drift-02
+		// api-07, drift-02, drift-04, drift-05
 		missingFromLocal: ['./styles.css'],
-		extraInLocal: ['./code', './math', './mermaid']
+		extraInLocal: [
+			'./code',
+			'./detect-direction',
+			'./icon-context',
+			'./math',
+			'./mermaid',
+			'./plugin-context',
+			'./plugins',
+			'./remend',
+			'./url-policy'
+		]
 	},
 	rootExports: {
 		// api-02, api-03, api-04, api-05, api-06
 		missingFromLocal: [
-			'AnimateOptions',
 			'Block',
-			'BlockProps',
 			'BundledLanguage',
 			'BundledTheme',
 			'CodeBlock',
@@ -110,22 +118,12 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'CodeBlockDownloadButton',
 			'CodeBlockHeader',
 			'CodeBlockSkeleton',
-			'Components',
-			'ControlsConfig',
 			'createAnimatePlugin',
 			'defaultRehypePlugins',
 			'defaultRemarkPlugins',
-			'detectTextDirection',
 			'escapeMarkdownTableCell',
 			'ExtraProps',
-			'IconMap',
-			'LinkSafetyConfig',
-			'LinkSafetyModalProps',
-			'MermaidErrorComponentProps',
-			'MermaidOptions',
 			'parseMarkdownIntoBlocks',
-			'StreamdownContext',
-			'StreamdownContextType',
 			'TableCopyDropdown',
 			'TableCopyDropdownProps',
 			'TableDownloadButton',
@@ -140,6 +138,7 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'HighlightResult',
 			'HighlightToken',
 			'IncompleteMarkdownParser',
+			'isPathRelativeUrl',
 			'LanguageInfo',
 			'lex',
 			'mergeTheme',
@@ -147,11 +146,16 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 			'MermaidInstance',
 			'parseBlocks',
 			'parseIncompleteMarkdown',
+			'parseUrl',
 			'Plugin',
 			'shadcnTheme',
+			'STREAMDOWN_CONTEXT_KEY',
 			'StreamdownToken',
 			'theme',
 			'Theme',
+			'transformUrl',
+			'TransformUrlOptions',
+			'UrlPolicyKind',
 			'useStreamdown',
 			'bundledLanguagesInfo',
 			'cjk',
@@ -173,12 +177,7 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 	streamdownProps: {
 		// prop-04, prop-09,
 		// prop-17, prop-18, prop-20, api-01
-		missingFromLocal: [
-			'rehypePlugins',
-			'remarkPlugins',
-			'remarkRehypeOptions',
-			'remend'
-		],
+		missingFromLocal: ['rehypePlugins', 'remarkPlugins', 'remarkRehypeOptions', 'remend'],
 		// api-01, prop-19, prop-22, prop-24
 		extraInLocal: [
 			'alert',

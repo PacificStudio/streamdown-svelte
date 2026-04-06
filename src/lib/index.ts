@@ -1,5 +1,21 @@
 export { default as Streamdown } from './Streamdown.svelte';
-export { useStreamdown, type StreamdownProps } from './context.svelte.js';
+export {
+	STREAMDOWN_CONTEXT_KEY,
+	StreamdownContext,
+	useStreamdown,
+	type AnimateOptions,
+	type BlockProps,
+	type Components,
+	type ControlsConfig,
+	type IconMap,
+	type LinkSafetyConfig,
+	type LinkSafetyModalProps,
+	type MermaidErrorComponentProps,
+	type MermaidOptions,
+	type StreamdownContextType,
+	type StreamdownProps
+} from './plugin-context.js';
+export { detectTextDirection } from './detect-direction.js';
 export { hasIncompleteCodeFence, hasTable, useIsCodeFenceIncomplete } from './incomplete-code.js';
 export { defaultUrlTransform, type AllowElement, type UrlTransform } from './markdown.js';
 export type { AllowedTags } from './security/types.js';
@@ -31,16 +47,19 @@ export {
 	type ThemeInput
 } from './plugins.js';
 
-export {
-	parseIncompleteMarkdown,
-	type Plugin,
-	IncompleteMarkdownParser
-} from './utils/parse-incomplete-markdown.js';
+export { parseIncompleteMarkdown, type Plugin, IncompleteMarkdownParser } from './remend.js';
 export {
 	bundledLanguagesInfo,
 	createLanguageSet,
 	type LanguageInfo
 } from './utils/bundledLanguages.js';
+export {
+	isPathRelativeUrl,
+	parseUrl,
+	transformUrl,
+	type TransformUrlOptions,
+	type UrlPolicyKind
+} from './url-policy.js';
 export {
 	defaultTranslations,
 	mergeTranslations,

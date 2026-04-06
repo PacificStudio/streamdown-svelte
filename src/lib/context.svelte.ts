@@ -10,6 +10,7 @@ import type { AllowedTags } from './security/types.js';
 import { carets } from './streaming.js';
 import type { PluginConfig, ThemeInput } from './plugins.js';
 import type { AllowElement, UrlTransform } from './markdown.js';
+import { STREAMDOWN_CONTEXT_KEY } from './context-key.js';
 
 export type { AllowedTags } from './security/types.js';
 
@@ -159,7 +160,7 @@ animation-fill-mode: forwards;`
 
 	constructor(props: StreamdownContextInit<Source>) {
 		bind(this, props);
-		setContext('streamdown', this);
+		setContext(STREAMDOWN_CONTEXT_KEY, this);
 		if (this.animation.animateOnMount) {
 			this.isMounted = true;
 		}
@@ -171,8 +172,10 @@ animation-fill-mode: forwards;`
 		});
 	}
 }
-export const useStreamdown = () => {
-	const context = getContext<StreamdownContext>('streamdown');
+export const useStreamdown = <
+	Source extends Record<string, any> = Record<string, any>
+>(): StreamdownContext<Source> => {
+	const context = getContext<StreamdownContext<Source>>(STREAMDOWN_CONTEXT_KEY);
 	if (!context) {
 		throw new Error('Streamdown context not found');
 	}
