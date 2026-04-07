@@ -49,17 +49,110 @@ function finalizeList(list: ListToken, lexer: Lexer) {
 	for (const item of list.tokens) {
 		lexer.state.top = false;
 		item.tokens = lexer.blockTokens(item.text, []);
+
+		if (!list.loose) {
+			const hasLooseParagraphSpacing = item.tokens.some(
+				(token) => token.type === 'space' && /\n.*\n/.test(token.raw)
+			);
+			if (hasLooseParagraphSpacing) {
+				list.loose = true;
+			}
+		}
 	}
 
 	// Mark list as loose if needed
 	if (list.loose) {
 		for (const item of list.tokens) {
 			item.loose = true;
+			item.tokens = normalizeLooseListItemTokens(item.tokens);
 		}
 	}
 }
 function escapeForRegex(s: string) {
 	return s.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+}
+
+function paragraphFromTextTokens(tokens: GenericToken[]): GenericToken {
+	const firstToken = tokens[0];
+	if (tokens.length === 1) {
+		return {
+			type: 'paragraph',
+			raw: firstToken.raw,
+			text: firstToken.text ?? firstToken.raw,
+			tokens: firstToken.tokens ?? [
+				{
+					type: 'text',
+					raw: firstToken.raw,
+					text: firstToken.text ?? firstToken.raw,
+					escaped: false
+				}
+			]
+		} satisfies GenericToken;
+	}
+
+	const inlineTokens: GenericToken[] = [];
+	for (let index = 0; index < tokens.length; index += 1) {
+		const token = tokens[index];
+		if (index > 0) {
+			inlineTokens.push({
+				type: 'text',
+				raw: '\n',
+				text: '\n',
+				escaped: false
+			});
+		}
+
+		if (token.tokens && token.tokens.length > 0) {
+			inlineTokens.push(...(token.tokens as GenericToken[]));
+		} else {
+			inlineTokens.push({
+				type: 'text',
+				raw: token.raw,
+				text: token.text ?? token.raw,
+				escaped: false
+			});
+		}
+	}
+
+	return {
+		type: 'paragraph',
+		raw: tokens.map((token) => token.raw).join('\n'),
+		text: tokens.map((token) => token.text ?? token.raw).join('\n'),
+		tokens: inlineTokens
+	} satisfies GenericToken;
+}
+
+function normalizeLooseListItemTokens(tokens: GenericToken[]): GenericToken[] {
+	const normalized: GenericToken[] = [];
+	let textTokens: GenericToken[] = [];
+
+	const flushTextTokens = () => {
+		if (textTokens.length === 0) {
+			return;
+		}
+
+		normalized.push(paragraphFromTextTokens(textTokens));
+		textTokens = [];
+	};
+
+	for (const token of tokens) {
+		if (token.type === 'space') {
+			flushTextTokens();
+			continue;
+		}
+
+		if (token.type === 'text') {
+			textTokens.push(token);
+			continue;
+		}
+
+		flushTextTokens();
+		normalized.push(token);
+	}
+
+	flushTextTokens();
+
+	return normalized;
 }
 export const markedList: Extension = {
 	name: 'list',

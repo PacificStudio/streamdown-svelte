@@ -198,6 +198,26 @@ describe('tokenization', () => {
 		expect(listToken.tokens[1].loose).toBe(true);
 	});
 
+	test('should keep paragraph blocks inside loose list items with internal blank lines', () => {
+		const tokens = lex('- Item 1\n\n  Some paragraph\n- Item 2');
+		const listToken = getFirstTokenByType(tokens, 'list');
+
+		expect(listToken).toBeDefined();
+		expect(listToken.loose).toBe(true);
+		expect(listToken.tokens).toHaveLength(2);
+		expect(listToken.tokens[0].loose).toBe(true);
+		expect(listToken.tokens[1].loose).toBe(true);
+
+		const firstItemBlockTypes = listToken.tokens[0].tokens.map((token: any) => token.type);
+		expect(firstItemBlockTypes).toEqual(['paragraph', 'paragraph']);
+		expect(listToken.tokens[0].tokens[0].text).toBe('Item 1');
+		expect(listToken.tokens[0].tokens[1].text).toBe('Some paragraph');
+
+		const secondItemBlockTypes = listToken.tokens[1].tokens.map((token: any) => token.type);
+		expect(secondItemBlockTypes).toEqual(['paragraph']);
+		expect(listToken.tokens[1].tokens[0].text).toBe('Item 2');
+	});
+
 	test('should parse ordered list item and verify properties', () => {
 		const tokens = lex('1. First ordered item\n2. Second ordered item');
 		const listToken = getFirstTokenByType(tokens, 'list');
