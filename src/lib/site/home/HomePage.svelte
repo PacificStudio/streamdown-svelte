@@ -10,12 +10,15 @@
 		heroDescription,
 		heroTitle,
 		installCommand,
+		usageFilePath,
 		usageCode,
 		usageMarkdown
 	} from './content.js';
 
-	let copiedInstall = $state(false);
-	let installTimer: ReturnType<typeof setTimeout> | null = null;
+	type CopyTarget = 'install' | 'usage';
+
+	let copiedTarget = $state<CopyTarget | null>(null);
+	let copyTimer: ReturnType<typeof setTimeout> | null = null;
 
 	function resetTimer(timer: ReturnType<typeof setTimeout> | null) {
 		if (timer) {
@@ -23,20 +26,17 @@
 		}
 	}
 
-	async function copyText(text: string, target: 'install') {
+	async function copyText(text: string, target: CopyTarget) {
 		await navigator.clipboard.writeText(text);
-
-		if (target === 'install') {
-			copiedInstall = true;
-			resetTimer(installTimer);
-			installTimer = setTimeout(() => {
-				copiedInstall = false;
-			}, 2000);
-		}
+		copiedTarget = target;
+		resetTimer(copyTimer);
+		copyTimer = setTimeout(() => {
+			copiedTarget = null;
+		}, 2000);
 	}
 
 	onDestroy(() => {
-		resetTimer(installTimer);
+		resetTimer(copyTimer);
 	});
 </script>
 
@@ -83,7 +83,7 @@
 						type="button"
 						onclick={() => copyText(installCommand, 'install')}
 					>
-						{copiedInstall ? 'Copied' : 'Copy'}
+						{copiedTarget === 'install' ? 'Copied' : 'Copy'}
 					</button>
 				</div>
 
@@ -144,22 +144,33 @@
 				</div>
 
 				<div class="sm:col-span-2 sm:p-12">
-					<div class="overflow-hidden rounded-sm border">
+					<div
+						class="overflow-hidden rounded-2xl border border-border bg-background shadow-[0_20px_70px_-40px_rgba(15,23,42,0.45)]"
+					>
 						<div
-							class="flex items-center gap-2 border-b border-border bg-sidebar py-1.5 pr-1.5 pl-4 text-muted-foreground"
+							class="flex items-center gap-3 border-b border-border bg-sidebar/80 px-4 py-3 text-muted-foreground supports-[backdrop-filter]:bg-sidebar/70 supports-[backdrop-filter]:backdrop-blur"
 						>
+							<img alt="Svelte" class="size-5 shrink-0" src="/svelte-favicon.png" />
 							<span
-								class="inline-flex size-4 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary"
+								class="min-w-0 flex-1 truncate font-mono text-sm tracking-tight text-foreground"
 							>
-								SV
+								{usageFilePath}
 							</span>
-							<span class="flex-1 font-mono text-sm tracking-tight">src/lib/ChatMessage.svelte</span
+							<button
+								class="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+								type="button"
+								onclick={() => copyText(usageCode, 'usage')}
 							>
+								{copiedTarget === 'usage' ? 'Copied' : 'Copy'}
+							</button>
 						</div>
-						<div
-							class="bg-background [&_.streamdown]:max-w-none [&_.streamdown]:rounded-none [&_.streamdown]:border-0 [&_.streamdown]:bg-transparent [&_.streamdown]:p-0 [&_.streamdown_pre]:m-0 [&_.streamdown_pre]:rounded-none [&_.streamdown_pre]:border-0"
-						>
-							<Streamdown content={usageMarkdown} baseTheme="shadcn" plugins={{ code }} />
+						<div class="usage-preview bg-background">
+							<Streamdown
+								content={usageMarkdown}
+								baseTheme="shadcn"
+								plugins={{ code }}
+								controls={{ code: false }}
+							/>
 						</div>
 					</div>
 				</div>
@@ -233,3 +244,35 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.usage-preview :global(.streamdown) {
+		max-width: none;
+	}
+
+	.usage-preview :global([data-streamdown='code-block']) {
+		margin: 0;
+		gap: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		padding: 0;
+	}
+
+	.usage-preview :global([data-streamdown='code-block-header']) {
+		display: none;
+	}
+
+	.usage-preview :global([data-streamdown='code-block-body']) {
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		padding: 1.25rem;
+	}
+
+	.usage-preview :global(pre) {
+		margin: 0;
+		border-radius: 0;
+		background: transparent;
+	}
+</style>

@@ -2,6 +2,7 @@ export const heroTitle = 'Streamdown-Svelte';
 export const heroDescription =
 	'Streamdown-Svelte is a markdown renderer designed for streaming content from AI models. Highly interactive, customizable, and easy to use.';
 export const installCommand = 'npm i streamdown-svelte';
+export const usageFilePath = 'src/lib/ChatMessage.svelte';
 
 export const demoMarkdown = `# Streamdown-Svelte
 
@@ -53,9 +54,9 @@ import { mermaid } from "@streamdown-svelte/mermaid";
 import { math } from "@streamdown-svelte/math";
 import { cjk } from "@streamdown-svelte/cjk";
 import "katex/dist/katex.min.css";
- 
- export let content = "";
- export let isStreaming = false;
+
+export let content = "";
+export let isStreaming = false;
 </script>
 
 <Streamdown

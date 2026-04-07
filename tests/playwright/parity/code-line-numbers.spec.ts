@@ -16,76 +16,33 @@ const maxDiffPixelRatio = 0.015;
 test.describe('code line number rendering', () => {
 	test('renders startLine labels in separate non-overlapping rows', async ({ page }, testInfo) => {
 		const route = buildParityRoute({
-			markdown: '```js startLine=5\nconst a = 1;\nconst b = 2;\nconst c = 3;\n```'
+			markdown: createCodeProbeMarkdown({
+				startLine: 1,
+				lineCount: 13
+			})
 		});
 
 		await openParityFixture(page, `${localBaseUrl}${route}`);
-
-		const lineLayout = await page.locator(renderedSelector).evaluate((root) => {
-			const code = root.querySelector<HTMLElement>('[data-streamdown="code-block-body"] code');
-			const lineElements = [...root.querySelectorAll<HTMLElement>('.sd-code-line')];
-
-			if (!code || lineElements.length !== 3) {
-				throw new Error('Expected exactly three rendered code lines for the line number probe.');
-			}
-
-			return {
-				codeHasLineNumbers: code.classList.contains('sd-line-numbers'),
-				codeStyle: code.getAttribute('style') ?? '',
-				lines: lineElements.map((line) => {
-					const rect = line.getBoundingClientRect();
-					return {
-						top: rect.top,
-						bottom: rect.bottom
-					};
-				})
-			};
+		await assertLineNumberMirror(page, testInfo, {
+			lineCount: 13,
+			startLine: 1
 		});
-
-		expect(lineLayout.codeHasLineNumbers).toBe(true);
-		expect(lineLayout.codeStyle).toContain('counter-reset: sd-line 4');
-
-		const bodyLocator = page.locator(`${renderedSelector} [data-streamdown="code-block-body"]`);
-		const actualBodyScreenshot = await bodyLocator.screenshot(screenshotOptions);
-		const actualBodyImage = PNG.sync.read(actualBodyScreenshot);
-		const bodyMetrics = await page.locator(renderedSelector).evaluate((root) => {
-			const body = root.querySelector<HTMLElement>('[data-streamdown="code-block-body"]');
-			const line = root.querySelector<HTMLElement>('.sd-code-line');
-
-			if (!body || !line) {
-				throw new Error('Could not read the body metrics for the line-number probe.');
-			}
-
-			const bodyStyle = getComputedStyle(body);
-			return {
-				bodyPaddingTop: Number.parseFloat(bodyStyle.paddingTop) || 0,
-				bodyPaddingBottom: Number.parseFloat(bodyStyle.paddingBottom) || 0,
-				bodyPaddingLeft: Number.parseFloat(bodyStyle.paddingLeft) || 0,
-				gutterWidth: Number.parseFloat(getComputedStyle(line).paddingLeft) || 48
-			};
-		});
-		const cropWidth = Math.round(bodyMetrics.bodyPaddingLeft + bodyMetrics.gutterWidth);
-		const expectedMirror = await createExpectedGutterMirror(page, {
-			width: cropWidth,
-			height: actualBodyImage.height,
-			lineCount: 3,
-			startLine: 5,
-			bodyPaddingTop: bodyMetrics.bodyPaddingTop,
-			bodyPaddingBottom: bodyMetrics.bodyPaddingBottom,
-			bodyPaddingLeft: bodyMetrics.bodyPaddingLeft,
-			gutterWidth: bodyMetrics.gutterWidth
-		});
-		const expectedScreenshot = await expectedMirror.screenshot(screenshotOptions);
-		const actualScreenshot = cropPng(actualBodyScreenshot, {
-			x: 0,
-			y: 0,
-			width: cropWidth,
-			height: actualBodyImage.height
-		});
-
-		await assertImageSimilarity(actualScreenshot, expectedScreenshot, testInfo);
 	});
 });
+
+function createCodeProbeMarkdown({
+	startLine,
+	lineCount
+}: {
+	startLine: number;
+	lineCount: number;
+}): string {
+	const lines = Array.from(
+		{ length: lineCount },
+		(_value, index) => `const v${index + 1} = ${index + 1};`
+	);
+	return `\`\`\`js startLine=${startLine}\n${lines.join('\n')}\n\`\`\``;
+}
 
 async function openParityFixture(page: Page, url: string): Promise<void> {
 	await page.goto(url, { waitUntil: 'networkidle' });
@@ -95,6 +52,91 @@ async function openParityFixture(page: Page, url: string): Promise<void> {
 		}
 	});
 	await expect(page.locator(renderedSelector)).toBeVisible();
+}
+
+async function assertLineNumberMirror(
+	page: Page,
+	testInfo: TestInfo,
+	{
+		lineCount,
+		startLine
+	}: {
+		lineCount: number;
+		startLine: number;
+	}
+): Promise<void> {
+	const lineLayout = await page.locator(renderedSelector).evaluate((root, expectedLineCount) => {
+		const code = root.querySelector<HTMLElement>('[data-streamdown="code-block-body"] code');
+		const lineElements = [...root.querySelectorAll<HTMLElement>('.sd-code-line')];
+
+		if (!code || lineElements.length !== expectedLineCount) {
+			throw new Error(
+				`Expected ${expectedLineCount} rendered code lines for the line number probe.`
+			);
+		}
+
+		return {
+			codeHasLineNumbers: code.classList.contains('sd-line-numbers'),
+			codeStyle: code.getAttribute('style') ?? '',
+			lines: lineElements.map((line) => {
+				const rect = line.getBoundingClientRect();
+				return {
+					top: rect.top,
+					bottom: rect.bottom
+				};
+			})
+		};
+	}, lineCount);
+
+	expect(lineLayout.codeHasLineNumbers).toBe(true);
+	if (startLine > 1) {
+		expect(lineLayout.codeStyle).toContain(`counter-reset: sd-line ${startLine - 1}`);
+	} else {
+		expect(lineLayout.codeStyle).toBe('');
+	}
+	for (let index = 0; index < lineLayout.lines.length - 1; index += 1) {
+		expect(lineLayout.lines[index].bottom).toBeLessThanOrEqual(lineLayout.lines[index + 1].top);
+	}
+
+	const bodyLocator = page.locator(`${renderedSelector} [data-streamdown="code-block-body"]`);
+	const actualBodyScreenshot = await bodyLocator.screenshot(screenshotOptions);
+	const actualBodyImage = PNG.sync.read(actualBodyScreenshot);
+	const bodyMetrics = await page.locator(renderedSelector).evaluate((root) => {
+		const body = root.querySelector<HTMLElement>('[data-streamdown="code-block-body"]');
+		const line = root.querySelector<HTMLElement>('.sd-code-line');
+
+		if (!body || !line) {
+			throw new Error('Could not read the body metrics for the line-number probe.');
+		}
+
+		const bodyStyle = getComputedStyle(body);
+		return {
+			bodyPaddingTop: Number.parseFloat(bodyStyle.paddingTop) || 0,
+			bodyPaddingBottom: Number.parseFloat(bodyStyle.paddingBottom) || 0,
+			bodyPaddingLeft: Number.parseFloat(bodyStyle.paddingLeft) || 0,
+			gutterWidth: Number.parseFloat(getComputedStyle(line).paddingLeft) || 48
+		};
+	});
+	const cropWidth = Math.round(bodyMetrics.bodyPaddingLeft + bodyMetrics.gutterWidth);
+	const expectedMirror = await createExpectedGutterMirror(page, {
+		width: cropWidth,
+		height: actualBodyImage.height,
+		lineCount,
+		startLine,
+		bodyPaddingTop: bodyMetrics.bodyPaddingTop,
+		bodyPaddingBottom: bodyMetrics.bodyPaddingBottom,
+		bodyPaddingLeft: bodyMetrics.bodyPaddingLeft,
+		gutterWidth: bodyMetrics.gutterWidth
+	});
+	const expectedScreenshot = await expectedMirror.screenshot(screenshotOptions);
+	const actualScreenshot = cropPng(actualBodyScreenshot, {
+		x: 0,
+		y: 0,
+		width: cropWidth,
+		height: actualBodyImage.height
+	});
+
+	await assertImageSimilarity(actualScreenshot, expectedScreenshot, testInfo);
 }
 
 async function createExpectedGutterMirror(

@@ -423,6 +423,8 @@
 		.sd-line-numbers > .sd-code-line {
 			position: relative;
 			display: block;
+			min-height: 1lh;
+			line-height: 1lh;
 			padding-left: 3rem;
 		}
 
@@ -433,9 +435,10 @@
 			left: 0;
 			top: 0;
 			width: 2rem;
+			display: block;
 			text-align: right;
 			font-size: 13px;
-			line-height: inherit;
+			line-height: 1lh;
 			color: rgb(107 114 128);
 			user-select: none;
 		}

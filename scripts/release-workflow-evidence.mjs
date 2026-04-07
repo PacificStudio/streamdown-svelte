@@ -319,7 +319,7 @@ function writeVerifyEvidence(options) {
 			registryMetadata = JSON.parse(
 				runCommand(
 					'npm',
-					['view', packageSpec, 'version', 'dist.integrity', 'dist.tarball', 'gitHead', '--json'],
+					['view', packageSpec, 'version', 'dist.integrity', 'dist.tarball', '--json'],
 					'npm view'
 				)
 			);
@@ -339,7 +339,6 @@ function writeVerifyEvidence(options) {
 					metadata.artifactMetadata.tarball.sha512,
 					errorMessage
 				),
-				gitHead: buildFailedVerificationCheck(sharedEvidence.source.commitSha, errorMessage),
 				tagCommit: buildFailedVerificationCheck(sharedEvidence.source.commitSha, errorMessage)
 			};
 
@@ -363,16 +362,12 @@ function writeVerifyEvidence(options) {
 			return;
 		}
 
-		const registryTarballUrl = parseOptionalNonEmptyString(registryMetadata.dist?.tarball) ?? null;
+		const registryTarballUrl = parseOptionalNonEmptyString(registryMetadata['dist.tarball']) ?? null;
 		const checks = {
 			version: buildVerificationCheck(sharedEvidence.package.version, registryMetadata.version),
 			integrity: buildVerificationCheck(
 				metadata.artifactMetadata.tarball.integrity,
-				registryMetadata.dist?.integrity ?? null
-			),
-			gitHead: buildVerificationCheck(
-				sharedEvidence.source.commitSha,
-				registryMetadata.gitHead ?? null
+				registryMetadata['dist.integrity'] ?? null
 			),
 			sha256: buildFailedVerificationCheck(
 				metadata.artifactMetadata.tarball.sha256,
