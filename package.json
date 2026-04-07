@@ -1,6 +1,6 @@
 {
 	"name": "streamdown-svelte",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "pnpm build:packages && vite build && pnpm package:root",

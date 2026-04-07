@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-07T14:19:20.424Z",
+  "generatedAt": "2026-04-07T20:13:20.014Z",
   "subject": {
-    "name": "streamdown-svelte-3.0.2.tgz",
-    "sha256": "a2cc3dab74d87681eab0f4e4cab7ac9b74ae8df6f368cdb4c4bb383eed4ee813"
+    "name": "streamdown-svelte-3.0.3.tgz",
+    "sha256": "ff571f0c1566b31a94bf066d6c84022809da6c88753a6e928a0c6c120d72b316"
   },
   "githubAttestation": {
     "supported": false,
@@ -15,7 +15,7 @@
   },
   "npmProvenance": {
     "expectedWhenTrustedPublishing": false,
-    "publishCommand": "npm publish ./artifacts/release/streamdown-svelte-3.0.2.tgz",
+    "publishCommand": "npm publish ./artifacts/release/streamdown-svelte-3.0.3.tgz",
     "requirements": {
       "publicRepository": true,
       "publicPackage": true,
