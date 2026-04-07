@@ -4,20 +4,14 @@ import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import Code from '../../../../src/lib/Elements/Code.svelte';
 import Mermaid from '../../../../src/lib/Elements/Mermaid.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
-
-vi.mock('mermaid', () => ({
-	default: {
-		initialize: vi.fn(),
-		render: vi.fn(async () => ({
-			svg: '<svg width="120" height="80"><text>Graph</text></svg>'
-		}))
-	}
-}));
+import { createStubMermaidPlugin } from '../../../helpers/mermaid-plugin.js';
 
 describeInBrowser('ported streamdown translations', () => {
 	testInBrowser(
 		'applies custom translations across code, table, mermaid, and image fallbacks',
 		async () => {
+			const mermaidPlugin = createStubMermaidPlugin();
+
 			const screen = render(Streamdown, {
 				content: [
 					'```javascript',
@@ -34,6 +28,9 @@ describeInBrowser('ported streamdown translations', () => {
 					'',
 					'![Broken image](https://example.com/image.png)'
 				].join('\n'),
+				plugins: {
+					mermaid: mermaidPlugin.plugin
+				},
 				components: {
 					code: Code,
 					mermaid: Mermaid

@@ -19,6 +19,9 @@
 	} from './icons.js';
 	import MermaidDownload from './MermaidDownload.svelte';
 
+	let mermaidLibrary: any | null = null;
+	let mermaidLibraryPromise: Promise<any | null> | null = null;
+
 	const streamdown = useStreamdown();
 
 	const {
@@ -44,8 +47,25 @@
 			return null;
 		}
 
-		const mod = await import('mermaid');
-		return mod.default;
+		if (mermaidLibrary) {
+			return mermaidLibrary;
+		}
+
+		// Share the same client-side import across instances so concurrent Mermaid
+		// mounts do not race Vitest's browser-module route mocking in CI.
+		if (!mermaidLibraryPromise) {
+			mermaidLibraryPromise = import('mermaid')
+				.then((mod) => {
+					mermaidLibrary = mod.default;
+					return mermaidLibrary;
+				})
+				.catch((error) => {
+					mermaidLibraryPromise = null;
+					throw error;
+				});
+		}
+
+		return mermaidLibraryPromise;
 	};
 
 	onMount(() => {

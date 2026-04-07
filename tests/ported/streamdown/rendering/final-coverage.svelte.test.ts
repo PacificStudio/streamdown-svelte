@@ -3,34 +3,27 @@ import { render } from 'vitest-browser-svelte';
 import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import Mermaid from '../../../../src/lib/Elements/Mermaid.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
-
-const { initializeMock, renderMock } = vi.hoisted(() => ({
-	initializeMock: vi.fn(),
-	renderMock: vi.fn(async () => ({
-		svg: '<svg width="120" height="80"><text>Coverage Diagram</text></svg>'
-	}))
-}));
-
-vi.mock('mermaid', () => ({
-	default: {
-		initialize: initializeMock,
-		render: renderMock
-	}
-}));
+import { createStubMermaidPlugin } from '../../../helpers/mermaid-plugin.js';
 
 describeInBrowser('ported streamdown final-coverage regressions', () => {
 	testInBrowser(
 		'keeps mermaid controls enabled when the mermaid key is omitted or explicitly undefined',
 		async () => {
-			renderMock.mockReset();
-			initializeMock.mockReset();
-			renderMock.mockResolvedValue({
+			const initializeMock = vi.fn();
+			const renderMock = vi.fn().mockResolvedValue({
 				svg: '<svg width="120" height="80"><text>Coverage Diagram</text></svg>'
+			});
+			const mermaidPlugin = createStubMermaidPlugin({
+				initialize: initializeMock,
+				render: renderMock
 			});
 
 			const content = ['```mermaid', 'graph TD; A-->B', '```'].join('\n');
 			const omitted = render(Streamdown, {
 				content,
+				plugins: {
+					mermaid: mermaidPlugin.plugin
+				},
 				components: {
 					mermaid: Mermaid
 				},
@@ -38,6 +31,9 @@ describeInBrowser('ported streamdown final-coverage regressions', () => {
 			});
 			const explicitUndefined = render(Streamdown, {
 				content,
+				plugins: {
+					mermaid: mermaidPlugin.plugin
+				},
 				components: {
 					mermaid: Mermaid
 				},

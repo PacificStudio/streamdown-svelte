@@ -4,27 +4,21 @@ import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import Mermaid from '../../../../src/lib/Elements/Mermaid.svelte';
 import MermaidErrorProbe from '../../../fixtures/MermaidErrorProbe.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
+import { createStubMermaidPlugin } from '../../../helpers/mermaid-plugin.js';
 
 const StreamdownWithFutureProps = Streamdown as unknown as typeof Streamdown & {
 	new (...args: any[]): any;
 };
 
-const { initializeMock, renderMock } = vi.hoisted(() => ({
-	initializeMock: vi.fn(),
-	renderMock: vi.fn(async () => ({
-		svg: '<svg width="120" height="80"><text>Mocked Diagram</text></svg>'
-	}))
-}));
-
-vi.mock('mermaid', () => ({
-	default: {
-		initialize: initializeMock,
-		render: renderMock
-	}
-}));
-
 describeInBrowser('ported streamdown mermaid component', () => {
 	testInBrowser('renders accessible SVG output and forwards custom mermaid config', async () => {
+		const initializeMock = vi.fn();
+		const renderMock = vi.fn();
+		const mermaidPlugin = createStubMermaidPlugin({
+			initialize: initializeMock,
+			render: renderMock
+		});
+
 		initializeMock.mockReset();
 		renderMock.mockReset();
 		renderMock.mockResolvedValue({
@@ -33,6 +27,9 @@ describeInBrowser('ported streamdown mermaid component', () => {
 
 		const screen = render(Streamdown, {
 			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
+			plugins: {
+				mermaid: mermaidPlugin.plugin
+			},
 			components: {
 				mermaid: Mermaid
 			},
@@ -63,11 +60,19 @@ describeInBrowser('ported streamdown mermaid component', () => {
 	});
 
 	testInBrowser('renders fallback and custom mermaid error content', async () => {
+		const renderMock = vi.fn();
+		const mermaidPlugin = createStubMermaidPlugin({
+			render: renderMock
+		});
+
 		renderMock.mockReset();
 		renderMock.mockRejectedValue(new Error('Invalid syntax'));
 
 		const fallbackScreen = render(Streamdown, {
 			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
+			plugins: {
+				mermaid: mermaidPlugin.plugin
+			},
 			components: {
 				mermaid: Mermaid
 			}
@@ -85,6 +90,9 @@ describeInBrowser('ported streamdown mermaid component', () => {
 
 		const customScreen = render(Streamdown, {
 			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
+			plugins: {
+				mermaid: mermaidPlugin.plugin
+			},
 			components: {
 				mermaid: Mermaid
 			},
@@ -101,6 +109,11 @@ describeInBrowser('ported streamdown mermaid component', () => {
 	});
 
 	testInBrowser('keeps the last valid SVG when a rerender fails', async () => {
+		const renderMock = vi.fn();
+		const mermaidPlugin = createStubMermaidPlugin({
+			render: renderMock
+		});
+
 		renderMock.mockReset();
 		renderMock
 			.mockResolvedValueOnce({
@@ -110,6 +123,9 @@ describeInBrowser('ported streamdown mermaid component', () => {
 
 		const screen = render(StreamdownWithFutureProps, {
 			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
+			plugins: {
+				mermaid: mermaidPlugin.plugin
+			},
 			components: {
 				mermaid: Mermaid
 			}
@@ -123,6 +139,9 @@ describeInBrowser('ported streamdown mermaid component', () => {
 
 		await screen.rerender({
 			content: ['```mermaid', 'graph TD; A-->C', '```'].join('\n'),
+			plugins: {
+				mermaid: mermaidPlugin.plugin
+			},
 			components: {
 				mermaid: Mermaid
 			}

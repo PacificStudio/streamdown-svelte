@@ -5,15 +5,7 @@ import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import Mermaid from '../../../../src/lib/Elements/Mermaid.svelte';
 import type { IconMap } from '../../../../src/lib/icon-context.js';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
-
-vi.mock('mermaid', () => ({
-	default: {
-		initialize: vi.fn(),
-		render: vi.fn(async () => ({
-			svg: '<svg width="120" height="80"><text>Graph</text></svg>'
-		}))
-	}
-}));
+import { createStubMermaidPlugin } from '../../../helpers/mermaid-plugin.js';
 
 const iconSnippet = (name: string) =>
 	createRawSnippet(() => ({
@@ -22,6 +14,7 @@ const iconSnippet = (name: string) =>
 
 describeInBrowser('ported streamdown icon overrides', () => {
 	testInBrowser('accepts reference IconMap-style keys for shared control icons', async () => {
+		const mermaidPlugin = createStubMermaidPlugin();
 		const icons: Partial<IconMap> = {
 			CopyIcon: iconSnippet('copy'),
 			DownloadIcon: iconSnippet('download'),
@@ -46,6 +39,9 @@ describeInBrowser('ported streamdown icon overrides', () => {
 				'graph TD; A-->B',
 				'```'
 			].join('\n'),
+			plugins: {
+				mermaid: mermaidPlugin.plugin
+			},
 			components: {
 				mermaid: Mermaid
 			},
