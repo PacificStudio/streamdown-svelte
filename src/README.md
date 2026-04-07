@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/PacificStudio/streamdown-svelte/master/static/favicon.svg" alt="Streamdown Svelte favicon" width="96" height="96" />
 </p>
 
-# Svelte Streamdown
+<h1 align="center">Svelte Streamdown</h1>
 
 Svelte port of [Vercel Streamdown](https://streamdown.ai/) for rendering AI-generated markdown with streaming-friendly parsing, hardened HTML handling, extensible plugins, and Svelte-native customization hooks.
 
@@ -144,6 +144,38 @@ Streamdown's built-in math component imports the default KaTeX stylesheet for re
 `streamdown-svelte` now keeps a parser cache around the active markdown stream. During streaming updates it reuses the latest document split and memoizes lexed results for stable block content, while the actively changing tail block stays transient so the cache does not grow without bound across token-by-token updates.
 
 This closes the markdown parse-caching gap raised in `beynar/svelte-streamdown#18`. The remaining accepted performance drift versus the React reference is narrower: React-specific `memo` comparators and deferred-render internals are still framework-specific and documented separately in `docs/parity-matrix.md`.
+
+## Harness Engineering
+
+This repository is developed with [OpenASE](https://github.com/PacificStudio/openase) driving Codex through a Harness Engineering workflow. The core idea is simple: define the hard boundaries first, then let implementation move fast inside those boundaries.
+
+For `streamdown-svelte`, that means OpenASE is used to orchestrate Codex against validation-first harnesses around parser parity, API surface contracts, browser rendering parity, and end-to-end streaming and non-streaming behavior. Once those harnesses are in place, Codex can move quickly across parser fixes, rendering details, package boundaries, and interaction polish without drifting away from the expected observable behavior.
+
+In practice, the harness comes before the speed:
+
+- acceptance criteria are written down as executable contracts
+- rendering behavior is pinned with browser and Playwright coverage
+- streaming and settled-document behavior are both tested explicitly
+- package/export boundaries are verified separately from UI behavior
+
+That setup is what lets the project iterate quickly while still closing parity gaps in a controlled way.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/PacificStudio/streamdown-svelte/master/static/openase-kanban-board.png" alt="OpenASE kanban board" width="100%" />
+</p>
+<p align="center">
+  OpenASE drives Codex through ticket-based execution while the harness keeps the engineering boundary explicit.
+</p>
+
+| Harness layer              | What it locks down                                                               | Why it matters                                                                            | Main validation entrypoints                                                                                                               |
+| -------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| API surface harness        | Root exports, subpath exports, public types, package boundaries                  | Prevents accidental drift while refactoring internals or splitting packages               | `pnpm verify:api-surface`, `tests/contracts/api-surface.spec.ts`                                                                          |
+| Parser harness             | Block splitting, incomplete-markdown repair, normalized parser IR                | Keeps streaming repair and final parsing behavior aligned with the reference contract     | `tests/contracts/parser-parity.spec.ts`, `tests/ported/remend/*`, `tests/ported/streamdown/parser/*`                                      |
+| Rendering harness          | Observable DOM structure for markdown, tables, code, citations, and embeds       | Ensures UI work stays parity-first instead of becoming framework-specific guesswork       | `tests/playwright/parity/rendering.spec.ts`, `tests/ported/streamdown/rendering/*`                                                        |
+| Streaming harness          | Token-by-token updates, incomplete fences, caret, animations, stable-block reuse | Verifies the chat-style experience instead of only final static output                    | `tests/playwright/parity/streaming.spec.ts`, `tests/ported/streamdown/interactions/streaming-updates.svelte.test.ts`                      |
+| Non-streaming harness      | Settled final output, static rendering, CommonMark/GFM expectations              | Keeps the library reliable for normal markdown rendering, not just live streams           | `tests/playwright/commonmark/parity.spec.ts`, `tests/ported/streamdown/rendering/final-coverage.svelte.test.ts`                           |
+| Interaction harness        | Copy/download/fullscreen controls, link safety, Mermaid and table UX             | Protects user-facing behavior that is easy to regress during visual refactors             | `tests/ported/streamdown/interactivity/*`, `tests/playwright/parity/interactions.spec.ts`, `tests/playwright/parity/style-probes.spec.ts` |
+| Parallel execution harness | Explicit docs for accepted drift, migration state, and remaining gaps            | Lets multiple agents move quickly on different slices without redefining "done" each time | `docs/parity-contract.md`, `docs/test-migration-status.md`, `docs/parity-matrix.md`                                                       |
 
 ## Rich Rendering Plugins
 
