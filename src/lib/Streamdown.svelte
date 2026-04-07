@@ -17,6 +17,7 @@
 	import { type FootnoteState, type StreamdownToken } from './marked/index.js';
 	import {
 		createMarkdownParseCache,
+		type MarkdownBlockCacheScope,
 		type MarkdownBlockParseResult
 	} from './markdown-parse-cache.js';
 	import { filterMarkdownTokens } from './markdown.js';
@@ -497,11 +498,15 @@
 			!footnoteDefinitionPattern.test(markdown)
 		);
 
-	const parseMarkdownWithOptionalFootnotes = (markdown: string): MarkdownBlockParseResult =>
+	const parseMarkdownWithOptionalFootnotes = (
+		markdown: string,
+		cacheScope: MarkdownBlockCacheScope = 'stable'
+	): MarkdownBlockParseResult =>
 		markdownParseCache.parseBlock({
 			markdown,
 			extensions: streamdown.extensions,
-			resolveFootnotes: shouldResolveFootnotes(markdown)
+			resolveFootnotes: shouldResolveFootnotes(markdown),
+			cacheScope
 		});
 	const normalizedContent = $derived.by(() => {
 		if (!(resolvedMode === 'streaming' && parseIncompleteMarkdown)) {
@@ -525,7 +530,8 @@
 				markdown: normalizedContent,
 				extensions: streamdown.extensions,
 				resolveFootnotes: shouldResolveFootnotes(normalizedContent),
-				splitBlocksFn: parseMarkdownIntoBlocksFn
+				splitBlocksFn: parseMarkdownIntoBlocksFn,
+				blockCacheScope: 'transient'
 			}),
 			staticBlock: null
 		};
@@ -561,7 +567,10 @@
 		return rawBlocks.map((raw, index) => {
 			const isIncomplete = blockIsIncomplete[index] ?? false;
 			const markdown = raw;
-			const parsed = parseMarkdownWithOptionalFootnotes(markdown);
+			const parsed = parseMarkdownWithOptionalFootnotes(
+				markdown,
+				isIncomplete ? 'transient' : 'stable'
+			);
 
 			return {
 				raw,

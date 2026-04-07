@@ -13,6 +13,8 @@ export type MarkdownBlockParseResult = {
 	footnotes: FootnoteState;
 };
 
+export type MarkdownBlockCacheScope = 'stable' | 'transient';
+
 export type MarkdownDocumentParseResult = {
 	blocks: string[];
 	footnotes: FootnoteState;
@@ -29,10 +31,12 @@ type MarkdownBlockParseRequest = {
 	markdown: string;
 	extensions?: Extension[];
 	resolveFootnotes: boolean;
+	cacheScope?: MarkdownBlockCacheScope;
 };
 
 type MarkdownDocumentParseRequest = MarkdownBlockParseRequest & {
 	splitBlocksFn?: ((markdown: string) => string[]) | null;
+	blockCacheScope?: MarkdownBlockCacheScope;
 };
 
 type CachedDocumentParse = {
@@ -64,7 +68,24 @@ class ScopedMarkdownParseCache {
 		private readonly extensions: Extension[]
 	) {}
 
-	parseBlock({ markdown, resolveFootnotes }: MarkdownBlockParseRequest): MarkdownBlockParseResult {
+	private computeBlockParse(markdown: string, resolveFootnotes: boolean): MarkdownBlockParseResult {
+		return resolveFootnotes
+			? this.operations.lexWithFootnotes(markdown, this.extensions)
+			: {
+					tokens: this.operations.lexWithoutFootnotes(markdown, this.extensions),
+					footnotes: createEmptyFootnoteState()
+				};
+	}
+
+	parseBlock({
+		markdown,
+		resolveFootnotes,
+		cacheScope = 'stable'
+	}: MarkdownBlockParseRequest): MarkdownBlockParseResult {
+		if (cacheScope === 'transient') {
+			return this.computeBlockParse(markdown, resolveFootnotes);
+		}
+
 		const cache = resolveFootnotes
 			? this.blockParsesWithFootnotes
 			: this.blockParsesWithoutFootnotes;
@@ -73,13 +94,7 @@ class ScopedMarkdownParseCache {
 			return cached;
 		}
 
-		const result = resolveFootnotes
-			? this.operations.lexWithFootnotes(markdown, this.extensions)
-			: {
-					tokens: this.operations.lexWithoutFootnotes(markdown, this.extensions),
-					footnotes: createEmptyFootnoteState()
-				};
-
+		const result = this.computeBlockParse(markdown, resolveFootnotes);
 		cache.set(markdown, result);
 		return result;
 	}
@@ -87,7 +102,8 @@ class ScopedMarkdownParseCache {
 	parseDocument({
 		markdown,
 		resolveFootnotes,
-		splitBlocksFn = null
+		splitBlocksFn = null,
+		blockCacheScope = 'stable'
 	}: MarkdownDocumentParseRequest): MarkdownDocumentParseResult {
 		if (
 			this.lastDocumentParse?.markdown === markdown &&
@@ -102,7 +118,11 @@ class ScopedMarkdownParseCache {
 			result = {
 				blocks: splitBlocksFn(markdown),
 				footnotes: resolveFootnotes
-					? this.parseBlock({ markdown, resolveFootnotes }).footnotes
+					? this.parseBlock({
+							markdown,
+							resolveFootnotes,
+							cacheScope: blockCacheScope
+						}).footnotes
 					: createEmptyFootnoteState()
 			};
 		} else if (resolveFootnotes) {

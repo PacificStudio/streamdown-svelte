@@ -36,7 +36,7 @@ Streamdown renders **markdown**, tables, alerts, footnotes, citations, and more.
 
 ## Streaming Performance
 
-`svelte-streamdown` now keeps a parser cache around the active markdown stream. During streaming updates it reuses the latest document split and memoizes lexed block results by block content, so unchanged blocks do not get split and lexed again on every rerender.
+`svelte-streamdown` now keeps a parser cache around the active markdown stream. During streaming updates it reuses the latest document split and memoizes lexed results for stable block content, while the actively changing tail block stays transient so the cache does not grow without bound across token-by-token updates.
 
 This closes the markdown parse-caching gap raised in `beynar/svelte-streamdown#18`. The remaining accepted performance drift versus the React reference is narrower: React-specific `memo` comparators and deferred-render internals are still framework-specific and documented separately in `docs/parity-matrix.md`.
 
