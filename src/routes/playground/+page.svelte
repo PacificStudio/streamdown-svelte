@@ -1,16 +1,12 @@
 <script lang="ts">
 	import { BROWSER } from 'esm-env';
+	import { StickToBottom } from 'stick-to-bottom-svelte';
 	import SiteHeader from '$lib/site/SiteHeader.svelte';
 	import { PLAYGROUND_URL } from '$lib/site/metadata.js';
 	import Streamdown from '$lib/Streamdown.svelte';
 	import type { AnimateOptions } from '$lib/context.svelte.js';
 	import { code, type CustomRenderer, type PluginConfig } from '$lib/plugins.js';
-	import { onDestroy, onMount } from 'svelte';
-	import {
-		listParityFixtures,
-		resolveParityFixture,
-		type ParityFixture
-	} from '../../../apps/parity-shared/fixtures.js';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { defaultMarkdown } from './default-markdown.js';
 	import VegaLiteRenderer from './VegaLiteRenderer.svelte';
 
@@ -21,39 +17,9 @@
 	const easingOptions = ['ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear'] as const;
 	const sepOptions = ['word', 'char'] as const;
 	const caretOptions = ['block', 'circle', 'none'] as const;
-	const showcaseFixtureId = '__showcase__' as const;
-	const customFixtureId = '__custom__' as const;
-	const defaultPlaygroundFixture = resolveParityFixture('15-composite-playground.md');
-	type ShowcaseFixture = {
-		id: typeof showcaseFixtureId;
-		label: string;
-		markdown: string;
-	};
-	type PresetFixture = ParityFixture | ShowcaseFixture;
-	type PlaygroundFixtureId = PresetFixture['id'] | typeof customFixtureId;
-	const presetFixtures: readonly PresetFixture[] = [
-		{
-			id: showcaseFixtureId,
-			label: 'Feature showcase',
-			markdown: defaultMarkdown
-		},
-		...listParityFixtures()
-	];
-	const fixtureOptions = [
-		...presetFixtures,
-		{
-			id: customFixtureId,
-			label: 'Custom draft',
-			markdown: ''
-		}
-	] as const;
-	const fixtureMap = new Map<PresetFixture['id'], PresetFixture>(
-		presetFixtures.map((fixture) => [fixture.id, fixture])
-	);
 
-	let markdown = $state(defaultPlaygroundFixture.markdown);
-	let markdownOutput = $state(defaultPlaygroundFixture.markdown);
-	let selectedFixtureId = $state<PlaygroundFixtureId>(defaultPlaygroundFixture.id);
+	let markdown = $state(defaultMarkdown);
+	let markdownOutput = $state(defaultMarkdown);
 	let mode = $state<'static' | 'streaming'>('static');
 	let isStreaming = $state(false);
 	let animated = $state(false);
@@ -68,6 +34,16 @@
 	let streamTimer: ReturnType<typeof setInterval> | null = null;
 	let streamIndex = 0;
 	let interactivePlugins = $state<Partial<PluginConfig>>({});
+	let outputScrollElement = $state<HTMLElement | null>(null);
+	let outputContentElement = $state<HTMLElement | null>(null);
+
+	const outputStickToBottom = new StickToBottom({
+		scrollElement: () => outputScrollElement,
+		contentElement: () => outputContentElement,
+		initial: 'smooth',
+		resize: 'smooth'
+	});
+	const outputAtBottom = $derived(outputStickToBottom.isAtBottom);
 
 	const tokens = $derived(markdown.split(' ').map((token) => `${token} `));
 	const activePlugins = $derived({
@@ -97,38 +73,8 @@
 		isStreaming = false;
 	}
 
-	function replaceFixtureInUrl(fixtureId: string) {
-		if (typeof window === 'undefined') {
-			return;
-		}
-
-		const url = new URL(window.location.href);
-		url.searchParams.set('fixture', fixtureId);
-		window.history.replaceState(null, '', url);
-	}
-
-	function syncFixtureSelection(nextMarkdown: string) {
-		const matchedFixture = presetFixtures.find((fixture) => fixture.markdown === nextMarkdown);
-		selectedFixtureId = matchedFixture?.id ?? customFixtureId;
-	}
-
 	function handleMarkdownInput(event: Event) {
-		const nextMarkdown = (event.currentTarget as HTMLTextAreaElement).value;
-		markdown = nextMarkdown;
-		syncFixtureSelection(nextMarkdown);
-	}
-
-	function applyFixture(rawFixtureId: string | null | undefined) {
-		const fallbackFixture = defaultPlaygroundFixture;
-		const fixture = rawFixtureId
-			? (fixtureMap.get(rawFixtureId as PresetFixture['id']) ?? fallbackFixture)
-			: fallbackFixture;
-
-		stopStreaming();
-		selectedFixtureId = fixture.id;
-		markdown = fixture.markdown;
-		markdownOutput = fixture.markdown;
-		replaceFixtureInUrl(fixture.id);
+		markdown = (event.currentTarget as HTMLTextAreaElement).value;
 	}
 
 	function simulateStreaming() {
@@ -155,12 +101,33 @@
 		stopStreaming();
 		markdown = '';
 		markdownOutput = '';
-		selectedFixtureId = customFixtureId;
+	}
+
+	function handleOutputWheel(event: WheelEvent) {
+		// The current Svelte port can miss the first "escape from lock" after a programmatic scroll.
+		// Mirror an upward wheel gesture into the package state so the follow toggle stays honest.
+		if (event.deltaY < 0) {
+			outputStickToBottom.stopScroll();
+		}
 	}
 
 	function currentContent() {
 		return isStreaming ? markdownOutput : markdown;
 	}
+
+	$effect(() => {
+		currentContent();
+		if (!BROWSER) {
+			return;
+		}
+
+		void tick().then(() => {
+			void outputStickToBottom.scrollToBottom({
+				animation: 'instant',
+				preserveScrollPosition: true
+			});
+		});
+	});
 
 	onDestroy(() => {
 		stopStreaming();
@@ -174,8 +141,6 @@
 				}
 			);
 		}
-
-		applyFixture(new URL(window.location.href).searchParams.get('fixture'));
 	});
 </script>
 
@@ -209,22 +174,6 @@
 		<h1 class="px-2 text-lg font-semibold tracking-tight">Streamdown-Svelte Playground</h1>
 
 		<div class="flex items-center gap-2">
-			<select
-				class="h-8 max-w-56 rounded-md border border-input bg-background px-3 text-sm"
-				bind:value={selectedFixtureId}
-				disabled={isStreaming}
-				onchange={(event) => {
-					const fixtureId = (event.currentTarget as HTMLSelectElement).value;
-					if (fixtureId !== customFixtureId) {
-						applyFixture(fixtureId);
-					}
-				}}
-			>
-				{#each fixtureOptions as fixture}
-					<option value={fixture.id}>{fixture.label}</option>
-				{/each}
-			</select>
-
 			<select
 				class="h-8 rounded-md border border-input bg-background px-3 text-sm"
 				bind:value={mode}
@@ -377,15 +326,24 @@
 			</div>
 		</section>
 
-		<section class="flex min-h-0 flex-1 flex-col md:w-1/2">
+		<section class="relative flex min-h-0 flex-1 flex-col md:w-1/2">
 			<div class="flex shrink-0 items-center border-b border-border bg-muted/50 px-4 py-2">
 				<span class="text-xs font-medium tracking-[0.18em] text-muted-foreground uppercase">
 					Streamdown-Svelte Output
 				</span>
 			</div>
 
-			<div class="min-h-0 flex-1 overflow-auto bg-background px-4 py-5">
-				<div class="mx-auto w-full max-w-4xl">
+			<div
+				bind:this={outputScrollElement}
+				data-playground-output-scroll
+				class="min-h-0 flex-1 overflow-auto bg-background px-4 py-5"
+				onwheel={handleOutputWheel}
+			>
+				<div
+					bind:this={outputContentElement}
+					data-playground-output-content
+					class="mx-auto w-full max-w-4xl"
+				>
 					<Streamdown
 						content={currentContent()}
 						baseTheme="shadcn"
@@ -397,6 +355,19 @@
 					/>
 				</div>
 			</div>
+
+			{#if !outputAtBottom}
+				<button
+					data-playground-scroll-cta
+					class="absolute bottom-4 left-1/2 inline-flex -translate-x-1/2 items-center justify-center rounded-full border border-border bg-background/95 px-4 py-2 text-sm font-medium text-foreground shadow-lg backdrop-blur transition hover:bg-muted"
+					type="button"
+					onclick={() => {
+						void outputStickToBottom.scrollToBottom({ animation: 'instant' });
+					}}
+				>
+					Jump to latest
+				</button>
+			{/if}
 		</section>
 	</div>
 </div>

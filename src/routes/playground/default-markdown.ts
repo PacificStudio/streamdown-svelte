@@ -25,7 +25,7 @@ Regular paragraph text with **bold**, *italic*, ***bold italic***, and ~~striket
 
 Visit [Streamdown-Svelte on GitHub](https://github.com/PacificStudio/streamdown-svelte) or paste a raw URL like https://streamdown-svelte.pacificstudio.ai and it becomes a link automatically.
 
-![Streamdown-Svelte logo](https://streamdown-svelte.pacificstudio.ai/favicon.svg)
+![Streamdown-Svelte logo](/playground/streamdown-logo-512.png)
 
 ---
 

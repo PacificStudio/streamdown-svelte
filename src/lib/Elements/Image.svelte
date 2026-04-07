@@ -4,6 +4,7 @@
 	import { save } from '$lib/utils/save.js';
 	import { isPathRelativeUrl, transformUrl } from '$lib/utils/url.js';
 	import Slot from './Slot.svelte';
+	import { downloadIcon, resolveIcon } from './icons.js';
 	import type { Tokens } from 'marked';
 	import type { Snippet } from 'svelte';
 
@@ -169,15 +170,19 @@
 						/>
 					</Slot>
 				{/if}
+				<div
+					aria-hidden="true"
+					class="pointer-events-none absolute inset-0 hidden rounded-lg bg-black/10 group-hover:block"
+				></div>
 				{#if isLoaded && !hasError}
 					<button
-						class={streamdown.theme.components.button}
+						class="absolute right-2 bottom-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-border bg-background/90 text-muted-foreground opacity-0 shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-background hover:text-foreground group-hover:opacity-100"
 						type="button"
 						title={streamdown.translations.downloadImage}
 						aria-label={streamdown.translations.downloadImage}
 						onclick={downloadImage}
 					>
-						{streamdown.translations.downloadImage}
+						{@render resolveIcon(streamdown.icons, 'download', downloadIcon)()}
 					</button>
 				{/if}
 			</span>

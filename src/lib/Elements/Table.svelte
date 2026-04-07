@@ -83,9 +83,9 @@
 	});
 </script>
 
-<div class="my-4 flex flex-col gap-2" data-streamdown="table-wrapper">
+<div class={streamdown.theme.table.wrapper} data-streamdown="table-wrapper">
 	{#if tableControls.showControls}
-		<div class="flex items-center justify-end gap-1">
+		<div class={streamdown.theme.table.toolbar} data-streamdown="table-toolbar">
 			<TableDownload
 				showCopy={tableControls.showCopy}
 				showDownload={tableControls.showDownload}
@@ -111,7 +111,7 @@
 
 	<div
 		data-streamdown-table={id}
-		class={`${streamdown.theme.table.base} group`}
+		class={`${streamdown.theme.table.base} ${streamdown.theme.table.container} group`}
 		style:overscroll-behavior-x="none"
 	>
 		<Slot
@@ -126,7 +126,7 @@
 </div>
 
 {#if isFullscreen}
-			<div
+	<div
 		data-streamdown="table-fullscreen"
 		class="fixed inset-0 z-50 flex flex-col bg-background p-4"
 		role="dialog"
@@ -144,23 +144,28 @@
 			}
 		}}
 	>
-		<div class="flex items-center justify-end gap-1 pb-4">
-			<TableDownload
-				showCopy={tableControls.showCopy}
-				showDownload={tableControls.showDownload}
-				targetSelector={`[data-streamdown-table-fullscreen="${id}"]`}
-			/>
-			<button
-				class={streamdown.theme.components.button}
-				title={streamdown.translations.exitFullscreen}
-				type="button"
-				onclick={closeFullscreen}
-			>
-				X
-			</button>
+		<div class="flex items-start justify-end pb-4">
+			<div class={streamdown.theme.table.toolbar} data-streamdown="table-fullscreen-toolbar">
+				<TableDownload
+					showCopy={tableControls.showCopy}
+					showDownload={tableControls.showDownload}
+					targetSelector={`[data-streamdown-table-fullscreen="${id}"]`}
+				/>
+				<button
+					class={streamdown.theme.components.button}
+					title={streamdown.translations.exitFullscreen}
+					type="button"
+					onclick={closeFullscreen}
+				>
+					X
+				</button>
+			</div>
 		</div>
 
-		<div data-streamdown-table-fullscreen={id} class="flex-1 overflow-auto">
+		<div
+			data-streamdown-table-fullscreen={id}
+			class={`flex-1 overflow-auto ${streamdown.theme.table.base} ${streamdown.theme.table.container}`}
+		>
 			<Slot
 				props={{ children, token, class: streamdown.theme.table.table }}
 				component={TableComponent}

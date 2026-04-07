@@ -76,6 +76,26 @@ describeInBrowser('ported streamdown code block features', () => {
 		]);
 	});
 
+	testInBrowser('keeps code actions in a sticky overlay shell', async () => {
+		const screen = render(Streamdown, {
+			content: '```ts\nconst answer = 42;\n```'
+		});
+
+		const actionShell = screen.container.querySelector<HTMLElement>(
+			'[data-streamdown="code-block-actions-shell"]'
+		);
+		const actionBar = screen.container.querySelector<HTMLElement>(
+			'[data-streamdown="code-block-actions"]'
+		);
+		expect(actionShell).toBeTruthy();
+		expect(actionBar).toBeTruthy();
+
+		expect(actionShell?.className).toContain('sticky');
+		expect(actionShell?.className).toContain('top-2');
+		expect(actionShell?.className).toContain('pointer-events-none');
+		expect(actionBar?.className).toContain('pointer-events-auto');
+	});
+
 	testInBrowser('keeps loading-state line numbers separated for double-digit rows', async () => {
 		const win = window as Window & {
 			STREAMDOWN_HIGHLIGHTER?: {
