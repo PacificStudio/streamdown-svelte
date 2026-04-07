@@ -1,12 +1,14 @@
 import type { MarkdownBlockCacheScope, MarkdownBlockParseResult } from '../markdown-parse-cache.js';
+import type { RemendOptions } from 'remend';
 import type { Footnote, FootnoteRef } from '../marked/marked-footnotes.js';
 import type { Extension, FootnoteState, StreamdownToken } from '../marked/index.js';
-import { filterMarkdownTokens } from '../markdown.js';
+import { filterMarkdownTokens, type MarkdownFilteringOptions } from '../markdown.js';
 import { carets, hasIncompleteCodeFence, hasTable } from '../streaming.js';
 import { detectTextDirection } from '../utils/detectDirection.js';
 import { normalizeHtmlIndentation } from '../security/html.js';
 import { preprocessCustomTags } from '../security/preprocess-custom-tags.js';
 import { preprocessLiteralTagContent } from '../security/preprocess-literal-tag-content.js';
+import { repairIncompleteMarkdown } from './incomplete-markdown.js';
 import { footnoteDefinitionPattern, resolveRootClassName } from './config.js';
 
 export type ParsedBlock = {
@@ -94,6 +96,7 @@ export const parseMarkdownWithOptionalFootnotes = ({
 	extensions,
 	mode,
 	parseIncompleteMarkdown,
+	remend,
 	cacheScope = 'stable'
 }: {
 	markdown: string;
@@ -108,10 +111,14 @@ export const parseMarkdownWithOptionalFootnotes = ({
 	extensions: Extension[] | undefined;
 	mode: 'static' | 'streaming';
 	parseIncompleteMarkdown: boolean;
+	remend?: RemendOptions;
 	cacheScope?: MarkdownBlockCacheScope;
 }) =>
 	cache.parseBlock({
-		markdown,
+		markdown:
+			mode === 'streaming' && parseIncompleteMarkdown
+				? repairIncompleteMarkdown(markdown, remend)
+				: markdown,
 		extensions,
 		resolveFootnotes: shouldResolveFootnotes({
 			markdown,
@@ -210,13 +217,7 @@ export const buildFootnoteEntries = ({
 }: {
 	footnoteState: FootnoteState;
 	parseMarkdownWithFootnotes: (markdown: string) => MarkdownBlockParseResult;
-	filtering: {
-		allowedElements?: readonly string[];
-		allowElement?: unknown;
-		disallowedElements?: readonly string[];
-		skipHtml?: boolean;
-		unwrapDisallowed?: boolean;
-	};
+	filtering: MarkdownFilteringOptions;
 }) =>
 	Array.from(footnoteState.footnotes.values()).map((entry) => {
 		const content = entry.lines.join('\n').trim();
@@ -226,13 +227,7 @@ export const buildFootnoteEntries = ({
 			tokens:
 				content.length === 0
 					? []
-					: filterMarkdownTokens(parseMarkdownWithFootnotes(content).tokens, {
-							allowedElements: filtering.allowedElements,
-							allowElement: filtering.allowElement as never,
-							disallowedElements: filtering.disallowedElements,
-							skipHtml: filtering.skipHtml,
-							unwrapDisallowed: filtering.unwrapDisallowed
-						})
+					: filterMarkdownTokens(parseMarkdownWithFootnotes(content).tokens, filtering)
 		};
 	}) satisfies Footnote[];
 

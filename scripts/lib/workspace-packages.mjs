@@ -53,6 +53,7 @@ export function listWorkspacePackages(repoRoot, { includeRoot = false } = {}) {
 
 export function listStandalonePluginPackages(repoRoot) {
 	return listWorkspacePackages(repoRoot).filter((entry) =>
-		entry.packageJson.name.startsWith('@streamdown/')
+		entry.packageJson.name.startsWith('@streamdown/') &&
+		entry.packageJson.name !== '@streamdown/plugin-core'
 	);
 }

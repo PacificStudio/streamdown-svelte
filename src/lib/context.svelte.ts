@@ -18,13 +18,19 @@ import type {
 	Snippets,
 	StreamdownComponents,
 	StreamdownContext as StreamdownContextContract,
-	StreamdownContextInit,
 	StreamdownControlsConfig,
 	StreamdownProps,
 	TableControlsConfig
 } from './contracts/streamdown.js';
 export { normalizeMermaidControls } from './contracts/streamdown.js';
-import { bind } from './utils/bind.js';
+import {
+	defineRuntimeSectionBridge,
+	StreamdownParseRuntime,
+	StreamdownRenderRuntime,
+	StreamdownSecurityRuntime,
+	StreamdownUiConfigRuntime,
+	type StreamdownRuntimeSections
+} from './streamdown/runtime.js';
 
 export type {
 	AllowedTags,
@@ -47,6 +53,14 @@ export type {
 	StreamdownProps,
 	TableControlsConfig
 } from './contracts/streamdown.js';
+
+export type {
+	StreamdownParseRuntimeInit,
+	StreamdownSecurityRuntimeInit,
+	StreamdownRenderRuntimeInit,
+	StreamdownUiConfigRuntimeInit,
+	StreamdownRuntimeSections
+} from './streamdown/runtime.js';
 
 /* Keep this literal prop block inline for the README/source contract test in
 `tests/contracts/readme-props.spec.ts`, which extracts public prop names
@@ -130,6 +144,11 @@ export class StreamdownContext<Source extends Record<string, any> = Record<strin
 
 	isMounted = false;
 
+	readonly parse: StreamdownParseRuntime<Source>;
+	readonly security: StreamdownSecurityRuntime<Source>;
+	readonly render: StreamdownRenderRuntime<Source>;
+	readonly uiConfig: StreamdownUiConfigRuntime<Source>;
+
 	get animationTextStyle() {
 		return getContext('POPOVER')
 			? undefined
@@ -165,8 +184,15 @@ animation-fill-mode: forwards;`
 				: undefined;
 	}
 
-	constructor(props: StreamdownContextInit<Source>) {
-		bind(this, props);
+	constructor(props: StreamdownRuntimeSections<Source>) {
+		this.parse = new StreamdownParseRuntime(props.parse);
+		this.security = new StreamdownSecurityRuntime(props.security);
+		this.render = new StreamdownRenderRuntime(props.render);
+		this.uiConfig = new StreamdownUiConfigRuntime(props.uiConfig);
+		defineRuntimeSectionBridge(this, 'parse', () => this.parse);
+		defineRuntimeSectionBridge(this, 'security', () => this.security);
+		defineRuntimeSectionBridge(this, 'render', () => this.render);
+		defineRuntimeSectionBridge(this, 'uiConfig', () => this.uiConfig);
 		setContext(STREAMDOWN_CONTEXT_KEY, this);
 		if (this.animation.animateOnMount) {
 			this.isMounted = true;

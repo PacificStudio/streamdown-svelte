@@ -20,6 +20,7 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
+    "@streamdown/plugin-core": "workspace:*",
     "mermaid": "^11.11.0"
   },
   "description": "Standalone mermaid plugin package used by the svelte-streamdown workspace.",

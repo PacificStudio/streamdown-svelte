@@ -8,6 +8,6 @@ export {
 	type MermaidModule,
 	type MermaidModuleLoader,
 	type MermaidPluginOptions
-} from "../../shared/plugin-core/mermaid.js";
+} from "@streamdown/plugin-core";
 
 export type { MermaidConfig } from "mermaid";

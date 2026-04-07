@@ -13,7 +13,7 @@ import type {
 	MermaidInstance,
 	MermaidPluginOptions,
 	ThemeInput
-} from '../../../shared/plugin-core/contracts.js';
+} from '@streamdown/plugin-core';
 
 export type {
 	CodeHighlighterPlugin,

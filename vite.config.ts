@@ -76,6 +76,7 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
+			'@streamdown/plugin-core': resolve('packages/streamdown-plugin-core/src/index.ts'),
 			'@streamdown/code': resolve('packages/streamdown-code/index.ts'),
 			'@streamdown/math': resolve('packages/streamdown-math/index.ts'),
 			'@streamdown/mermaid': resolve('packages/streamdown-mermaid/index.ts'),

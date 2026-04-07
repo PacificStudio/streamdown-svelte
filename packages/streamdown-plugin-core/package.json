@@ -1,6 +1,6 @@
 {
-  "name": "@streamdown/cjk",
-  "version": "1.0.3",
+  "name": "@streamdown/plugin-core",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -13,18 +13,25 @@
   },
   "files": [
     "dist",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "build": "tsup index.ts --format esm --dts --clean",
+    "build": "tsup src/index.ts --format esm --dts --clean",
     "prepack": "pnpm run build"
   },
   "dependencies": {
-    "@streamdown/plugin-core": "workspace:*",
+    "@shikijs/langs": "^3.17.1",
+    "@shikijs/themes": "^3.17.1",
+    "mermaid": "^11.11.0",
+    "rehype-katex": "^7.0.1",
     "remark-cjk-friendly": "^2.0.1",
     "remark-cjk-friendly-gfm-strikethrough": "^2.0.1",
+    "remark-math": "^6.0.0",
+    "shiki": "^3.13.0",
+    "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
   },
-  "description": "Standalone CJK plugin package used by the svelte-streamdown workspace.",
+  "description": "Shared Streamdown plugin implementation core for the workspace.",
   "license": "MIT"
 }

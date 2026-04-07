@@ -1,6 +1,6 @@
 "use client";
 
-import { bundledLanguagesInfo } from "../../shared/plugin-core/bundled-languages.js";
+import { bundledLanguagesInfo } from "@streamdown/plugin-core";
 import {
 	createCodePlugin as createSharedCodePlugin,
 	type CodeHighlighterPlugin,
@@ -8,7 +8,7 @@ import {
 	type HighlightResult,
 	type HighlightToken,
 	type ThemeInput
-} from "../../shared/plugin-core/code.js";
+} from "@streamdown/plugin-core";
 
 export type {
 	CodeHighlighterPlugin,

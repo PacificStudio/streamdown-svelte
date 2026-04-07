@@ -1,5 +1,4 @@
 <script lang="ts" generics="Source extends Record<string, any> = Record<string, any>">
-	import remend from 'remend';
 	import { useDarkMode } from '$lib/utils/darkMode.svelte.js';
 	import Block from './Block.svelte';
 	import { type MermaidOptions, type StreamdownProps } from './context.svelte.js';
@@ -139,61 +138,71 @@
 	);
 
 	streamdown = createStreamdownRuntimeContext<Source>({
-		element: () => element,
-		content: () => content,
-		parseIncompleteMarkdown: () => parseIncompleteMarkdown,
-		parseMarkdownIntoBlocksFn: () => parseMarkdownIntoBlocksFn,
-		mode: () => resolvedMode,
-		dir: () => dir,
-		defaultOrigin: () => defaultOrigin,
-		allowedLinkPrefixes: () => allowedLinkPrefixes,
-		allowedImagePrefixes: () => allowedImagePrefixes,
-		linkSafety: () => linkSafety,
-		allowedTags: () => allowedTags,
-		allowedElements: () => allowedElements,
-		allowElement: () => allowElement,
-		disallowedElements: () => disallowedElements,
-		literalTagContent: () => literalTagContent,
-		normalizeHtmlIndentation: () => shouldNormalizeHtmlIndentation,
-		skipHtml: () => skipHtml,
-		unwrapDisallowed: () => unwrapDisallowed,
-		urlTransform: () => urlTransform,
-		prefix: () => prefix,
-		lineNumbers: () => lineNumbers,
-		shikiTheme: () => shikiThemedTheme,
-		snippets: () => snippets,
-		theme: () => resolvedTheme,
-		baseTheme: () => baseTheme,
-		mermaidConfig: () => ({
-			theme: mermaidThemedTheme,
-			...(resolvedMermaid?.config ?? {}),
-			...mermaidConfig
-		}),
-		mermaid: () => resolvedMermaid,
-		katexConfig: () => katexConfig,
-		plugins: () => plugins,
-		renderHtml: () => renderHtml ?? true,
-		translations: () => mergeTranslations(translations),
-		shikiLanguages: () => shikiLanguages,
-		shikiThemes: () => ({
-			...(shikiThemes ?? {}),
-			...collectThemeRegistrations(resolvedShikiThemePair)
-		}),
-		sources: () => sources,
-		inlineCitationsMode: () => inlineCitationsMode,
-		animation: () => resolvedAnimation,
-		isAnimating: () => isAnimating,
-		animated: () => animated,
-		caret: () => caret,
-		onAnimationStart: () => onAnimationStart,
-		onAnimationEnd: () => onAnimationEnd,
-		controls: () => resolvedControls.controls,
-		codeControls: () => resolvedControls.codeControls,
-		children: () => children,
-		extensions: () => extensions,
-		icons: () => icons,
-		mdxComponents: () => mdxComponents,
-		components: () => components
+		parse: {
+			content: () => content,
+			remend: () => remendOptions,
+			parseIncompleteMarkdown: () => parseIncompleteMarkdown,
+			parseMarkdownIntoBlocksFn: () => parseMarkdownIntoBlocksFn,
+			mode: () => resolvedMode,
+			dir: () => dir,
+			sources: () => sources,
+			inlineCitationsMode: () => inlineCitationsMode,
+			extensions: () => extensions
+		},
+		security: {
+			defaultOrigin: () => defaultOrigin,
+			allowedLinkPrefixes: () => allowedLinkPrefixes,
+			allowedImagePrefixes: () => allowedImagePrefixes,
+			linkSafety: () => linkSafety,
+			allowedTags: () => allowedTags,
+			allowedElements: () => allowedElements,
+			allowElement: () => allowElement,
+			disallowedElements: () => disallowedElements,
+			literalTagContent: () => literalTagContent,
+			normalizeHtmlIndentation: () => shouldNormalizeHtmlIndentation,
+			skipHtml: () => skipHtml,
+			unwrapDisallowed: () => unwrapDisallowed,
+			urlTransform: () => urlTransform,
+			renderHtml: () => renderHtml ?? true
+		},
+		render: {
+			BlockComponent: () => BlockComponent,
+			prefix: () => prefix,
+			lineNumbers: () => lineNumbers,
+			shikiTheme: () => shikiThemedTheme,
+			snippets: () => snippets,
+			theme: () => resolvedTheme,
+			baseTheme: () => baseTheme,
+			mermaidConfig: () => ({
+				theme: mermaidThemedTheme,
+				...(resolvedMermaid?.config ?? {}),
+				...mermaidConfig
+			}),
+			mermaid: () => resolvedMermaid,
+			katexConfig: () => katexConfig,
+			plugins: () => plugins,
+			translations: () => mergeTranslations(translations),
+			shikiLanguages: () => shikiLanguages,
+			shikiThemes: () => ({
+				...(shikiThemes ?? {}),
+				...collectThemeRegistrations(resolvedShikiThemePair)
+			}),
+			children: () => children,
+			mdxComponents: () => mdxComponents,
+			components: () => components
+		},
+		uiConfig: {
+			element: () => element,
+			animation: () => resolvedAnimation,
+			isAnimating: () => isAnimating,
+			animated: () => animated,
+			caret: () => caret,
+			onAnimationStart: () => onAnimationStart,
+			onAnimationEnd: () => onAnimationEnd,
+			controls: () => resolvedControls.controls,
+			codeControls: () => resolvedControls.codeControls,
+			icons: () => icons
+		}
 	});
 	PluginContext.provide(() => plugins ?? null);
 	IconContext.provide(() => icons);
@@ -231,14 +240,11 @@
 			extensions: streamdown.extensions,
 			mode: resolvedMode,
 			parseIncompleteMarkdown,
+			remend: remendOptions,
 			cacheScope
 		});
 	const normalizedContent = $derived.by(() => {
-		if (!(resolvedMode === 'streaming' && parseIncompleteMarkdown)) {
-			return preprocessedContent;
-		}
-
-		return remend(preprocessedContent, remendOptions);
+		return preprocessedContent;
 	});
 	const parsedMarkdownDocument = $derived.by(() => {
 		if (resolvedStatic) {

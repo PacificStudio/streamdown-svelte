@@ -31,30 +31,99 @@ function packWorkspacePackage(pkg, packDestination) {
 	};
 }
 
-function verifyPackage(pkg) {
-	const packDestination = createPackDestination(`${pkg.id}-export-verify-`);
-	const tempDirectories = [packDestination];
-	const fixtureDirectory = join(packDestination, 'pack-smoke');
+function collectWorkspaceDependencyTarballs(packageName, packedPackages) {
+	const visited = new Set();
+	const tarballPaths = [];
 
-	try {
-		const { exportEntries, packageJson, tarballPath } = packWorkspacePackage(pkg, packDestination);
-		assertBuildOutputExists(pkg.dir, exportEntries);
+	const visit = (dependencyName) => {
+		if (visited.has(dependencyName)) {
+			return;
+		}
 
-		const tarballPaths = [tarballPath];
+		const dependencyPackage = packedPackages.get(dependencyName);
+		if (!dependencyPackage) {
+			return;
+		}
 
-		if (pkg.isRoot) {
-			for (const dependencyPkg of getPublishablePackages()) {
-				if (dependencyPkg.isRoot) {
-					continue;
-				}
+		visited.add(dependencyName);
 
-				const dependencyDestination = createPackDestination(
-					`${dependencyPkg.id}-export-verify-dependency-`
-				);
-				tempDirectories.push(dependencyDestination);
-				tarballPaths.push(packWorkspacePackage(dependencyPkg, dependencyDestination).tarballPath);
+		const dependencyFields = [
+			dependencyPackage.packageJson.dependencies,
+			dependencyPackage.packageJson.optionalDependencies,
+			dependencyPackage.packageJson.peerDependencies
+		];
+
+		for (const dependencyField of dependencyFields) {
+			for (const nestedDependencyName of Object.keys(dependencyField ?? {})) {
+				visit(nestedDependencyName);
 			}
 		}
+
+		tarballPaths.push(dependencyPackage.tarballPath);
+	};
+
+	const rootPackage = packedPackages.get(packageName);
+	for (const dependencyField of [
+		rootPackage?.packageJson.dependencies,
+		rootPackage?.packageJson.optionalDependencies,
+		rootPackage?.packageJson.peerDependencies
+	]) {
+		for (const dependencyName of Object.keys(dependencyField ?? {})) {
+			visit(dependencyName);
+		}
+	}
+
+	return tarballPaths;
+}
+
+function packPublishablePackages() {
+	const packedPackages = new Map();
+	const tempDirectories = [];
+
+	try {
+		for (const pkg of getPublishablePackages()) {
+			const packDestination = createPackDestination(`${pkg.id}-export-verify-`);
+			tempDirectories.push(packDestination);
+			packedPackages.set(pkg.packageName, {
+				pkg,
+				...packWorkspacePackage(pkg, packDestination)
+			});
+		}
+
+		return {
+			packedPackages,
+			cleanup: () => {
+				for (const directory of tempDirectories) {
+					cleanupDirectory(directory);
+				}
+			}
+		};
+	} catch (error) {
+		for (const directory of tempDirectories) {
+			cleanupDirectory(directory);
+		}
+		throw error;
+	}
+}
+
+function verifyPackage(pkg, packedPackages) {
+	const packDestination = createPackDestination(`${pkg.id}-export-verify-smoke-`);
+	const fixtureDirectory = join(packDestination, 'pack-smoke');
+	const tempDirectories = [packDestination];
+
+	try {
+		const packedPackage = packedPackages.get(pkg.packageName);
+		if (!packedPackage) {
+			throw new Error(`Missing packed package metadata for ${pkg.packageName}`);
+		}
+
+		const { exportEntries, packageJson, tarballPath } = packedPackage;
+		assertBuildOutputExists(pkg.dir, exportEntries);
+
+		const tarballPaths = [
+			...collectWorkspaceDependencyTarballs(packageJson.name, packedPackages),
+			tarballPath
+		];
 
 		prepareSmokeFixture({
 			fixtureTemplateDirectory: pkg.smokeFixtureDir,
@@ -85,5 +154,11 @@ function verifyPackage(pkg) {
 	}
 }
 
-const results = getPublishablePackages().map((pkg) => verifyPackage(pkg));
-console.log(JSON.stringify({ packages: results }, null, 2));
+const packed = packPublishablePackages();
+
+try {
+	const results = getPublishablePackages().map((pkg) => verifyPackage(pkg, packed.packedPackages));
+	console.log(JSON.stringify({ packages: results }, null, 2));
+} finally {
+	packed.cleanup();
+}

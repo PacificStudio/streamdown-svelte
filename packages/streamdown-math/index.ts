@@ -5,4 +5,4 @@ export {
 	math,
 	type MathPlugin,
 	type MathPluginOptions
-} from "../../shared/plugin-core/math.js";
+} from "@streamdown/plugin-core";

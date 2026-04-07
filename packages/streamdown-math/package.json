@@ -20,6 +20,7 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
+    "@streamdown/plugin-core": "workspace:*",
     "katex": "^0.16.22",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",

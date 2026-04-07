@@ -20,6 +20,7 @@
     "prepack": "pnpm run build"
   },
   "dependencies": {
+    "@streamdown/plugin-core": "workspace:*",
     "shiki": "^3.13.0"
   },
   "description": "Standalone code highlighter plugin package for svelte-streamdown workspace parity.",

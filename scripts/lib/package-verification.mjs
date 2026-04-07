@@ -277,17 +277,44 @@ export function prepareSmokeFixture({ fixtureTemplateDirectory, fixtureDirectory
 	writeFileSync(join(fixtureDirectory, 'src', 'export-smoke.js'), entryContent);
 }
 
+function updateSmokeFixtureManifest(fixtureDirectory, tarballPaths) {
+	const packageJsonPath = join(fixtureDirectory, 'package.json');
+	const packageJson = readJson(packageJsonPath);
+	const tarballDependencies = Object.fromEntries(
+		tarballPaths
+			.map((tarballPath) => {
+				const tarballPackageJson = readTarballPackageJson(tarballPath, fixtureDirectory);
+
+				if (typeof tarballPackageJson.name !== 'string' || !tarballPackageJson.name.trim()) {
+					throw new Error(`Packed tarball ${basename(tarballPath)} is missing a valid package name`);
+				}
+
+				return [tarballPackageJson.name, `file:./${basename(tarballPath)}`];
+			})
+			.sort(([leftName], [rightName]) => leftName.localeCompare(rightName))
+	);
+
+	packageJson.dependencies = {
+		...(packageJson.dependencies ?? {}),
+		...tarballDependencies
+	};
+	packageJson.pnpm = {
+		...(packageJson.pnpm ?? {}),
+		overrides: {
+			...(packageJson.pnpm?.overrides ?? {}),
+			...tarballDependencies
+		}
+	};
+
+	writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, '\t')}\n`);
+}
+
 export function runPackSmoke(fixtureDirectory, tarballPaths, cwd) {
+	updateSmokeFixtureManifest(fixtureDirectory, tarballPaths);
 	runCommand(
 		'pnpm',
 		['install', '--prefer-offline', '--no-frozen-lockfile'],
 		'pack smoke install',
-		fixtureDirectory
-	);
-	runCommand(
-		'pnpm',
-		['add', '--prefer-offline', ...tarballPaths.map((tarballPath) => `./${basename(tarballPath)}`)],
-		'pack smoke tarball install',
 		fixtureDirectory
 	);
 	runCommand('pnpm', ['build'], 'pack smoke build', fixtureDirectory);

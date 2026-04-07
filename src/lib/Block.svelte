@@ -1,15 +1,14 @@
 <script lang="ts">
-	import { getContext, setContext } from 'svelte';
-	import AnimatedText from './AnimatedText.svelte';
-	import Element from './Elements/Element.svelte';
+	import { setContext } from 'svelte';
+	import BlockTokens from './block/BlockTokens.svelte';
+	import { renderBlockHtml } from './block/html.js';
 	import { useStreamdown } from './context.svelte.js';
 	import { filterMarkdownTokens } from './markdown.js';
 	import { lex, type StreamdownToken } from './marked/index.js';
 	import { applyPluginMarkdownTransforms } from './plugins.js';
-	import { renderMarkdownFragment } from './security/html.js';
+	import { repairIncompleteMarkdown } from './streamdown/incomplete-markdown.js';
 	import { detectTextDirection } from './utils/detectDirection.js';
 	import { hasIncompleteCodeFence, STREAMDOWN_BLOCK_CONTEXT } from './incomplete-code.js';
-	import { parseIncompleteMarkdown as completeIncompleteMarkdown } from './utils/parse-incomplete-markdown.js';
 
 	let {
 		block,
@@ -26,16 +25,18 @@
 	} = $props();
 
 	const streamdown = useStreamdown();
-	const markdown = $derived(
-		applyPluginMarkdownTransforms(
-			providedTokens
-				? block
-				: isStatic || !shouldParseIncompleteMarkdown || streamdown.parseIncompleteMarkdown === false
-					? block
-					: completeIncompleteMarkdown(block.trim()),
-			streamdown.plugins
-		)
-	);
+	const repairedBlock = $derived.by(() => {
+		if (providedTokens) {
+			return block;
+		}
+
+		if (isStatic || !shouldParseIncompleteMarkdown || streamdown.parseIncompleteMarkdown === false) {
+			return block;
+		}
+
+		return repairIncompleteMarkdown(block.trim(), streamdown.remend);
+	});
+	const markdown = $derived(applyPluginMarkdownTransforms(repairedBlock, streamdown.plugins));
 	const isIncompleteCodeFence = $derived(
 		streamdown.isAnimating && !isStatic && hasIncompleteCodeFence(block)
 	);
@@ -48,45 +49,14 @@
 			unwrapDisallowed: streamdown.unwrapDisallowed
 		})
 	);
-	const insidePopover = getContext('POPOVER');
-	const allowedTagNames = $derived(
-		streamdown.allowedTags ? Object.keys(streamdown.allowedTags) : []
-	);
-
-	const shouldRenderSecurityHtmlBlock = $derived.by(() => {
-		if (streamdown.skipHtml) {
-			return false;
-		}
-
-		const trimmed = markdown.trimStart();
-		if (trimmed.startsWith('<')) {
-			return true;
-		}
-
-		return allowedTagNames.some((tagName) =>
-			new RegExp(`<\\/?${tagName}(?=[\\s>/])`, 'i').test(markdown)
-		);
-	});
-
 	const securityHtmlBlock = $derived.by(() => {
-		if (!shouldRenderSecurityHtmlBlock) {
-			return '';
-		}
-
-		if (streamdown.renderHtml === false) {
-			return markdown
-				.replaceAll('&', '&amp;')
-				.replaceAll('<', '&lt;')
-				.replaceAll('>', '&gt;')
-				.replaceAll('"', '&quot;')
-				.replaceAll("'", '&#39;');
-		}
-
-		return renderMarkdownFragment(markdown, {
+		return renderBlockHtml(markdown, {
 			allowedImagePrefixes: streamdown.allowedImagePrefixes,
 			allowedLinkPrefixes: streamdown.allowedLinkPrefixes,
 			allowedTags: streamdown.allowedTags,
 			defaultOrigin: streamdown.defaultOrigin,
+			renderHtml: streamdown.renderHtml,
+			skipHtml: streamdown.skipHtml,
 			urlTransform: streamdown.urlTransform
 		});
 	});
@@ -103,44 +73,6 @@
 		return streamdown.dir;
 	});
 
-	const namedHtmlEntities: Record<string, string> = {
-		amp: '&',
-		apos: "'",
-		bull: '•',
-		copy: '©',
-		gt: '>',
-		hearts: '♥',
-		lt: '<',
-		mdash: '—',
-		nbsp: '\u00A0',
-		quot: '"'
-	};
-
-	const decodeHtmlEntities = (value: string): string =>
-		value.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]+);/g, (match, entity) => {
-			if (entity.startsWith('#x') || entity.startsWith('#X')) {
-				const codePoint = Number.parseInt(entity.slice(2), 16);
-				return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
-			}
-
-			if (entity.startsWith('#')) {
-				const codePoint = Number.parseInt(entity.slice(1), 10);
-				return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
-			}
-
-			return namedHtmlEntities[entity] ?? match;
-		});
-
-	const renderLeafText = (token: StreamdownToken): string => {
-		if (!('text' in token) || typeof token.text !== 'string') {
-			return '';
-		}
-
-		return token.type === 'text' ? decodeHtmlEntities(token.text) : token.text;
-	};
-	const shouldAnimateLeafText = (token: StreamdownToken): boolean =>
-		streamdown.animation.enabled && !insidePopover && !isStatic && token.type !== 'codespan';
-
 	setContext(STREAMDOWN_BLOCK_CONTEXT, {
 		get isIncompleteCodeFence() {
 			return isIncompleteCodeFence;
@@ -148,34 +80,14 @@
 	});
 </script>
 
-{#if shouldRenderSecurityHtmlBlock}
+{#if securityHtmlBlock !== null}
 	{@html securityHtmlBlock}
 {:else}
-	{#snippet renderChildren(tokens: StreamdownToken[])}
-		{#each tokens as token}
-			{#if token}
-				{@const children = (token as any)?.tokens || []}
-				{@const isTextOnlyNode = children.length === 0}
-				<Element {token} {isIncomplete}>
-					{#if isTextOnlyNode}
-						{#if shouldAnimateLeafText(token)}
-							<AnimatedText text={renderLeafText(token)} />
-						{:else}
-							{renderLeafText(token)}
-						{/if}
-					{:else}
-						{@render renderChildren(children)}
-					{/if}
-				</Element>
-			{/if}
-		{/each}
-	{/snippet}
-
 	{#if dir}
 		<div data-streamdown-dir={dir} {dir} style="display: contents;">
-			{@render renderChildren(tokens)}
+			<BlockTokens {tokens} {isIncomplete} {isStatic} />
 		</div>
 	{:else}
-		{@render renderChildren(tokens)}
+		<BlockTokens {tokens} {isIncomplete} {isStatic} />
 	{/if}
 {/if}

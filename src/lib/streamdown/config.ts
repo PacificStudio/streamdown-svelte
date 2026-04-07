@@ -4,7 +4,14 @@ import {
 	type StreamdownProps
 } from '../context.svelte.js';
 import { getThemeName, type ThemeInput } from '../plugins.js';
-import { createCn, mergeTheme, prefixThemeClasses, shadcnTheme } from '../theme.js';
+import {
+	createCn,
+	mergeTheme,
+	prefixThemeClasses,
+	shadcnTheme,
+	theme as tailwindTheme,
+	type Theme
+} from '../theme.js';
 
 const animationNameMap = {
 	blurIn: 'blur',
@@ -176,10 +183,10 @@ export const resolveThemeClassMap = <Source extends Record<string, any>>({
 	baseTheme: StreamdownProps<Source>['baseTheme'];
 	shouldMergeTheme: boolean;
 	prefix: string | undefined;
-}) => {
-	const mergedTheme = shouldMergeTheme
-		? mergeTheme(theme, baseTheme)
-		: theme || (baseTheme === 'shadcn' ? shadcnTheme : theme);
+}): Theme => {
+	const fallbackTheme = baseTheme === 'shadcn' ? shadcnTheme : tailwindTheme;
+	const mergedTheme =
+		shouldMergeTheme || theme ? mergeTheme(theme, baseTheme) : fallbackTheme;
 
 	return prefixThemeClasses(prefix, mergedTheme);
 };

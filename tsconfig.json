@@ -12,5 +12,6 @@
 		"strict": true,
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext"
-	}
+	},
+	"exclude": ["dist", "packages/*/dist"]
 }

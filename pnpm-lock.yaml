@@ -20,6 +20,9 @@ importers:
       '@shikijs/themes':
         specifier: ^3.17.1
         version: 3.17.1
+      '@streamdown/plugin-core':
+        specifier: workspace:*
+        version: link:packages/streamdown-plugin-core
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -224,6 +227,9 @@ importers:
 
   packages/streamdown-cjk:
     dependencies:
+      '@streamdown/plugin-core':
+        specifier: workspace:*
+        version: link:../streamdown-plugin-core
       remark-cjk-friendly:
         specifier: ^2.0.1
         version: 2.0.1(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(unified@11.0.5)
@@ -236,12 +242,18 @@ importers:
 
   packages/streamdown-code:
     dependencies:
+      '@streamdown/plugin-core':
+        specifier: workspace:*
+        version: link:../streamdown-plugin-core
       shiki:
         specifier: ^3.13.0
         version: 3.13.0
 
   packages/streamdown-math:
     dependencies:
+      '@streamdown/plugin-core':
+        specifier: workspace:*
+        version: link:../streamdown-plugin-core
       katex:
         specifier: ^0.16.22
         version: 0.16.22
@@ -257,9 +269,45 @@ importers:
 
   packages/streamdown-mermaid:
     dependencies:
+      '@streamdown/plugin-core':
+        specifier: workspace:*
+        version: link:../streamdown-plugin-core
       mermaid:
         specifier: ^11.11.0
         version: 11.11.0
+
+  packages/streamdown-plugin-core:
+    dependencies:
+      '@shikijs/langs':
+        specifier: ^3.17.1
+        version: 3.17.1
+      '@shikijs/themes':
+        specifier: ^3.17.1
+        version: 3.17.1
+      mermaid:
+        specifier: ^11.11.0
+        version: 11.11.0
+      rehype-katex:
+        specifier: ^7.0.1
+        version: 7.0.1
+      remark-cjk-friendly:
+        specifier: ^2.0.1
+        version: 2.0.1(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(unified@11.0.5)
+      remark-cjk-friendly-gfm-strikethrough:
+        specifier: ^2.0.1
+        version: 2.0.1(@types/mdast@4.0.4)(micromark-util-types@2.0.2)(micromark@4.0.2)(unified@11.0.5)
+      remark-math:
+        specifier: ^6.0.0
+        version: 6.0.0
+      shiki:
+        specifier: ^3.13.0
+        version: 3.13.0
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
 
 packages:
 

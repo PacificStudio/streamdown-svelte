@@ -1,22 +1,17 @@
-import { tick } from 'svelte';
+import { defineGetter } from '../utils/bind.js';
 
 type KeyFramesOptions = {
 	duration: number;
 	easing: string;
 	fill: 'auto' | 'backwards' | 'both' | 'forwards' | 'none';
 };
-
-export const bind = (ref: Record<string, any>, props: Record<string, any>) => {
-	const descriptors = Object.getOwnPropertyDescriptors(props);
-	for (const key in descriptors) {
-		Object.defineProperty(ref, key, descriptors[key]);
-	}
-};
 export interface StepperState<Item> {
-	items: Item[];
+	readonly items: Item[];
 	keyFramesOptions: KeyFramesOptions;
 }
 export class StepperState<Item> {
+	declare readonly items: Item[];
+	keyFramesOptions: KeyFramesOptions;
 	activeStep = $state(0);
 	destinationOffset = $state(0);
 	stepAnimation = $state<Animation>();
@@ -25,7 +20,8 @@ export class StepperState<Item> {
 	stepContainer: HTMLElement | null = null;
 	isAnimating = $state(false);
 	constructor(props: { items: Item[]; keyFramesOptions: KeyFramesOptions }) {
-		bind(this, props);
+		this.keyFramesOptions = props.keyFramesOptions;
+		defineGetter(this, 'items', () => props.items);
 	}
 
 	translate = () => {
@@ -78,10 +74,8 @@ export class StepperState<Item> {
 		const steps = node.querySelectorAll('[data-step]');
 
 		const setOffsets = () => {
-			steps.forEach((step, i) => {
-				this.offsets[i] = (step as HTMLElement).offsetLeft;
-				this.translate();
-			});
+			this.offsets = Array.from(steps, (step) => (step as HTMLElement).offsetLeft);
+			this.translate();
 		};
 		const resizeObserver = new ResizeObserver(setOffsets);
 		resizeObserver.observe(node);
