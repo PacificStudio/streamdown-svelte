@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  defu: ^6.1.6
+
 importers:
 
   .:
@@ -1866,8 +1869,8 @@ packages:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
 
-  defu@6.1.4:
-    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
+  defu@6.1.6:
+    resolution: {integrity: sha512-f8mefEW4WIVg4LckePx3mALjQSPQgFlg9U8yaPdlsbdYcHQyj9n2zL2LJEA52smeYxOvmd/nB7TpMtHGMTHcug==}
 
   delaunator@5.0.1:
     resolution: {integrity: sha512-8nvh+XBe96aCESrGOqMp/84b13H9cdKbG5P2ejQCh4d4sK9RL4371qou9drQjMhvnPmhWl5hnmqbEE0fXr9Xnw==}
@@ -4793,7 +4796,7 @@ snapshots:
 
   deepmerge@4.3.1: {}
 
-  defu@6.1.4: {}
+  defu@6.1.6: {}
 
   delaunator@5.0.1:
     dependencies:
@@ -6346,7 +6349,7 @@ snapshots:
 
   unenv@2.0.0-rc.20:
     dependencies:
-      defu: 6.1.4
+      defu: 6.1.6
       exsolve: 1.0.7
       ohash: 2.0.11
       pathe: 2.0.3
