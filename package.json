@@ -159,6 +159,9 @@
 		"svelte"
 	],
 	"pnpm": {
+		"overrides": {
+			"defu": "^6.1.6"
+		},
 		"onlyBuiltDependencies": [
 			"esbuild"
 		]
