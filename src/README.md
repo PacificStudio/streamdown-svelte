@@ -22,6 +22,103 @@ Streamdown renders **markdown**, tables, alerts, footnotes, citations, and more.
 <Streamdown {content} />
 ```
 
+## Consumer Setup
+
+### Tailwind v4 / SvelteKit
+
+If your app uses Tailwind v4, add Streamdown's published files as a source so Tailwind keeps the package's utility classes in the final CSS. In a SvelteKit app that keeps its main stylesheet at `src/app.css`:
+
+```css
+@import 'tailwindcss';
+@source "../node_modules/svelte-streamdown/dist/**/*.{js,svelte,ts}";
+```
+
+If your stylesheet lives elsewhere, adjust the relative path from that file to `node_modules/svelte-streamdown/dist`. Without `@source`, built-in code blocks, tables, alerts, and theme classes can render unstyled in production builds.
+
+### Shiki themes
+
+`shikiTheme` controls the active built-in Shiki theme. `shikiThemes` is the registration map for custom theme names when you want to switch between imported themes by string.
+
+Use a single bundled theme name when one theme is enough:
+
+```svelte
+<Streamdown {content} shikiTheme="github-dark" />
+```
+
+Use a light/dark tuple when your app already toggles `.dark`, `[data-theme='dark']`, or `color-scheme: dark` on `<html>` / `<body>` and you want Streamdown to follow that mode automatically:
+
+```svelte
+<Streamdown {content} shikiTheme={['github-light', 'github-dark']} />
+```
+
+You can also pass imported Shiki theme objects directly:
+
+````svelte
+<script lang="ts">
+	import { Streamdown } from 'svelte-streamdown';
+	import vitesseDark from '@shikijs/themes/vitesse-dark';
+	import vitesseLight from '@shikijs/themes/vitesse-light';
+
+	let content = '```ts\nconsole.log(\"hi\");\n```';
+</script>
+
+<Streamdown {content} shikiTheme={[vitesseLight, vitesseDark]} />
+````
+
+When you want to switch custom themes by name at runtime, register them once with `shikiThemes` and then update `shikiTheme` reactively:
+
+````svelte
+<script lang="ts">
+	import { Streamdown } from 'svelte-streamdown';
+	import vitesseDark from '@shikijs/themes/vitesse-dark';
+	import vitesseLight from '@shikijs/themes/vitesse-light';
+
+	let content = '```ts\nconsole.log(\"hi\");\n```';
+	let isDark = false;
+
+	const shikiThemes = {
+		'vitesse-light': vitesseLight,
+		'vitesse-dark': vitesseDark
+	};
+</script>
+
+<button type="button" onclick={() => (isDark = !isDark)}> Toggle code theme </button>
+
+<Streamdown {content} shikiTheme={isDark ? 'vitesse-dark' : 'vitesse-light'} {shikiThemes} />
+````
+
+There is no `shikiPreloadThemes` prop in the current API. Theme switching is supported by updating `shikiTheme`, and custom theme registrations should be passed through `shikiThemes` or directly inside the `shikiTheme` tuple.
+
+If you pass a custom `plugins.code`, its `getThemes()` result becomes the active code-block theme source instead of `shikiTheme`.
+
+### Math and Mermaid
+
+Math and Mermaid are opt-in plugins. The minimal consumer setup is:
+
+```svelte
+<script lang="ts">
+	import { Streamdown, createMathPlugin, createMermaidPlugin } from 'svelte-streamdown';
+
+	let content = `
+$$E = mc^2$$
+
+\`\`\`mermaid
+graph TD
+  A --> B
+\`\`\`
+`;
+
+	const plugins = {
+		math: createMathPlugin(),
+		mermaid: createMermaidPlugin()
+	};
+</script>
+
+<Streamdown {content} {plugins} />
+```
+
+Streamdown's built-in math component imports the default KaTeX stylesheet for rendered math. Without `plugins.math`, math falls back to plain text. Without `plugins.mermaid`, Mermaid fences fall back to code-style output.
+
 ## What Ships Today
 
 - Streaming and static rendering modes
@@ -209,58 +306,58 @@ Important content
 
 The public `StreamdownProps` type is exported from the package.
 
-| Prop                        | Type                                                                                                                                               | Notes                                                                           |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `content`                   | `string`                                                                                                                                           | Markdown source to render.                                                      |
-| `mode`                      | `'static' \| 'streaming'`                                                                                                                          | Selects streaming repair behavior.                                              |
-| `static`                    | `boolean`                                                                                                                                          | Compatibility alias for forcing static mode.                                    |
-| `parseIncompleteMarkdown`   | `boolean`                                                                                                                                          | Enables or disables incomplete-markdown repair.                                 |
-| `parseMarkdownIntoBlocksFn` | `(markdown: string) => string[]`                                                                                                                   | Custom block splitter.                                                          |
-| `dir`                       | `'auto' \| 'ltr' \| 'rtl'`                                                                                                                         | Controls text direction.                                                        |
-| `class`                     | `string`                                                                                                                                           | Root wrapper class.                                                             |
-| `className`                 | `string`                                                                                                                                           | Alias that is merged with `class`.                                              |
-| `defaultOrigin`             | `string`                                                                                                                                           | Base origin for relative URLs.                                                  |
-| `allowedLinkPrefixes`       | `string[]`                                                                                                                                         | Link allowlist.                                                                 |
-| `allowedImagePrefixes`      | `string[]`                                                                                                                                         | Image allowlist.                                                                |
-| `linkSafety`                | `LinkSafetyConfig`                                                                                                                                 | Link confirmation hooks and modal renderer.                                     |
-| `allowedTags`               | `AllowedTags`                                                                                                                                      | Raw HTML tag allowlist.                                                         |
-| `allowedElements`           | `string[]`                                                                                                                                         | Markdown element allowlist, using normalized tag names such as `p` or `h2`.     |
-| `allowElement`              | `AllowElement`                                                                                                                                     | Callback for per-element markdown filtering decisions.                          |
-| `disallowedElements`        | `string[]`                                                                                                                                         | Markdown element denylist, using normalized tag names such as `strong` or `li`. |
-| `literalTagContent`         | `string[]`                                                                                                                                         | Tags whose inner content should be treated literally.                           |
-| `normalizeHtmlIndentation`  | `boolean`                                                                                                                                          | Normalizes indentation before HTML handling.                                    |
-| `renderHtml`                | `boolean \| ((token: Tokens.HTML \| Tokens.Tag) => string)`                                                                                        | Controls raw HTML rendering.                                                    |
-| `skipHtml`                  | `boolean`                                                                                                                                          | Drops raw HTML tokens before render.                                            |
-| `unwrapDisallowed`          | `boolean`                                                                                                                                          | Keeps a filtered markdown node's children instead of dropping the full subtree. |
-| `urlTransform`              | `UrlTransform`                                                                                                                                     | Rewrites or removes rendered URL attributes before link/image hardening.        |
-| `sources`                   | `Record<string, any>`                                                                                                                              | Citation source data.                                                           |
-| `inlineCitationsMode`       | `'list' \| 'carousel'`                                                                                                                             | Citation popover layout.                                                        |
-| `plugins`                   | `PluginConfig`                                                                                                                                     | Enables math, Mermaid, CJK, custom renderers, or a custom highlighter contract. |
-| `extensions`                | `Extension[]`                                                                                                                                      | Custom marked tokenizers.                                                       |
-| `components`                | `StreamdownComponents`                                                                                                                             | Component overrides for selected rendered elements.                             |
-| `mdxComponents`             | `Record<string, Component>`                                                                                                                        | Component map for uppercase MDX-style tags.                                     |
-| `children`                  | `Snippet`                                                                                                                                          | Fallback renderer for unmatched custom tokens.                                  |
-| `theme`                     | `DeepPartialTheme`                                                                                                                                 | Theme overrides.                                                                |
-| `baseTheme`                 | `'tailwind' \| 'shadcn'`                                                                                                                           | Built-in theme base.                                                            |
-| `mergeTheme`                | `boolean`                                                                                                                                          | Merge custom theme with the selected base theme.                                |
-| `prefix`                    | `string`                                                                                                                                           | Prefixes generated utility classes.                                             |
-| `lineNumbers`               | `boolean`                                                                                                                                          | Enables line numbers for fenced code blocks when the fence allows them.         |
-| `shikiTheme`                | `string`                                                                                                                                           | Active Shiki theme name.                                                        |
-| `shikiLanguages`            | `LanguageInfo[]`                                                                                                                                   | Extra languages for the built-in highlighter.                                   |
-| `shikiThemes`               | `Record<string, ThemeRegistration>`                                                                                                                | Extra Shiki theme registrations.                                                |
-| `mermaidConfig`             | `MermaidConfig`                                                                                                                                    | Mermaid configuration passed to the renderer.                                   |
-| `katexConfig`               | `KatexOptions \| ((inline: boolean) => KatexOptions)`                                                                                              | KaTeX configuration.                                                            |
-| `translations`              | `Partial<StreamdownTranslations>`                                                                                                                  | UI label overrides.                                                             |
-| `controls`                  | `{ code?, mermaid?, table? }`                                                                                                                      | Enables or disables built-in action controls.                                   |
-| `animation`                 | `{ enabled?, animateOnMount?, type?, duration?, timingFunction?, tokenize? }`                                                                      | Streaming animation configuration.                                              |
-| `animated`                  | `boolean \| AnimateOptions`                                                                                                                        | Compatibility animation API.                                                    |
-| `isAnimating`               | `boolean`                                                                                                                                          | Tells Streamdown whether content is actively streaming.                         |
-| `caret`                     | `keyof typeof carets`                                                                                                                              | Caret glyph shown while streaming.                                              |
-| `onAnimationStart`          | `() => void`                                                                                                                                       | Called when `isAnimating` flips on.                                             |
-| `onAnimationEnd`            | `() => void`                                                                                                                                       | Called when `isAnimating` flips off.                                            |
-| `streamdown`                | `StreamdownContext`                                                                                                                                | Bindable instance of the active context.                                        |
-| `element`                   | `HTMLElement`                                                                                                                                      | Bindable root element reference.                                                |
-| `icons`                     | `{ copy?, download?, fullscreen?, zoomIn?, zoomOut?, fitView?, note?, tip?, warning?, caution?, important?, chevronLeft?, chevronRight?, check? }` | Snippet overrides for built-in icons.                                           |
+| Prop                        | Type                                                                                                                                               | Notes                                                                               |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `content`                   | `string`                                                                                                                                           | Markdown source to render.                                                          |
+| `mode`                      | `'static' \| 'streaming'`                                                                                                                          | Selects streaming repair behavior.                                                  |
+| `static`                    | `boolean`                                                                                                                                          | Compatibility alias for forcing static mode.                                        |
+| `parseIncompleteMarkdown`   | `boolean`                                                                                                                                          | Enables or disables incomplete-markdown repair.                                     |
+| `parseMarkdownIntoBlocksFn` | `(markdown: string) => string[]`                                                                                                                   | Custom block splitter.                                                              |
+| `dir`                       | `'auto' \| 'ltr' \| 'rtl'`                                                                                                                         | Controls text direction.                                                            |
+| `class`                     | `string`                                                                                                                                           | Root wrapper class.                                                                 |
+| `className`                 | `string`                                                                                                                                           | Alias that is merged with `class`.                                                  |
+| `defaultOrigin`             | `string`                                                                                                                                           | Base origin for relative URLs.                                                      |
+| `allowedLinkPrefixes`       | `string[]`                                                                                                                                         | Link allowlist.                                                                     |
+| `allowedImagePrefixes`      | `string[]`                                                                                                                                         | Image allowlist.                                                                    |
+| `linkSafety`                | `LinkSafetyConfig`                                                                                                                                 | Link confirmation hooks and modal renderer.                                         |
+| `allowedTags`               | `AllowedTags`                                                                                                                                      | Raw HTML tag allowlist.                                                             |
+| `allowedElements`           | `string[]`                                                                                                                                         | Markdown element allowlist, using normalized tag names such as `p` or `h2`.         |
+| `allowElement`              | `AllowElement`                                                                                                                                     | Callback for per-element markdown filtering decisions.                              |
+| `disallowedElements`        | `string[]`                                                                                                                                         | Markdown element denylist, using normalized tag names such as `strong` or `li`.     |
+| `literalTagContent`         | `string[]`                                                                                                                                         | Tags whose inner content should be treated literally.                               |
+| `normalizeHtmlIndentation`  | `boolean`                                                                                                                                          | Normalizes indentation before HTML handling.                                        |
+| `renderHtml`                | `boolean \| ((token: Tokens.HTML \| Tokens.Tag) => string)`                                                                                        | Controls raw HTML rendering.                                                        |
+| `skipHtml`                  | `boolean`                                                                                                                                          | Drops raw HTML tokens before render.                                                |
+| `unwrapDisallowed`          | `boolean`                                                                                                                                          | Keeps a filtered markdown node's children instead of dropping the full subtree.     |
+| `urlTransform`              | `UrlTransform`                                                                                                                                     | Rewrites or removes rendered URL attributes before link/image hardening.            |
+| `sources`                   | `Record<string, any>`                                                                                                                              | Citation source data.                                                               |
+| `inlineCitationsMode`       | `'list' \| 'carousel'`                                                                                                                             | Citation popover layout.                                                            |
+| `plugins`                   | `PluginConfig`                                                                                                                                     | Enables math, Mermaid, CJK, custom renderers, or a custom highlighter contract.     |
+| `extensions`                | `Extension[]`                                                                                                                                      | Custom marked tokenizers.                                                           |
+| `components`                | `StreamdownComponents`                                                                                                                             | Component overrides for selected rendered elements.                                 |
+| `mdxComponents`             | `Record<string, Component>`                                                                                                                        | Component map for uppercase MDX-style tags.                                         |
+| `children`                  | `Snippet`                                                                                                                                          | Fallback renderer for unmatched custom tokens.                                      |
+| `theme`                     | `DeepPartialTheme`                                                                                                                                 | Theme overrides.                                                                    |
+| `baseTheme`                 | `'tailwind' \| 'shadcn'`                                                                                                                           | Built-in theme base.                                                                |
+| `mergeTheme`                | `boolean`                                                                                                                                          | Merge custom theme with the selected base theme.                                    |
+| `prefix`                    | `string`                                                                                                                                           | Prefixes generated utility classes.                                                 |
+| `lineNumbers`               | `boolean`                                                                                                                                          | Enables line numbers for fenced code blocks when the fence allows them.             |
+| `shikiTheme`                | `string \| ThemeRegistration \| [string \| ThemeRegistration, string \| ThemeRegistration]`                                                        | Active bundled theme name, imported theme registration, or a `[light, dark]` tuple. |
+| `shikiLanguages`            | `LanguageInfo[]`                                                                                                                                   | Extra languages for the built-in highlighter.                                       |
+| `shikiThemes`               | `Record<string, ThemeRegistration>`                                                                                                                | Custom Shiki theme registrations referenced by `shikiTheme`.                        |
+| `mermaidConfig`             | `MermaidConfig`                                                                                                                                    | Mermaid configuration passed to the renderer.                                       |
+| `katexConfig`               | `KatexOptions \| ((inline: boolean) => KatexOptions)`                                                                                              | KaTeX configuration.                                                                |
+| `translations`              | `Partial<StreamdownTranslations>`                                                                                                                  | UI label overrides.                                                                 |
+| `controls`                  | `{ code?, mermaid?, table? }`                                                                                                                      | Enables or disables built-in action controls.                                       |
+| `animation`                 | `{ enabled?, animateOnMount?, type?, duration?, timingFunction?, tokenize? }`                                                                      | Streaming animation configuration.                                                  |
+| `animated`                  | `boolean \| AnimateOptions`                                                                                                                        | Compatibility animation API.                                                        |
+| `isAnimating`               | `boolean`                                                                                                                                          | Tells Streamdown whether content is actively streaming.                             |
+| `caret`                     | `keyof typeof carets`                                                                                                                              | Caret glyph shown while streaming.                                                  |
+| `onAnimationStart`          | `() => void`                                                                                                                                       | Called when `isAnimating` flips on.                                                 |
+| `onAnimationEnd`            | `() => void`                                                                                                                                       | Called when `isAnimating` flips off.                                                |
+| `streamdown`                | `StreamdownContext`                                                                                                                                | Bindable instance of the active context.                                            |
+| `element`                   | `HTMLElement`                                                                                                                                      | Bindable root element reference.                                                    |
+| `icons`                     | `{ copy?, download?, fullscreen?, zoomIn?, zoomOut?, fitView?, note?, tip?, warning?, caution?, important?, chevronLeft?, chevronRight?, check? }` | Snippet overrides for built-in icons.                                               |
 
 ## Public Exports
 
