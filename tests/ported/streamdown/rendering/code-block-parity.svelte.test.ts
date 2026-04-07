@@ -40,12 +40,19 @@ describeInBrowser('ported streamdown code block rendering parity', () => {
 		});
 
 		const body = screen.container.querySelector('[data-streamdown="code-block-body"]');
-		const code = screen.container.querySelector('[data-streamdown="code-block-body"] code');
-		const line = screen.container.querySelector('[data-streamdown="code-block-body"] code > span');
+		const code = screen.container.querySelector<HTMLElement>(
+			'[data-streamdown="code-block-body"] code'
+		);
+		const line = screen.container.querySelector<HTMLElement>(
+			'[data-streamdown="code-block-body"] code > .sd-code-line'
+		);
+		const lineNumber = line
+			? window.getComputedStyle(line, '::before').content.replaceAll('"', '')
+			: '';
 		expect(body?.getAttribute('data-language')).toBe('js');
-		expect(code?.className).toContain('[counter-reset:line]');
-		expect(code?.getAttribute('style')).toContain('counter-reset: line 4');
-		expect(line?.className).toContain('before:content-[counter(line)]');
+		expect(code?.classList.contains('sd-line-numbers')).toBe(true);
+		expect(code?.getAttribute('style')).toContain('counter-reset: sd-line 4');
+		expect(lineNumber).toBe('counter(sd-line)');
 
 		const disabledLineNumbers = render(Streamdown, {
 			content: '```js noLineNumbers\nconst x = 1;\n```',
@@ -53,9 +60,10 @@ describeInBrowser('ported streamdown code block rendering parity', () => {
 		});
 
 		expect(
-			disabledLineNumbers.container.querySelector('[data-streamdown="code-block-body"] code')
-				?.className ?? ''
-		).not.toContain('[counter-reset:line]');
+			disabledLineNumbers.container
+				.querySelector('[data-streamdown="code-block-body"] code')
+				?.classList.contains('sd-line-numbers')
+		).toBe(false);
 	});
 
 	testInBrowser(

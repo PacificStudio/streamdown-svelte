@@ -120,4 +120,42 @@ describe('plugin factories', () => {
 			expect(line).toContain('const answer = 42;');
 		});
 	});
+
+	test('createCodePlugin honors an explicit activeTheme override for compare-style checks', async () => {
+		const plugin = createCodePlugin();
+		const codeSample = 'import { Streamdown } from "streamdown-svelte";';
+		const lightCallback = vi.fn();
+		const darkCallback = vi.fn();
+
+		plugin.highlight(
+			{
+				code: codeSample,
+				language: 'svelte',
+				themes: plugin.getThemes(),
+				activeTheme: 'github-light'
+			},
+			lightCallback
+		);
+		plugin.highlight(
+			{
+				code: codeSample,
+				language: 'svelte',
+				themes: plugin.getThemes(),
+				activeTheme: 'github-dark'
+			},
+			darkCallback
+		);
+
+		await vi.waitFor(() => {
+			expect(lightCallback).toHaveBeenCalled();
+			expect(darkCallback).toHaveBeenCalled();
+		});
+
+		const lightColor = lightCallback.mock.calls[0]?.[0]?.tokens[0]?.[0]?.color;
+		const darkColor = darkCallback.mock.calls[0]?.[0]?.tokens[0]?.[0]?.color;
+
+		expect(lightColor).toBeTruthy();
+		expect(darkColor).toBeTruthy();
+		expect(darkColor).not.toBe(lightColor);
+	});
 });

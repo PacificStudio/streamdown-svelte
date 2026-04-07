@@ -1,26 +1,21 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { useTheme } from 'svelte-themes';
 	import Streamdown from '$lib/Streamdown.svelte';
 	import { code } from '$lib/index.js';
 	import HomeDemo from './HomeDemo.svelte';
+	import SiteHeader from '$lib/site/SiteHeader.svelte';
 	import {
-		brands,
+		benchmarkSummary,
 		featureCards,
 		heroDescription,
 		heroTitle,
 		installCommand,
-		templates,
 		usageCode,
 		usageMarkdown
 	} from './content.js';
 
-	const theme = useTheme();
-
 	let copiedInstall = $state(false);
-	let copiedUsage = $state(false);
 	let installTimer: ReturnType<typeof setTimeout> | null = null;
-	let usageTimer: ReturnType<typeof setTimeout> | null = null;
 
 	function resetTimer(timer: ReturnType<typeof setTimeout> | null) {
 		if (timer) {
@@ -28,7 +23,7 @@
 		}
 	}
 
-	async function copyText(text: string, target: 'install' | 'usage') {
+	async function copyText(text: string, target: 'install') {
 		await navigator.clipboard.writeText(text);
 
 		if (target === 'install') {
@@ -37,82 +32,49 @@
 			installTimer = setTimeout(() => {
 				copiedInstall = false;
 			}, 2000);
-			return;
 		}
-
-		copiedUsage = true;
-		resetTimer(usageTimer);
-		usageTimer = setTimeout(() => {
-			copiedUsage = false;
-		}, 2000);
-	}
-
-	function toggleTheme() {
-		theme.theme = theme.resolvedTheme === 'dark' ? 'light' : 'dark';
 	}
 
 	onDestroy(() => {
 		resetTimer(installTimer);
-		resetTimer(usageTimer);
 	});
 </script>
 
 <svelte:head>
-	<title>Streamdown</title>
+	<title>Streamdown-Svelte</title>
 	<meta
 		name="description"
-		content="A markdown renderer designed for streaming content from AI models. Highly interactive, customizable, and easy to use."
+		content="Streamdown-Svelte is a markdown renderer designed for streaming content from AI models. Highly interactive, customizable, and easy to use."
 	/>
 </svelte:head>
 
 <div class="min-h-dvh bg-sidebar pb-32 dark:bg-background">
-	<header class="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-		<div class="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
-			<a class="font-semibold tracking-tight" href="/">Streamdown</a>
-			<nav class="flex items-center gap-2 sm:gap-3">
-				<a
-					class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-					href="/playground"
-				>
-					Playground
-				</a>
-				<a
-					class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-					href="https://github.com/PacificStudio/streamdown-svelte"
-					target="_blank"
-					rel="noreferrer"
-				>
-					GitHub
-				</a>
-				<button
-					class="rounded-md border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
-					type="button"
-					onclick={toggleTheme}
-				>
-					{theme.resolvedTheme === 'dark' ? 'Light' : 'Dark'}
-				</button>
-			</nav>
-		</div>
-	</header>
+	<SiteHeader />
 
 	<div class="mx-auto w-full max-w-5xl">
 		<section class="space-y-6 px-4 pt-16 pb-16 text-center sm:pt-24">
 			<div class="mx-auto w-full max-w-4xl space-y-5">
 				<h1
-					class="text-balance text-center text-4xl font-semibold tracking-tight sm:text-5xl xl:text-6xl"
+					class="text-center text-4xl font-semibold tracking-tight text-balance sm:text-5xl xl:text-6xl"
 				>
 					{heroTitle}
 				</h1>
-				<p class="mx-auto max-w-3xl text-balance text-lg leading-relaxed text-muted-foreground sm:text-xl">
+				<p
+					class="mx-auto max-w-xl text-lg leading-relaxed text-balance text-muted-foreground sm:text-xl"
+				>
 					{heroDescription}
 				</p>
 			</div>
 
-			<div class="mx-auto flex w-full max-w-2xl flex-col gap-3 sm:flex-row sm:justify-center">
-				<div class="inline-flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background text-left shadow-sm">
-					<span class="border-r border-border px-3 py-3 font-mono text-sm text-muted-foreground">$</span>
+			<div class="mx-auto flex w-full max-w-3xl flex-col gap-3 sm:flex-row sm:justify-center">
+				<div
+					class="inline-flex min-w-0 items-center overflow-hidden rounded-md border border-border bg-background text-left shadow-sm sm:flex-[0_1_24rem]"
+				>
+					<span class="border-r border-border px-3 py-3 font-mono text-sm text-muted-foreground"
+						>$</span
+					>
 					<input
-						class="min-w-0 flex-1 bg-transparent px-3 py-3 font-mono text-sm outline-none"
+						class="min-w-0 flex-1 bg-transparent px-3 py-3 font-mono text-sm outline-none sm:min-w-[12rem] md:min-w-[12rem]"
 						readonly
 						value={installCommand}
 					/>
@@ -135,12 +97,15 @@
 		</section>
 
 		<div class="grid divide-y border-y border-border bg-background sm:border-x">
-			<section id="demo" class="grid items-center gap-10 overflow-hidden px-4 py-8 sm:px-12 sm:py-12">
+			<section
+				id="demo"
+				class="grid items-center gap-10 overflow-hidden px-4 py-8 sm:px-12 sm:py-12"
+			>
 				<div class="mx-auto grid max-w-2xl gap-4 text-center">
-					<h2 class="font-semibold text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]">
+					<h2 class="text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]">
 						A fully-loaded Markdown renderer
 					</h2>
-					<p class="text-balance text-lg text-muted-foreground">
+					<p class="text-lg text-balance text-muted-foreground">
 						Built-in typography, streaming carets, animations, plugins, and more.
 					</p>
 				</div>
@@ -148,37 +113,33 @@
 				<HomeDemo />
 			</section>
 
-			<section class="grid gap-8 p-12">
-				<div class="text-center text-sm font-medium text-muted-foreground">
-					<p>Powering AI experiences for</p>
-				</div>
-				<div class="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border bg-border md:grid-cols-5">
-					{#each brands as brand}
-						<div class="bg-background px-4 py-6 text-center text-sm font-medium text-muted-foreground">
-							{brand}
-						</div>
-					{/each}
-				</div>
-			</section>
-
-			<section class="grid gap-8 px-4 py-8 sm:grid-cols-2 sm:px-12 sm:py-12 md:grid-cols-3">
+			<section
+				id="features"
+				class="grid scroll-mt-24 gap-8 px-4 py-8 sm:grid-cols-2 sm:px-12 sm:py-12 md:grid-cols-3"
+			>
 				{#each featureCards as card}
 					<div>
 						<h3 class="mb-2 text-lg font-semibold tracking-tight">{card.title}</h3>
-						<p class="text-muted-foreground [&_a]:font-medium [&_a]:text-primary [&_a]:underline">
+						<p
+							class="text-muted-foreground [&_a]:font-medium [&_a]:text-foreground [&_a]:underline [&_a]:decoration-border [&_a]:underline-offset-4 [&_a]:transition-colors [&_a:hover]:decoration-foreground/60"
+						>
 							{@html card.description}
 						</p>
 					</div>
 				{/each}
 			</section>
 
-			<section id="usage" class="grid gap-12 p-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:p-0">
+			<section
+				id="plugins"
+				class="grid scroll-mt-24 gap-12 p-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:p-0"
+			>
 				<div class="flex flex-col gap-2 text-balance sm:p-12">
-					<h2 class="font-semibold text-xl tracking-tight sm:text-2xl md:text-3xl">
+					<h2 class="text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
 						Get started in seconds
 					</h2>
-					<p class="mt-2 text-balance text-lg text-muted-foreground">
-						Install only what you need. Plugins are optional and tree-shakeable for minimal bundle size.
+					<p class="mt-2 text-lg text-balance text-muted-foreground">
+						Install only what you need. Plugins are optional and tree-shakeable for minimal bundle
+						size.
 					</p>
 				</div>
 
@@ -187,69 +148,80 @@
 						<div
 							class="flex items-center gap-2 border-b border-border bg-sidebar py-1.5 pr-1.5 pl-4 text-muted-foreground"
 						>
-							<span class="inline-flex size-4 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary">
-								TS
-							</span>
-							<span class="flex-1 font-mono text-sm tracking-tight">app/chat/page.tsx</span>
-							<button
-								class="rounded-md px-3 py-1 text-sm font-medium transition-colors hover:bg-accent hover:text-foreground"
-								type="button"
-								onclick={() => copyText(usageCode, 'usage')}
+							<span
+								class="inline-flex size-4 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary"
 							>
-								{copiedUsage ? 'Copied' : 'Copy'}
-							</button>
+								SV
+							</span>
+							<span class="flex-1 font-mono text-sm tracking-tight">src/lib/ChatMessage.svelte</span
+							>
 						</div>
-						<div class="bg-background [&_.streamdown]:max-w-none [&_.streamdown]:rounded-none [&_.streamdown]:border-0 [&_.streamdown]:bg-transparent [&_.streamdown]:p-0 [&_.streamdown_pre]:m-0 [&_.streamdown_pre]:rounded-none [&_.streamdown_pre]:border-0">
-							<Streamdown content={usageMarkdown} plugins={{ code }} />
+						<div
+							class="bg-background [&_.streamdown]:max-w-none [&_.streamdown]:rounded-none [&_.streamdown]:border-0 [&_.streamdown]:bg-transparent [&_.streamdown]:p-0 [&_.streamdown_pre]:m-0 [&_.streamdown_pre]:rounded-none [&_.streamdown_pre]:border-0"
+						>
+							<Streamdown content={usageMarkdown} baseTheme="shadcn" plugins={{ code }} />
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section class="grid gap-12 px-4 py-8 sm:px-12 sm:py-12">
-				<div class="grid max-w-3xl gap-2 text-balance">
-					<h2 class="font-semibold text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]">
-						Showcase
+			<section class="grid gap-8 px-4 py-8 sm:px-12 sm:py-12">
+				<div class="grid gap-3 text-balance">
+					<h2 class="text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]">
+						{benchmarkSummary.title}
 					</h2>
-					<p class="text-balance text-lg text-muted-foreground">
-						See Streamdown in action with one of the official showcase examples.
+					<p class="max-w-3xl text-lg text-balance text-muted-foreground">
+						{benchmarkSummary.description}
+					</p>
+					<p class="text-sm text-muted-foreground">
+						Snapshot from {benchmarkSummary.reportDate} on {benchmarkSummary.platform}.
 					</p>
 				</div>
-				<div class="grid gap-8 md:grid-cols-3">
-					{#each templates as item}
-						<a
-							class="group flex flex-col overflow-hidden rounded-lg border border-border bg-background p-4"
-							href={item.link}
-							target="_blank"
-							rel="noreferrer"
-						>
-							<h3 class="font-medium tracking-tight">{item.title}</h3>
-							<p class="line-clamp-2 text-sm text-muted-foreground">{item.description}</p>
-							<img
-								alt={item.title}
-								class="mt-8 -mb-12 ml-7 aspect-video -rotate-3 overflow-hidden rounded-md border border-border object-cover object-top transition-transform duration-300 group-hover:-rotate-1 group-hover:scale-[1.03]"
-								height="336"
-								src={item.image}
-								width="640"
-							/>
-						</a>
+
+				<div class="grid gap-4 md:grid-cols-3">
+					{#each benchmarkSummary.highlights as item}
+						<div class="rounded-2xl border border-border bg-background p-5 shadow-sm">
+							<p class="text-sm font-medium text-muted-foreground">{item.label}</p>
+							<p class="mt-2 text-3xl font-semibold tracking-tight">{item.value}</p>
+							<p class="mt-2 text-sm text-muted-foreground">{item.detail}</p>
+						</div>
+					{/each}
+				</div>
+
+				<div class="flex items-center justify-center rounded-2xl bg-sidebar/20 px-4 py-6">
+					<img
+						alt="Benchmark comparison by scenario"
+						class="mx-auto block w-full max-w-6xl"
+						src={benchmarkSummary.chart}
+					/>
+				</div>
+
+				<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+					{#each benchmarkSummary.suites as suite}
+						<div class="rounded-xl border border-border bg-background p-4">
+							<p class="text-sm font-medium text-muted-foreground">{suite.name}</p>
+							<p class="mt-2 text-2xl font-semibold tracking-tight">{suite.delta}</p>
+							<p class="mt-2 text-sm text-muted-foreground">{suite.record}</p>
+						</div>
 					{/each}
 				</div>
 			</section>
 
-			<section class="flex flex-col gap-4 px-8 py-10 md:flex-row md:items-center md:justify-between">
-				<h2 class="font-semibold text-xl tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]">
+			<section
+				class="flex flex-col gap-4 px-8 py-10 md:flex-row md:items-center md:justify-between"
+			>
+				<h2 class="text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl lg:text-[40px]">
 					Upgrade your AI experiences
 				</h2>
 				<div class="flex flex-wrap gap-3">
 					<a
-						class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
+						class="inline-flex items-center justify-center rounded-md bg-[#ff3e00] px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#e43700]"
 						href="/playground"
 					>
 						Open playground
 					</a>
 					<a
-						class="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-3 text-sm font-medium transition-colors hover:bg-accent"
+						class="inline-flex items-center justify-center rounded-md border border-[#ff3e00]/30 bg-[#ff3e00]/8 px-4 py-3 text-sm font-medium text-[#ff3e00] transition-colors hover:bg-[#ff3e00]/14 dark:border-[#ff6b3d]/30 dark:bg-[#ff6b3d]/10 dark:text-[#ff8a66] dark:hover:bg-[#ff6b3d]/16"
 						href="https://github.com/PacificStudio/streamdown-svelte"
 						target="_blank"
 						rel="noreferrer"

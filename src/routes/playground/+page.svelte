@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SiteHeader from '$lib/site/SiteHeader.svelte';
 	import Streamdown from '$lib/Streamdown.svelte';
 	import { cjk, code, math, mermaid } from '$lib/index.js';
 	import type { AnimateOptions } from '$lib/context.svelte.js';
@@ -164,16 +165,18 @@
 </script>
 
 <svelte:head>
-	<title>Streamdown Playground</title>
+	<title>Streamdown-Svelte Playground</title>
 	<meta
 		name="description"
-		content="Try Streamdown in your browser. Edit markdown and see rendered output in real-time."
+		content="Try Streamdown-Svelte in your browser. Edit markdown and see rendered output in real-time."
 	/>
 </svelte:head>
 
 <div class="flex h-[100dvh] flex-col overflow-hidden bg-background">
+	<SiteHeader fullWidth={true} />
+
 	<header class="relative flex shrink-0 items-center justify-between border-b border-border p-2">
-		<h1 class="px-2 text-lg font-semibold tracking-tight">Streamdown Playground</h1>
+		<h1 class="px-2 text-lg font-semibold tracking-tight">Streamdown-Svelte Playground</h1>
 
 		<div class="flex items-center gap-2">
 			<select
@@ -347,7 +350,7 @@
 		<section class="flex min-h-0 flex-1 flex-col md:w-1/2">
 			<div class="flex shrink-0 items-center border-b border-border bg-muted/50 px-4 py-2">
 				<span class="text-xs font-medium tracking-[0.18em] text-muted-foreground uppercase">
-					Streamdown Output
+					Streamdown-Svelte Output
 				</span>
 			</div>
 

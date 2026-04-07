@@ -28,6 +28,14 @@ const getPreferredTheme = (themes: [ThemeInput, ThemeInput]): ThemeInput => {
 	return themes[0];
 };
 
+const resolveActiveTheme = ({
+	activeTheme,
+	themes
+}: {
+	activeTheme?: ThemeInput;
+	themes: [ThemeInput, ThemeInput];
+}): ThemeInput => activeTheme ?? getPreferredTheme(themes);
+
 const toPlaintextTokens = (code: string): HighlightResult => ({
 	tokens: code.split('\n').map((line) => [
 		{
@@ -251,10 +259,13 @@ export function createCodePlugin(options: CodePluginCoreOptions): CodeHighlighte
 		supportsLanguage(language: string) {
 			return runtime.supportsLanguage(language);
 		},
-		highlight({ code, language, themes: runtimeThemes }, callback) {
+		highlight({ code, language, themes: runtimeThemes, activeTheme }, callback) {
 			const activeThemes = runtimeThemes ?? themes;
-			const activeTheme = getPreferredTheme(activeThemes);
-			const activeThemeName = themeName(activeTheme);
+			const resolvedActiveTheme = resolveActiveTheme({
+				activeTheme,
+				themes: activeThemes
+			});
+			const activeThemeName = themeName(resolvedActiveTheme);
 			const normalizedLanguage = normalizeLanguage(language);
 			const cacheKey = `${normalizedLanguage}:${activeThemeName}:${code}`;
 			const cached = tokenCache.get(cacheKey);
@@ -263,13 +274,13 @@ export function createCodePlugin(options: CodePluginCoreOptions): CodeHighlighte
 			}
 
 			const produce = () => {
-				const result = runtime.highlightCode(code, normalizedLanguage, activeTheme);
+				const result = runtime.highlightCode(code, normalizedLanguage, resolvedActiveTheme);
 				tokenCache.set(cacheKey, result);
 				return result;
 			};
 
-			if (!runtime.isReady(activeTheme, normalizedLanguage)) {
-				void runtime.load(activeTheme, normalizedLanguage).then(() => {
+			if (!runtime.isReady(resolvedActiveTheme, normalizedLanguage)) {
+				void runtime.load(resolvedActiveTheme, normalizedLanguage).then(() => {
 					callback?.(produce());
 				});
 				return null;

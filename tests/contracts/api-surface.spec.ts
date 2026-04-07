@@ -340,7 +340,28 @@ const approvedApiSurfaceDiffs: ApiSurfaceDiffs = sortApiSurfaceDiffs({
 		optionalMismatches: []
 	},
 	pluginPackages: {
-		missingFromLocal: []
+		missingFromLocal: [
+			{
+				packageName: '@streamdown/cjk',
+				defaultEntry: 'cjk',
+				createEntry: 'createCjkPlugin'
+			},
+			{
+				packageName: '@streamdown/code',
+				defaultEntry: 'code',
+				createEntry: 'createCodePlugin'
+			},
+			{
+				packageName: '@streamdown/math',
+				defaultEntry: 'math',
+				createEntry: 'createMathPlugin'
+			},
+			{
+				packageName: '@streamdown/mermaid',
+				defaultEntry: 'mermaid',
+				createEntry: 'createMermaidPlugin'
+			}
+		]
 	},
 	pluginConfig: {
 		// plugin-01

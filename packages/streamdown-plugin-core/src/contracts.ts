@@ -18,6 +18,7 @@ export interface HighlightResult {
 }
 
 export interface HighlightOptions {
+	activeTheme?: ThemeInput;
 	code: string;
 	language: string;
 	themes: [ThemeInput, ThemeInput];

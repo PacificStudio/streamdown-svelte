@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/PacificStudio/streamdown-svelte/master/static/favicon.svg" alt="Streamdown Svelte favicon" width="96" height="96" />
+</p>
+
 # Svelte Streamdown
 
 Svelte port of [Vercel Streamdown](https://streamdown.ai/) for rendering AI-generated markdown with streaming-friendly parsing, hardened HTML handling, extensible plugins, and Svelte-native customization hooks.

@@ -39,13 +39,14 @@
 		extractCodeFenceLanguage(token) || fence.language || token.lang || 'text'
 	);
 	const pluginThemes = $derived(codePlugin?.getThemes() ?? null);
-	const activeTheme = $derived(
-		pluginThemes
-			? typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
-				? getThemeName(pluginThemes[1])
-				: getThemeName(pluginThemes[0])
-			: streamdown.shikiTheme
-	);
+	const activeThemeName = $derived(streamdown.shikiTheme);
+	const pluginActiveTheme = $derived.by(() => {
+		if (!pluginThemes) {
+			return null;
+		}
+
+		return pluginThemes.find((theme) => getThemeName(theme) === activeThemeName) ?? activeThemeName;
+	});
 	const showLineNumbers = $derived(streamdown.lineNumbers && fence.showLineNumbers);
 	const incomplete = $derived(Boolean(isIncomplete || block?.isIncompleteCodeFence));
 	const buttonDisabled = $derived(streamdown.isAnimating || incomplete);
@@ -54,7 +55,7 @@
 	);
 	const codeStyle = $derived(
 		showLineNumbers && fence.startLine && fence.startLine > 1
-			? `counter-reset: line ${fence.startLine - 1};`
+			? `counter-reset: sd-line ${fence.startLine - 1};`
 			: undefined
 	);
 	let pluginTokens = $state<RenderToken[][] | null>(null);
@@ -84,14 +85,15 @@
 	};
 
 	$effect(() => {
-		const theme = activeTheme;
+		const theme = activeThemeName;
 		const lang = language;
 		if (codePlugin) {
 			const result = codePlugin.highlight(
 				{
 					code: token.text,
 					language: lang,
-					themes: codePlugin.getThemes()
+					themes: codePlugin.getThemes(),
+					activeTheme: pluginActiveTheme ?? undefined
 				},
 				(asyncResult) => {
 					pluginTokens = asyncResult.tokens;
@@ -115,11 +117,11 @@
 			return pluginTokens;
 		}
 
-		if (!highlighter.isReady(activeTheme, language)) {
+		if (!highlighter.isReady(activeThemeName, language)) {
 			return null;
 		}
 
-		return highlighter.highlightCode(token.text, language, activeTheme);
+		return highlighter.highlightCode(token.text, language, activeThemeName);
 	});
 </script>
 
@@ -177,19 +179,17 @@
 	>
 		{#if renderedLines}
 			<pre class={streamdown.theme.code.pre}><code
+					class="block"
 					class:sd-line-numbers={showLineNumbers}
 					data-streamdown-line-numbers={showLineNumbers}
-					style={codeStyle}
-					class={showLineNumbers ? '[counter-increment:line_0] [counter-reset:line]' : undefined}
-					>{@render Tokens(renderedLines)}</code
+					style={codeStyle}>{@render Tokens(renderedLines)}</code
 				></pre>
 		{:else}
 			<pre class={streamdown.theme.code.pre}><code
+					class="block"
 					class:sd-line-numbers={showLineNumbers}
 					data-streamdown-line-numbers={showLineNumbers}
-					style={codeStyle}
-					class={showLineNumbers ? '[counter-increment:line_0] [counter-reset:line]' : undefined}
-					>{@render Skeleton(token.text.split('\n'))}</code
+					style={codeStyle}>{@render Skeleton(token.text.split('\n'))}</code
 				></pre>
 		{/if}
 	</div>
@@ -197,13 +197,7 @@
 
 {#snippet Tokens(lines: RenderToken[][])}
 	{#each lines as tokens}
-		<span
-			class={`sd-code-line ${streamdown.theme.code.line} ${
-				showLineNumbers
-					? 'before:mr-4 before:inline-block before:w-6 before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:select-none before:[counter-increment:line]'
-					: ''
-			}`}
-		>
+		<span class={`sd-code-line ${streamdown.theme.code.line}`}>
 			{#each tokens as token}
 				<span
 					style={streamdown.isMounted ? streamdown.animationTextStyle : ''}
@@ -222,13 +216,7 @@
 		{'\n'}
 	{:else}
 		{#each lines as line}
-			<span
-				class={`sd-code-line ${streamdown.theme.code.skeleton} ${
-					showLineNumbers
-						? 'before:mr-4 before:inline-block before:w-6 before:text-right before:font-mono before:text-[13px] before:text-muted-foreground/50 before:content-[counter(line)] before:select-none before:[counter-increment:line]'
-						: ''
-				}`}
-			>
+			<span class={`sd-code-line ${streamdown.theme.code.skeleton}`}>
 				{line.length > 0 ? line : '\n'}
 			</span>
 		{/each}

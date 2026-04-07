@@ -36,6 +36,57 @@ describeInBrowser('ported streamdown plugin contract', () => {
 		});
 	});
 
+	testInBrowser(
+		're-resolves plugins.code activeTheme from the streamdown theme contract',
+		async () => {
+			const highlight = vi.fn(() => ({
+				tokens: [[{ content: 'import { Streamdown } from "streamdown-svelte";', color: '#24292e' }]]
+			}));
+			const codePlugin: CodeHighlighterPlugin = {
+				name: 'shiki',
+				type: 'code-highlighter',
+				getSupportedLanguages: () => ['svelte'],
+				getThemes: () => ['github-light', 'github-dark'],
+				supportsLanguage: () => true,
+				highlight
+			};
+
+			document.documentElement.dataset.theme = 'light';
+
+			const screen = render(Streamdown, {
+				content: ['```svelte', 'import { Streamdown } from "streamdown-svelte";', '```'].join('\n'),
+				plugins: {
+					code: codePlugin
+				}
+			});
+
+			await vi.waitFor(() => {
+				expect(screen.container.textContent).toContain(
+					'import { Streamdown } from "streamdown-svelte";'
+				);
+				expect(highlight).toHaveBeenCalledWith(
+					expect.objectContaining({
+						activeTheme: 'github-light'
+					}),
+					expect.any(Function)
+				);
+			});
+
+			document.documentElement.dataset.theme = 'dark';
+
+			await vi.waitFor(() => {
+				expect(highlight).toHaveBeenCalledWith(
+					expect.objectContaining({
+						activeTheme: 'github-dark'
+					}),
+					expect.any(Function)
+				);
+			});
+
+			delete document.documentElement.dataset.theme;
+		}
+	);
+
 	testInBrowser('renders KaTeX output when plugins.math is provided', async () => {
 		const screen = render(Streamdown, {
 			content: '$$E = mc^2$$',

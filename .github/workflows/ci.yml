@@ -223,6 +223,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build workspace packages
+        run: pnpm build:packages
+
       - name: Verify API surface parity contract
         run: pnpm verify:api-surface
 

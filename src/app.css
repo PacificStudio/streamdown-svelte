@@ -39,6 +39,12 @@
 }
 
 :root {
+	--font-brand-sans:
+		'Geist', 'Inter', 'Avenir Next', 'Segoe UI Variable Display', 'SF Pro Display', 'Helvetica Neue',
+		ui-sans-serif, system-ui, sans-serif;
+	--font-brand-mono:
+		'Geist Mono', 'SFMono-Regular', 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace,
+		monospace;
 	--radius: 0.625rem;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
@@ -119,6 +125,7 @@
 
 	body {
 		@apply min-h-dvh bg-background text-foreground;
+		font-family: var(--font-brand-sans);
 	}
 
 	input::placeholder,
@@ -144,4 +151,12 @@
 		transparent 100%
 	);
 	background-size: 0.25rem 0.25rem;
+}
+
+.font-brand-sans {
+	font-family: var(--font-brand-sans);
+}
+
+.font-brand-mono {
+	font-family: var(--font-brand-mono);
 }

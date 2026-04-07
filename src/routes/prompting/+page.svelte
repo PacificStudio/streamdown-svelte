@@ -1,9 +1,10 @@
 <script lang="ts">
+	import SiteHeader from '$lib/site/SiteHeader.svelte';
 	import Streamdown from '$lib/Streamdown.svelte';
 	import { useTheme } from 'svelte-themes';
 
 	let content = `
-# AI System Instructions for Svelte Streamdown
+# AI System Instructions for Streamdown-Svelte
 
 Copy the prompt below to use with AI systems. Click the copy button on the code block:
 
@@ -165,7 +166,7 @@ Component names MUST start with capital letter.
 
 ## Feature Examples
 
-Below are examples of all supported features rendered with Svelte Streamdown:
+Below are examples of all supported features rendered with Streamdown-Svelte:
 
 ### Basic Text Formatting
 - **Bold text**: \`**text**\` or \`__text__\`
@@ -357,25 +358,7 @@ Self-closing or with children - both work!
 	const theme = useTheme();
 </script>
 
-<div
-	class="sticky top-0 z-10 flex flex-col gap-2 border-b border-dashed border-border bg-background/95 p-3 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:flex-row md:items-center md:justify-between"
->
-	<!-- Page title -->
-	<div class="flex items-center gap-2">
-		<h1 class="text-lg font-semibold text-foreground">Prompting Guide</h1>
-	</div>
-
-	<!-- Navigation links row -->
-	<div class="flex items-center gap-2">
-		<a
-			class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-2 text-xs font-medium text-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50 sm:px-3"
-			href="/"
-		>
-			<span class="hidden sm:inline">🏠 Back to Demo</span>
-			<span class="sm:hidden">🏠 Home</span>
-		</a>
-	</div>
-</div>
+<SiteHeader />
 
 <div class="px-2 sm:px-4 md:px-6 lg:px-10">
 	<div

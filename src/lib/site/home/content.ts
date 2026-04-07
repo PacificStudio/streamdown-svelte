@@ -1,33 +1,29 @@
-export const heroTitle = 'Streamdown';
+export const heroTitle = 'Streamdown-Svelte';
 export const heroDescription =
-	'A markdown renderer designed for streaming content from AI models. Highly interactive, customizable, and easy to use.';
-export const installCommand = 'npm i streamdown';
+	'Streamdown-Svelte is a markdown renderer designed for streaming content from AI models. Highly interactive, customizable, and easy to use.';
+export const installCommand = 'npm i streamdown-svelte';
 
-export const demoMarkdown = `# Streamdown
+export const demoMarkdown = `# Streamdown-Svelte
 
-Streamdown is a **streaming-optimized** Markdown renderer for React. It was designed for AI chat interfaces where content arrives token-by-token, but it works just as well for static content.
+Streamdown-Svelte is a **streaming-optimized** Markdown renderer for Svelte. It was designed for AI chat interfaces where content arrives token-by-token, but it works just as well for static content.
 
-Most Markdown renderers re-parse the entire document on every update. Streamdown takes a different approach — it splits content into discrete blocks and only re-renders the block that changed. This means your UI stays fast, even when the response is hundreds of lines long.
+Most Markdown renderers re-parse the entire document on every update. Streamdown-Svelte takes a different approach — it splits content into discrete blocks and only re-renders the block that changed. This means your UI stays fast, even when the response is hundreds of lines long.
 
 ## Getting started
 
-Install the package from npm, then drop it into your component tree. It accepts a \`children\` string and handles the rest.
+Install the package from npm, then drop it into your component tree. Pass markdown through the \`content\` prop and Streamdown-Svelte handles the rest.
 
-\`\`\`tsx
-import { Streamdown } from "streamdown";
+\`\`\`svelte
+import { Streamdown } from "streamdown-svelte";
 
-const Chat = ({ content }: { content: string }) => (
-  <Streamdown animated caret="block">
-    {content}
-  </Streamdown>
-);
+<Streamdown content={content} animated caret="block" />
 \`\`\`
 
 The \`animated\` prop enables a smooth fade-in on new blocks, and \`caret\` renders a blinking cursor at the end of the stream — just like the one you're watching right now.
 
 ## Plugin ecosystem
 
-Streamdown ships with optional plugins for common use cases. Each one is a separate package, so you only bundle what you need.
+Streamdown-Svelte ships with optional plugins for common use cases. Each one is a separate package, so you only bundle what you need.
 
 | Plugin | Package | Purpose |
 | --- | --- | --- |
@@ -38,72 +34,39 @@ Streamdown ships with optional plugins for common use cases. Each one is a separ
 
 For example, the quadratic formula renders beautifully: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
 
-## Why Streamdown?
+## Why Streamdown-Svelte?
 
-There are plenty of Markdown renderers out there, but most of them weren't built for streaming. Here's what makes Streamdown different:
+There are plenty of Markdown renderers out there, but most of them weren't built for streaming. Here's what makes Streamdown-Svelte different:
 
 - [x] Block-level diffing for *incremental* re-renders
 - [x] First-class support for ~~incomplete~~ partial Markdown
 - [x] Configurable caret styles and animations
 - [ ] World domination
 
-> Streamdown is open-source and Apache-2.0 licensed. Contributions are welcome.
+> Streamdown-Svelte is open-source and Apache-2.0 licensed. Contributions are welcome.
 `;
 
-export const usageCode = `import { useChat } from "@ai-sdk/react";
-import { Streamdown } from "streamdown";
+export const usageCode = `<script lang="ts">
+import { Streamdown } from "streamdown-svelte";
 import { code } from "@streamdown-svelte/code";
 import { mermaid } from "@streamdown-svelte/mermaid";
 import { math } from "@streamdown-svelte/math";
 import { cjk } from "@streamdown-svelte/cjk";
 import "katex/dist/katex.min.css";
+ 
+ export let content = "";
+ export let isStreaming = false;
+</script>
 
-export default function Chat() {
-  const { messages, status } = useChat();
+<Streamdown
+  {content}
+  plugins={{ code, mermaid, math, cjk }}
+  isAnimating={isStreaming}
+/>\n`;
 
-  return (
-    <div>
-      {messages.map(message => (
-        <div key={message.id}>
-          {message.role === 'user' ? 'User: ' : 'AI: '}
-          {message.parts.map((part, index) =>
-            part.type === 'text' ? (
-              <Streamdown
-                key={index}
-                plugins={{ code, mermaid, math, cjk }}
-                isAnimating={status === 'streaming'}
-              >
-                {part.text}
-              </Streamdown>
-            ) : null,
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}`;
-
-export const usageMarkdown = `\`\`\`tsx
+export const usageMarkdown = `\`\`\`svelte
 ${usageCode}
 \`\`\``;
-
-export const brands = [
-	'Mintlify',
-	'Ollama',
-	'Supabase',
-	'Trigger.dev',
-	'Mastra',
-	'Cloudflare',
-	'ElevenLabs',
-	'Upstash',
-	'Langfuse',
-	'Dify',
-	'Sentry',
-	'Moonshot AI',
-	'AWS',
-	'Google Cloud',
-	'Hugging Face'
-] as const;
 
 export const featureCards = [
 	{
@@ -122,7 +85,7 @@ export const featureCards = [
 		id: 'code',
 		title: 'Interactive code blocks',
 		description:
-			'<a href="/playground">Shiki-powered</a> syntax highlighting with copy and download controls. Streamdown supports language detection, line numbers, and custom renderers for rich fenced blocks.'
+			'<a href="/playground">Shiki-powered</a> syntax highlighting with copy and download controls. Streamdown-Svelte supports language detection, line numbers, and custom renderers for rich fenced blocks.'
 	},
 	{
 		id: 'plugins',
@@ -144,24 +107,50 @@ export const featureCards = [
 	}
 ] as const;
 
-export const templates = [
-	{
-		title: 'Next.js Chatbot Template',
-		description:
-			'A free, open-source template that helps you dive right into building powerful chatbot applications.',
-		link: 'https://github.com/vercel/ai-chatbot',
-		image: '/home/nextjs-chatbot-template.png'
-	},
-	{
-		title: 'AI Elements',
-		description: 'A collection of UI elements for building AI-powered applications.',
-		link: 'https://elements.ai-sdk.dev/',
-		image: '/home/ai-elements.png'
-	},
-	{
-		title: 'Vibe Coding Platform',
-		description: 'An end to end text-to-app coding platform.',
-		link: 'https://oss-vibe-coding-platform.vercel.app/',
-		image: '/home/vibe-coding-platform.png'
-	}
-] as const;
+export const benchmarkSummary = {
+	title: 'Performance',
+	description:
+		'Current workspace benchmark snapshot against the upstream Streamdown reference. These figures come from the same compare report previewed in the README.',
+	chart: '/benchmarks/compare-by-scenario.svg',
+	reportDate: 'April 7, 2026',
+	platform: 'Linux x64, Intel Core Ultra 9 285K, Node 22.22.1',
+	highlights: [
+		{
+			label: 'Overall throughput',
+			value: '+31.8%',
+			detail: 'Geometric mean across 31 benchmark pairs'
+		},
+		{
+			label: 'Head-to-head wins',
+			value: '19 / 31',
+			detail: 'Local Streamdown-Svelte wins over upstream reference'
+		},
+		{
+			label: 'Stream render suite',
+			value: '+273.3%',
+			detail: 'Fastest area, with 5 out of 5 wins'
+		}
+	],
+	suites: [
+		{
+			name: 'Stream Render',
+			delta: '+273.3%',
+			record: '5 wins / 0 losses'
+		},
+		{
+			name: 'Table Utilities',
+			delta: '+34.9%',
+			record: '9 wins / 0 losses'
+		},
+		{
+			name: 'Remend Parser',
+			delta: '-3.3%',
+			record: '4 wins / 5 losses'
+		},
+		{
+			name: 'Parse Blocks',
+			delta: '-5.1%',
+			record: '1 win / 7 losses'
+		}
+	]
+} as const;

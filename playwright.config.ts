@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 const referencePort = 4173;
 const localPort = 4174;
+const appPort = 4175;
 
 export default defineConfig({
 	testDir: './tests/playwright',
@@ -30,6 +31,12 @@ export default defineConfig({
 		{
 			command: `FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --config apps/parity-local/vite.config.ts --host 127.0.0.1 --port ${localPort}`,
 			url: `http://127.0.0.1:${localPort}`,
+			reuseExistingServer: !process.env.CI,
+			timeout: 120_000
+		},
+		{
+			command: `FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --host 127.0.0.1 --port ${appPort}`,
+			url: `http://127.0.0.1:${appPort}`,
 			reuseExistingServer: !process.env.CI,
 			timeout: 120_000
 		}

@@ -431,8 +431,11 @@
 			counter-increment: sd-line;
 			position: absolute;
 			left: 0;
+			top: 0;
 			width: 2rem;
 			text-align: right;
+			font-size: 13px;
+			line-height: inherit;
 			color: rgb(107 114 128);
 			user-select: none;
 		}

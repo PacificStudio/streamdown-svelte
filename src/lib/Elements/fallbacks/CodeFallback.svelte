@@ -27,6 +27,7 @@
 	</div>
 	<div style="height: fit-content; width: 100%;" class={streamdown.theme.code.container}>
 		<pre class={streamdown.theme.code.pre}><code
+				class="block"
 				class:sd-line-numbers={showLineNumbers}
 				data-streamdown-line-numbers={showLineNumbers}
 				>{#each token.text.split('\n') as line}<span

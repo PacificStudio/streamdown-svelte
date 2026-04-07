@@ -1,6 +1,6 @@
-export const defaultMarkdown = `# Streamdown Feature Showcase
+export const defaultMarkdown = `# Streamdown-Svelte Feature Showcase
 
-This playground demonstrates every feature supported by Streamdown.
+This playground demonstrates every feature supported by Streamdown-Svelte.
 
 ---
 
@@ -23,9 +23,9 @@ Regular paragraph text with **bold**, *italic*, ***bold italic***, and ~~striket
 
 ## Links and Images
 
-Visit [Streamdown on GitHub](https://github.com/vercel/streamdown) or paste a raw URL like https://streamdown.dev and it becomes a link automatically.
+Visit [Streamdown-Svelte on GitHub](https://github.com/PacificStudio/streamdown-svelte) or paste a raw URL like https://streamdown.dev and it becomes a link automatically.
 
-![Streamdown logo](https://streamdown.dev/og.png)
+![Streamdown-Svelte logo](https://streamdown.dev/og.png)
 
 ---
 
@@ -126,7 +126,7 @@ print(fibonacci(10))
 \`\`\`
 
 \`\`\`bash
-# Install Streamdown
+# Install Streamdown-Svelte
 npm install streamdown-svelte @streamdown-svelte/code @streamdown-svelte/math @streamdown-svelte/mermaid
 \`\`\`
 
@@ -239,11 +239,11 @@ stateDiagram-v2
 
 ## CJK Support
 
-**Chinese:** **你好世界。** Streamdown 支持中文排版。
+**Chinese:** **你好世界。** Streamdown-Svelte 支持中文排版。
 
-**Japanese:** *こんにちは。* Streamdown は日本語をサポートしています。
+**Japanese:** *こんにちは。* Streamdown-Svelte は日本語をサポートしています。
 
-**Korean:** ~~안녕하세요.~~ Streamdown은 한국어를 지원합니다.
+**Korean:** ~~안녕하세요.~~ Streamdown-Svelte는 한국어를 지원합니다.
 
 ---
 
@@ -255,5 +255,5 @@ Three dashes create a horizontal rule:
 
 ## HTML Entities
 
-&copy; 2025 &mdash; Streamdown &bull; Built with &hearts;
+&copy; 2025 &mdash; Streamdown-Svelte &bull; Built with &hearts;
 `;
