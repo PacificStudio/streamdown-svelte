@@ -73,11 +73,11 @@ export default defineConfig({
 		fs: {
 			allow: [resolve('.'), resolve('packages')]
 		},
-		// Browser-mode test runs do not rely on file watching, and ignoring generated
-		// coverage/test output prevents CI from exhausting the watcher file-descriptor limit.
+		// Browser-mode test runs only need a static dev server; disabling file watching
+		// avoids exhausting GitHub Actions file-descriptor limits during coverage batches.
 		watch: isTestMode
 			? {
-					ignored: ['**/coverage/**', '**/test-results/**', '**/playwright-report/**']
+					ignored: ['**/*']
 				}
 			: undefined
 	},
