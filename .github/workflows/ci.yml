@@ -252,6 +252,43 @@ jobs:
       - name: Verify release artifact metadata
         run: pnpm verify:release-metadata
 
+  verify-playwright-parity:
+    name: verify-playwright-parity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen reference repo
+        uses: actions/checkout@v4
+        with:
+          repository: vercel/streamdown
+          ref: 5f6475139a87dee8af08fcf7b01475292bc064d2
+          path: references/streamdown
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium
+
+      - name: Verify browser parity suites
+        run: pnpm test:playwright:parity
+
   report-coverage:
     name: report-coverage
     runs-on: ubuntu-latest

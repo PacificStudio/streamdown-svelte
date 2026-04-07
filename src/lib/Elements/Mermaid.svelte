@@ -40,10 +40,8 @@
 	onMount(() => {
 		const requestIdleCallbackWrapper =
 			typeof window !== 'undefined' && 'requestIdleCallback' in window
-				? (
-						callback: IdleRequestCallback,
-						options?: IdleRequestOptions
-					): number => window.requestIdleCallback(callback, options)
+				? (callback: IdleRequestCallback, options?: IdleRequestOptions): number =>
+						window.requestIdleCallback(callback, options)
 				: (callback: IdleRequestCallback): number => {
 						const start = Date.now();
 						return window.setTimeout(() => {
@@ -85,8 +83,7 @@
 					clearPendingRenders();
 					renderTimeout = window.setTimeout(() => {
 						const records = observer.takeRecords();
-						const isStillInView =
-							records.length === 0 || (records.at(-1)?.isIntersecting ?? false);
+						const isStillInView = records.length === 0 || (records.at(-1)?.isIntersecting ?? false);
 						if (!isStillInView) {
 							return;
 						}
@@ -284,7 +281,11 @@
 		{#if showActionBar}
 			<div class={streamdown.theme.mermaid.buttons}>
 				{#if controls.download}
-					<MermaidDownload {id} chart={chartSource} renderSvg={() => renderSvgMarkup(chartSource)} />
+					<MermaidDownload
+						{id}
+						chart={chartSource}
+						renderSvg={() => renderSvgMarkup(chartSource)}
+					/>
 				{/if}
 				{#if showCopy}
 					<button

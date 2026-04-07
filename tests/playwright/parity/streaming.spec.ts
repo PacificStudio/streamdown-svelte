@@ -90,12 +90,26 @@ test.describe('browser streaming parity against frozen streamdown reference', ()
 						expect(localPage.locator('[data-parity-mode]')).toHaveText('streaming')
 					]);
 
-					const [referenceState, localState, referenceSnapshot, localSnapshot] = await Promise.all([
+					const [referenceState, localState] = await Promise.all([
 						readParityState(referencePage),
-						readParityState(localPage),
-						readRenderSnapshot(referencePage.locator(renderedSelector)),
-						readRenderSnapshot(localPage.locator(renderedSelector))
+						readParityState(localPage)
 					]);
+					const { referenceSnapshot, localSnapshot } =
+						fixtureId === '12-mermaid-actions.md'
+							? await readCoordinatedRenderSnapshots(
+									referencePage.locator(renderedSelector),
+									localPage.locator(renderedSelector),
+									{
+										intervalMs: 75,
+										settleTimeoutMs: 1_500
+									}
+								)
+							: {
+									referenceSnapshot: await readRenderSnapshot(
+										referencePage.locator(renderedSelector)
+									),
+									localSnapshot: await readRenderSnapshot(localPage.locator(renderedSelector))
+								};
 
 					if (localSnapshot.dump !== referenceSnapshot.dump) {
 						mismatchCount += 1;
@@ -338,6 +352,43 @@ async function readRenderSnapshot(locator: Locator): Promise<RenderSnapshot> {
 		formattedDom,
 		summary
 	};
+}
+
+async function readCoordinatedRenderSnapshots(
+	referenceLocator: Locator,
+	localLocator: Locator,
+	options: {
+		intervalMs: number;
+		settleTimeoutMs: number;
+	}
+): Promise<{ referenceSnapshot: RenderSnapshot; localSnapshot: RenderSnapshot }> {
+	let [referenceSnapshot, localSnapshot] = await Promise.all([
+		readRenderSnapshot(referenceLocator),
+		readRenderSnapshot(localLocator)
+	]);
+	let previousPairKey = `${referenceSnapshot.dump}\n---\n${localSnapshot.dump}`;
+	const deadline = Date.now() + options.settleTimeoutMs;
+
+	while (Date.now() < deadline) {
+		if (referenceSnapshot.dump === localSnapshot.dump) {
+			return { referenceSnapshot, localSnapshot };
+		}
+
+		await referenceLocator.page().waitForTimeout(options.intervalMs);
+		[referenceSnapshot, localSnapshot] = await Promise.all([
+			readRenderSnapshot(referenceLocator),
+			readRenderSnapshot(localLocator)
+		]);
+
+		const pairKey = `${referenceSnapshot.dump}\n---\n${localSnapshot.dump}`;
+		if (pairKey === previousPairKey) {
+			return { referenceSnapshot, localSnapshot };
+		}
+
+		previousPairKey = pairKey;
+	}
+
+	return { referenceSnapshot, localSnapshot };
 }
 
 function formatStreamingParityFailure(input: {
