@@ -18,7 +18,7 @@ vi.mock('mermaid', () => ({
 }));
 
 describeInBrowser('ported streamdown pan-zoom pointer interactions', () => {
-	testInBrowser('zooms on wheel input and pans on mouse drag', async () => {
+	testInBrowser('zooms on wheel input and pans on mouse drag by default', async () => {
 		renderMock.mockReset();
 		renderMock.mockResolvedValue({
 			svg: '<svg width="120" height="80"><rect width="120" height="80"></rect><text>Interactive</text></svg>'
@@ -85,6 +85,82 @@ describeInBrowser('ported streamdown pan-zoom pointer interactions', () => {
 
 		await vi.waitFor(() => {
 			expect(target.style.transform).not.toBe(zoomedTransform);
+			expect(target.style.cursor).toBe('grab');
+		});
+	});
+
+	testInBrowser('disables wheel zoom independently while keeping drag pan enabled', async () => {
+		renderMock.mockReset();
+		renderMock.mockResolvedValue({
+			svg: '<svg width="120" height="80"><rect width="120" height="80"></rect><text>Interactive</text></svg>'
+		});
+
+		const screen = render(Streamdown, {
+			content: ['```mermaid', 'graph TD; A-->B', '```'].join('\n'),
+			components: {
+				mermaid: Mermaid
+			},
+			controls: {
+				mermaid: {
+					mouseWheelZoom: false
+				}
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(screen.container.querySelector('[data-mermaid-svg]')).toBeTruthy();
+			expect(screen.container.querySelector('button[title="Zoom in"]')).toBeTruthy();
+		});
+
+		const target = screen.container.querySelector(
+			'[data-streamdown-mermaid] [role="application"]'
+		) as HTMLElement;
+		const interactionSurface = screen.container.querySelector(
+			'[data-streamdown-mermaid] [role="application"]'
+		) as HTMLElement;
+		const initialTransform = target.style.transform;
+
+		interactionSurface.dispatchEvent(
+			new WheelEvent('wheel', {
+				deltaY: -100,
+				clientX: 120,
+				clientY: 90,
+				bubbles: true,
+				cancelable: true
+			})
+		);
+
+		await vi.waitFor(() => {
+			expect(target.style.transform).toBe(initialTransform);
+		});
+
+		target.dispatchEvent(
+			new MouseEvent('mousedown', {
+				button: 0,
+				clientX: 100,
+				clientY: 100,
+				bubbles: true,
+				cancelable: true
+			})
+		);
+		window.dispatchEvent(
+			new MouseEvent('mousemove', {
+				clientX: 150,
+				clientY: 130,
+				bubbles: true,
+				cancelable: true
+			})
+		);
+		window.dispatchEvent(
+			new MouseEvent('mouseup', {
+				clientX: 150,
+				clientY: 130,
+				bubbles: true
+			})
+		);
+
+		await vi.waitFor(() => {
+			expect(target.style.transform).not.toBe(initialTransform);
 			expect(target.style.cursor).toBe('grab');
 		});
 	});

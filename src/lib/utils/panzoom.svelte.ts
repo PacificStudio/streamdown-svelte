@@ -8,6 +8,7 @@ import { onDestroy, untrack } from 'svelte';
 // - zoomToFit: scale and center element inside its parent with optional padding
 
 export interface PanzoomOptions {
+	enabled?: boolean | (() => boolean);
 	minZoom?: number; // default: 0.1
 	maxZoom?: number; // default: +Infinity
 	zoomSpeed?: number; // wheel sensitivity (default: 1)
@@ -15,7 +16,7 @@ export interface PanzoomOptions {
 	initialScale?: number; // default: 1
 	initialX?: number; // default: 0
 	initialY?: number; // default: 0
-	activateMouseWheel?: boolean;
+	activateMouseWheel?: boolean | (() => boolean);
 }
 
 export interface ExpandOptions {
@@ -37,6 +38,10 @@ export const usePanzoom = (opts: PanzoomOptions = {}) => {
 	const maxZoom = opts.maxZoom ?? Number.POSITIVE_INFINITY;
 	const zoomSpeed = opts.zoomSpeed ?? 1;
 	const doubleClickScale = opts.doubleClickScale ?? 1.75;
+	const resolveFlag = (value: boolean | (() => boolean) | undefined, fallback: boolean): boolean =>
+		(typeof value === 'function' ? value() : value) ?? fallback;
+	const isEnabled = () => resolveFlag(opts.enabled, true);
+	const isMouseWheelEnabled = () => resolveFlag(opts.activateMouseWheel, false);
 
 	let node: HTMLElement | SVGSVGElement | null = null; // element we transform
 	let eventTarget: HTMLElement | null = null; // element we listen on (parent container if available)
@@ -144,7 +149,8 @@ export const usePanzoom = (opts: PanzoomOptions = {}) => {
 	}
 
 	function onWheel(e: WheelEvent) {
-		if (!opts.activateMouseWheel) return;
+		if (!isEnabled()) return;
+		if (!isMouseWheelEnabled()) return;
 		if (!node) return;
 		if (animating) {
 			e.preventDefault();
@@ -162,6 +168,7 @@ export const usePanzoom = (opts: PanzoomOptions = {}) => {
 	}
 
 	function onDblClick(e: MouseEvent) {
+		if (!isEnabled()) return;
 		// Ignore dblclicks that originate outside of the pan/zoom content (the node)
 		const t = e.target as Element | null;
 		if (node && t && !(t === (node as Element) || (node as Element).contains(t))) {
@@ -190,6 +197,7 @@ export const usePanzoom = (opts: PanzoomOptions = {}) => {
 	}
 
 	function startDrag(e: MouseEvent) {
+		if (!isEnabled()) return;
 		if (animating) {
 			e.preventDefault();
 			return;
@@ -235,6 +243,7 @@ export const usePanzoom = (opts: PanzoomOptions = {}) => {
 	}
 
 	function onTouchStart(e: TouchEvent) {
+		if (!isEnabled()) return;
 		const hasButton = e
 			.composedPath()
 			.some((el: EventTarget) => (el as HTMLElement).tagName?.toLowerCase?.() === 'button');
@@ -382,10 +391,11 @@ export const usePanzoom = (opts: PanzoomOptions = {}) => {
 
 			// prevent text selection/scrolling while interacting
 			const t = (eventTarget ?? node) as HTMLElement;
-			t.style.userSelect = 'none';
-			t.style.touchAction = 'none';
-			t.style.cursor = 'grab';
-			(t.style as any).overscrollBehavior = 'contain';
+			const enabled = isEnabled();
+			t.style.userSelect = enabled ? 'none' : '';
+			t.style.touchAction = enabled ? 'none' : '';
+			t.style.cursor = enabled ? 'grab' : '';
+			(t.style as any).overscrollBehavior = enabled ? 'contain' : '';
 			// For SVG root, use fill-box so translation math stays in CSS px space
 			const n = node;
 			if (typeof SVGSVGElement !== 'undefined' && target instanceof SVGSVGElement) {
