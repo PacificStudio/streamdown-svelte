@@ -13,6 +13,7 @@ import {
 	type UrlTransform
 } from '../markdown.js';
 import {
+	isPathRelativeUrl,
 	parseAllowedUrlPrefixes,
 	transformParsedUrl,
 	type AllowedUrlPrefix
@@ -152,11 +153,15 @@ function hasProtocolOnlyPrefix(allowedPrefixes: readonly AllowedUrlPrefix[]): bo
 function createSecurityUrlTransform({
 	allowedImagePrefixes,
 	allowedLinkPrefixes,
+	shouldDelegateImagePrefixChecks,
+	shouldDelegateLinkPrefixChecks,
 	defaultOrigin,
 	urlTransform
 }: {
 	allowedImagePrefixes: readonly AllowedUrlPrefix[];
 	allowedLinkPrefixes: readonly AllowedUrlPrefix[];
+	shouldDelegateImagePrefixChecks: boolean;
+	shouldDelegateLinkPrefixChecks: boolean;
 	defaultOrigin?: string;
 	urlTransform?: UrlTransform;
 }): UrlTransform {
@@ -168,12 +173,20 @@ function createSecurityUrlTransform({
 		}
 
 		if (node.tagName === 'a' && key === 'href') {
+			if (!shouldDelegateLinkPrefixChecks || isPathRelativeUrl(transformedUrl)) {
+				return transformedUrl;
+			}
+
 			return transformParsedUrl(transformedUrl, allowedLinkPrefixes, defaultOrigin, {
 				kind: 'link'
 			});
 		}
 
 		if (node.tagName === 'img' && key === 'src') {
+			if (!shouldDelegateImagePrefixChecks || isPathRelativeUrl(transformedUrl)) {
+				return transformedUrl;
+			}
+
 			return transformParsedUrl(transformedUrl, allowedImagePrefixes, defaultOrigin, {
 				kind: 'image'
 			});
@@ -208,19 +221,24 @@ export function renderMarkdownFragment(
 	try {
 		const parsedAllowedLinkPrefixes = parseAllowedUrlPrefixes(allowedLinkPrefixes, defaultOrigin);
 		const parsedAllowedImagePrefixes = parseAllowedUrlPrefixes(allowedImagePrefixes, defaultOrigin);
-		const shouldDelegatePrefixChecksToSecurityTransform =
-			hasProtocolOnlyPrefix(parsedAllowedLinkPrefixes) ||
-			hasProtocolOnlyPrefix(parsedAllowedImagePrefixes);
+		const shouldDelegateLinkPrefixChecks = hasProtocolOnlyPrefix(parsedAllowedLinkPrefixes);
+		const shouldDelegateImagePrefixChecks = hasProtocolOnlyPrefix(parsedAllowedImagePrefixes);
+		const hardenAllowedLinkPrefixes = shouldDelegateLinkPrefixChecks ? ['*'] : allowedLinkPrefixes;
+		const hardenAllowedImagePrefixes = shouldDelegateImagePrefixChecks
+			? ['*']
+			: allowedImagePrefixes;
 		const hardenDefaultOrigin = resolveHardenDefaultOrigin(
 			defaultOrigin,
-			allowedLinkPrefixes,
-			allowedImagePrefixes,
-			parsedAllowedLinkPrefixes,
-			parsedAllowedImagePrefixes
+			hardenAllowedLinkPrefixes,
+			hardenAllowedImagePrefixes,
+			parseAllowedUrlPrefixes(hardenAllowedLinkPrefixes, defaultOrigin),
+			parseAllowedUrlPrefixes(hardenAllowedImagePrefixes, defaultOrigin)
 		);
 		const securityUrlTransform = createSecurityUrlTransform({
 			allowedImagePrefixes: parsedAllowedImagePrefixes,
 			allowedLinkPrefixes: parsedAllowedLinkPrefixes,
+			shouldDelegateImagePrefixChecks,
+			shouldDelegateLinkPrefixChecks,
 			defaultOrigin,
 			urlTransform
 		});
@@ -234,12 +252,8 @@ export function renderMarkdownFragment(
 				.use(rehypeSanitize, createSanitizeSchema(allowedTags))
 				.use(rehypeTransformUrls, { urlTransform: securityUrlTransform })
 				.use(harden, {
-					allowedImagePrefixes: shouldDelegatePrefixChecksToSecurityTransform
-						? ['*']
-						: allowedImagePrefixes,
-					allowedLinkPrefixes: shouldDelegatePrefixChecksToSecurityTransform
-						? ['*']
-						: allowedLinkPrefixes,
+					allowedImagePrefixes: hardenAllowedImagePrefixes,
+					allowedLinkPrefixes: hardenAllowedLinkPrefixes,
 					allowedProtocols: ['*'],
 					defaultOrigin: hardenDefaultOrigin,
 					allowDataImages: true

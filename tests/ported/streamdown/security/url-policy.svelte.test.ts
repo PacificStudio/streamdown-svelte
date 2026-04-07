@@ -148,6 +148,16 @@ describeInBrowser('ported streamdown security URL rendering', () => {
 		expect(blocked.container.innerHTML).not.toContain('http://example.com/path');
 	});
 
+	testInBrowser('protocol-only allowedLinkPrefixes keep raw HTML relative links', () => {
+		const screen = render(Streamdown, {
+			content: '<a href="./guide">Guide</a>',
+			static: true,
+			allowedLinkPrefixes: ['https://']
+		});
+
+		expect(screen.container.querySelector('a')?.getAttribute('href')).toBe('/guide');
+	});
+
 	testInBrowser(
 		'protocol-only allowedImagePrefixes can allow all https images while blocking http',
 		() => {
@@ -212,5 +222,25 @@ describeInBrowser('ported streamdown security URL rendering', () => {
 		);
 		expect(blocked.container.querySelector('img')).toBeNull();
 		expect(blocked.container.innerHTML).not.toContain('http://cdn.example.com/blocked.png');
+	});
+
+	testInBrowser('protocol-only allowedImagePrefixes do not strip raw HTML relative links', () => {
+		const screen = render(Streamdown, {
+			content: '<a href="./guide">Guide</a>',
+			static: true,
+			allowedImagePrefixes: ['https://']
+		});
+
+		expect(screen.container.querySelector('a')?.getAttribute('href')).toBe('/guide');
+	});
+
+	testInBrowser('protocol-only allowedImagePrefixes keep raw HTML relative images', () => {
+		const screen = render(Streamdown, {
+			content: '<img src="./guide.png" alt="Guide">',
+			static: true,
+			allowedImagePrefixes: ['https://']
+		});
+
+		expect(screen.container.querySelector('img')?.getAttribute('src')).toBe('/guide.png');
 	});
 });
