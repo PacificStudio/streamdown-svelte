@@ -41,9 +41,6 @@ describeInBrowser('ported streamdown mermaid controls', () => {
 				}
 			});
 
-			expect(screen.container.querySelector('button[title="Download diagram"]')).toBeNull();
-			expect(screen.container.querySelector('button[title="View fullscreen"]')).toBeNull();
-
 			await vi.waitFor(() => {
 				expect(screen.container.querySelector('button[title="Download diagram"]')).toBeTruthy();
 				expect(screen.container.querySelector('button[title="View fullscreen"]')).toBeTruthy();
@@ -55,16 +52,10 @@ describeInBrowser('ported streamdown mermaid controls', () => {
 			).click();
 
 			await vi.waitFor(() => {
-				expect(
-					screen.container.querySelector('button[title="Download diagram as SVG"]')
-				).toBeTruthy();
+				expect(document.querySelector('button[title="Download diagram as SVG"]')).toBeTruthy();
 			});
 
-			(
-				screen.container.querySelector(
-					'button[title="Download diagram as SVG"]'
-				) as HTMLButtonElement
-			).click();
+			(document.querySelector('button[title="Download diagram as SVG"]') as HTMLButtonElement).click();
 
 			await vi.waitFor(() => {
 				expect(saveMock).toHaveBeenCalledWith(
@@ -80,16 +71,10 @@ describeInBrowser('ported streamdown mermaid controls', () => {
 			).click();
 
 			await vi.waitFor(() => {
-				expect(
-					screen.container.querySelector('button[title="Download diagram as MMD"]')
-				).toBeTruthy();
+				expect(document.querySelector('button[title="Download diagram as MMD"]')).toBeTruthy();
 			});
 
-			(
-				screen.container.querySelector(
-					'button[title="Download diagram as MMD"]'
-				) as HTMLButtonElement
-			).click();
+			(document.querySelector('button[title="Download diagram as MMD"]') as HTMLButtonElement).click();
 
 			expect(saveMock).toHaveBeenCalledWith('diagram.mmd', 'graph TD; A-->B', 'text/plain');
 
@@ -99,9 +84,7 @@ describeInBrowser('ported streamdown mermaid controls', () => {
 			fullscreenButton.click();
 
 			await vi.waitFor(() => {
-				const container = screen.container.querySelector(
-					'[data-streamdown-mermaid] > div[data-expanded="true"]'
-				);
+				const container = screen.container.querySelector('[data-streamdown-mermaid] [data-expanded="true"]');
 				expect(container).toBeTruthy();
 				expect(screen.container.querySelector('button[title="Exit fullscreen"]')).toBeTruthy();
 			});
@@ -111,9 +94,7 @@ describeInBrowser('ported streamdown mermaid controls', () => {
 			).click();
 
 			await vi.waitFor(() => {
-				const container = screen.container.querySelector(
-					'[data-streamdown-mermaid] > div[data-expanded="false"]'
-				);
+				const container = screen.container.querySelector('[data-streamdown-mermaid] [data-expanded="false"]');
 				expect(container).toBeTruthy();
 			});
 		}

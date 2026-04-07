@@ -99,7 +99,9 @@ describeInBrowser('ported streamdown remaining aggregate closeout', () => {
 					urlTransform: (url: string) => `${url}?proxied=1`
 				});
 
-				expect(filterScreen.container.querySelector('strong')?.textContent).toBe('bold');
+				expect(filterScreen.container.querySelector('[data-streamdown-strong]')?.textContent).toBe(
+					'bold'
+				);
 				expect(filterScreen.container.querySelector('em')).toBeNull();
 				expect(filterScreen.container.querySelector('a')?.getAttribute('href')).toBe(
 					'https://example.com/path?proxied=1'

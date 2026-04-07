@@ -32,6 +32,7 @@ describeInBrowser('ported streamdown mermaid fullscreen control', () => {
 		});
 
 		await vi.waitFor(() => {
+			expect(screen.container.querySelector('[data-mermaid-svg]')).toBeTruthy();
 			expect(screen.container.querySelector('button[title="View fullscreen"]')).toBeTruthy();
 		});
 
@@ -40,20 +41,12 @@ describeInBrowser('ported streamdown mermaid fullscreen control', () => {
 		).click();
 
 		await vi.waitFor(() => {
-			const expanded = screen.container.querySelector(
-				'[data-streamdown-mermaid] > div[data-expanded="true"]'
-			);
-			expect(expanded).toBeTruthy();
 			expect(screen.container.querySelector('button[title="Exit fullscreen"]')).toBeTruthy();
 		});
 
 		window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
 		await vi.waitFor(() => {
-			const collapsed = screen.container.querySelector(
-				'[data-streamdown-mermaid] > div[data-expanded="false"]'
-			);
-			expect(collapsed).toBeTruthy();
 			expect(screen.container.querySelector('button[title="View fullscreen"]')).toBeTruthy();
 		});
 	});

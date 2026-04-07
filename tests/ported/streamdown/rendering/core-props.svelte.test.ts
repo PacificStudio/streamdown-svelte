@@ -10,7 +10,7 @@ describeInBrowser('ported streamdown core props', () => {
 			mode: 'streaming'
 		});
 
-		expect(screen.container.querySelector('strong')).toBeTruthy();
+		expect(screen.container.querySelector('[data-streamdown-strong]')).toBeTruthy();
 	});
 
 	testInBrowser('static mode leaves incomplete markdown unparsed', () => {
@@ -19,7 +19,7 @@ describeInBrowser('ported streamdown core props', () => {
 			mode: 'static'
 		});
 
-		expect(screen.container.querySelector('strong')).toBeNull();
+		expect(screen.container.querySelector('[data-streamdown-strong]')).toBeNull();
 		expect(screen.container.textContent).toContain('**incomplete bold');
 	});
 
@@ -30,7 +30,7 @@ describeInBrowser('ported streamdown core props', () => {
 			parseIncompleteMarkdown: false
 		});
 
-		expect(screen.container.querySelector('strong')).toBeNull();
+		expect(screen.container.querySelector('[data-streamdown-strong]')).toBeNull();
 	});
 
 	testInBrowser('parseMarkdownIntoBlocksFn overrides the streaming block splitter', () => {

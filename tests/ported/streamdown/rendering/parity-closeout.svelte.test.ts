@@ -19,8 +19,8 @@ describeInBrowser('remaining parity closeout evidence', () => {
 				static: true
 			});
 
-			expect(defaultScreen.container.querySelector('strong')).toBeTruthy();
-			expect(staticAliasScreen.container.querySelector('strong')).toBeNull();
+			expect(defaultScreen.container.querySelector('[data-streamdown-strong]')).toBeTruthy();
+			expect(staticAliasScreen.container.querySelector('[data-streamdown-strong]')).toBeNull();
 			expect(staticAliasScreen.container.textContent).toContain('**incomplete bold');
 		}
 	);

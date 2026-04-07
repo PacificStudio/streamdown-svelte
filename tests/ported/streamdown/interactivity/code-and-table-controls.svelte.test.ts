@@ -107,34 +107,28 @@ describeInBrowser('ported streamdown code and table controls', () => {
 		expect(downloadToggle).toBeTruthy();
 		expect(copyToggle).toBeTruthy();
 
-		(downloadToggle as HTMLButtonElement).click();
+			(downloadToggle as HTMLButtonElement).click();
 
-		await vi.waitFor(() => {
-			expect(
-				screen.container.querySelector('button[title="Download table as Markdown"]')
-			).toBeTruthy();
-		});
+			await vi.waitFor(() => {
+				expect(document.querySelector('button[title="Download table as Markdown"]')).toBeTruthy();
+			});
 
-		(
-			screen.container.querySelector(
-				'button[title="Download table as Markdown"]'
-			) as HTMLButtonElement
-		).click();
-		expect(saveMock).toHaveBeenCalledWith(
-			'table.md',
+			(
+				document.querySelector('button[title="Download table as Markdown"]') as HTMLButtonElement
+			).click();
+			expect(saveMock).toHaveBeenCalledWith(
+				'table.md',
 			expect.stringContaining('| Name | Value |'),
 			'text/markdown'
 		);
 
-		(copyToggle as HTMLButtonElement).click();
+			(copyToggle as HTMLButtonElement).click();
 
-		await vi.waitFor(() => {
-			expect(screen.container.querySelector('button[title="Copy table as CSV"]')).toBeTruthy();
-		});
+			await vi.waitFor(() => {
+				expect(document.querySelector('button[title="Copy table as CSV"]')).toBeTruthy();
+			});
 
-		(
-			screen.container.querySelector('button[title="Copy table as CSV"]') as HTMLButtonElement
-		).click();
+			(document.querySelector('button[title="Copy table as CSV"]') as HTMLButtonElement).click();
 
 		await vi.waitFor(() => {
 			expect(writeText).toHaveBeenCalledWith('Name,Value\nFoo,Bar');
@@ -168,31 +162,23 @@ describeInBrowser('ported streamdown code and table controls', () => {
 			).click();
 
 			await vi.waitFor(() => {
-				expect(
-					screen.container.querySelector('button[title="Download table as CSV"]')
-				).toBeTruthy();
-				expect(
-					screen.container.querySelector('button[title="Download table as Markdown"]')
-				).toBeTruthy();
+				expect(document.querySelector('button[title="Download table as CSV"]')).toBeTruthy();
+				expect(document.querySelector('button[title="Download table as Markdown"]')).toBeTruthy();
 			});
 
-			expect(screen.container.querySelector('button[title="Download table as HTML"]')).toBeFalsy();
+			expect(document.querySelector('button[title="Download table as HTML"]')).toBeFalsy();
 
 			(screen.container.querySelector('button[title="Copy table"]') as HTMLButtonElement).click();
 
 			await vi.waitFor(() => {
-				expect(screen.container.querySelector('button[title="Copy table as CSV"]')).toBeTruthy();
-				expect(
-					screen.container.querySelector('button[title="Copy table as Markdown"]')
-				).toBeTruthy();
-				expect(screen.container.querySelector('button[title="Copy table as TSV"]')).toBeTruthy();
+				expect(document.querySelector('button[title="Copy table as CSV"]')).toBeTruthy();
+				expect(document.querySelector('button[title="Copy table as Markdown"]')).toBeTruthy();
+				expect(document.querySelector('button[title="Copy table as TSV"]')).toBeTruthy();
 			});
 
-			expect(screen.container.querySelector('button[title="Copy table as HTML"]')).toBeFalsy();
+			expect(document.querySelector('button[title="Copy table as HTML"]')).toBeFalsy();
 
-			(
-				screen.container.querySelector('button[title="Copy table as TSV"]') as HTMLButtonElement
-			).click();
+			(document.querySelector('button[title="Copy table as TSV"]') as HTMLButtonElement).click();
 
 			await vi.waitFor(() => {
 				expect(writeText).toHaveBeenCalledWith('Name\tValue\nFoo\tBar');

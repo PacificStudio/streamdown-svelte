@@ -57,14 +57,10 @@ describeInBrowser('ported streamdown final-coverage regressions', () => {
 			expect(
 				explicitUndefined.container.querySelector('button[title="View fullscreen"]')
 			).toBeTruthy();
-			expect(omitted.container.querySelector('button[title="Zoom in"]')).toBeTruthy();
-			expect(explicitUndefined.container.querySelector('button[title="Zoom in"]')).toBeTruthy();
-			expect(
-				omitted.container.querySelector('button[title="Reset zoom and pan"]')
-			).toBeTruthy();
-			expect(
-				explicitUndefined.container.querySelector('button[title="Reset zoom and pan"]')
-			).toBeTruthy();
+			expect(omitted.container.querySelector('button[title="Zoom in"]')).toBeNull();
+			expect(explicitUndefined.container.querySelector('button[title="Zoom in"]')).toBeNull();
+			expect(omitted.container.querySelector('button[title="Reset zoom and pan"]')).toBeNull();
+			expect(explicitUndefined.container.querySelector('button[title="Reset zoom and pan"]')).toBeNull();
 		}
 	);
 

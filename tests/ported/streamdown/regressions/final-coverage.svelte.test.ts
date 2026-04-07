@@ -128,15 +128,11 @@ describeInBrowser('ported streamdown final aggregate closeout', () => {
 			downloadButton?.click();
 
 			await vi.waitFor(() => {
-				expect(
-					screen.container.querySelector('button[title="Download table as Markdown"]')
-				).toBeTruthy();
-				expect(
-					screen.container.querySelector('button[title="Download table as CSV"]')
-				).toBeTruthy();
+				expect(document.querySelector('button[title="Download table as Markdown"]')).toBeTruthy();
+				expect(document.querySelector('button[title="Download table as CSV"]')).toBeTruthy();
 			});
 
-			expect(screen.container.querySelector('button[title="Download table as HTML"]')).toBeNull();
+			expect(document.querySelector('button[title="Download table as HTML"]')).toBeNull();
 		}
 	);
 });

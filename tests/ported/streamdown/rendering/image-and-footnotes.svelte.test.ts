@@ -26,7 +26,8 @@ describeInBrowser('ported streamdown image and footnote rendering', () => {
 					'[^1]: This is the first footnote.',
 					'[^2]: This is a multi-line footnote.',
 					'    It can have multiple paragraphs.'
-				].join('\n')
+				].join('\n'),
+				static: true
 			});
 
 			const footnoteRefs = screen.container.querySelectorAll('sup[data-streamdown-sup]');

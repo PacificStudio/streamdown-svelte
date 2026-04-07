@@ -57,15 +57,9 @@ describeInBrowser('ported streamdown mermaid download controls', () => {
 		).click();
 
 		await vi.waitFor(() => {
-			expect(
-				screen.container.querySelector('button[title="Download diagram as PNG"]')
-			).toBeTruthy();
-			expect(
-				screen.container.querySelector('button[title="Download diagram as SVG"]')
-			).toBeTruthy();
-			expect(
-				screen.container.querySelector('button[title="Download diagram as MMD"]')
-			).toBeTruthy();
+			expect(document.querySelector('button[title="Download diagram as PNG"]')).toBeTruthy();
+			expect(document.querySelector('button[title="Download diagram as SVG"]')).toBeTruthy();
+			expect(document.querySelector('button[title="Download diagram as MMD"]')).toBeTruthy();
 		});
 
 		(
@@ -73,7 +67,7 @@ describeInBrowser('ported streamdown mermaid download controls', () => {
 		).click();
 
 		await vi.waitFor(() => {
-			expect(screen.container.querySelector('button[title="Download diagram as PNG"]')).toBeNull();
+			expect(document.querySelector('button[title="Download diagram as PNG"]')).toBeNull();
 		});
 	});
 
@@ -101,13 +95,9 @@ describeInBrowser('ported streamdown mermaid download controls', () => {
 			screen.container.querySelector('button[title="Download diagram"]') as HTMLButtonElement
 		).click();
 		await vi.waitFor(() => {
-			expect(
-				screen.container.querySelector('button[title="Download diagram as SVG"]')
-			).toBeTruthy();
+			expect(document.querySelector('button[title="Download diagram as SVG"]')).toBeTruthy();
 		});
-		(
-			screen.container.querySelector('button[title="Download diagram as SVG"]') as HTMLButtonElement
-		).click();
+		(document.querySelector('button[title="Download diagram as SVG"]') as HTMLButtonElement).click();
 
 		await vi.waitFor(() => {
 			expect(saveMock).toHaveBeenCalledWith(
@@ -121,13 +111,9 @@ describeInBrowser('ported streamdown mermaid download controls', () => {
 			screen.container.querySelector('button[title="Download diagram"]') as HTMLButtonElement
 		).click();
 		await vi.waitFor(() => {
-			expect(
-				screen.container.querySelector('button[title="Download diagram as PNG"]')
-			).toBeTruthy();
+			expect(document.querySelector('button[title="Download diagram as PNG"]')).toBeTruthy();
 		});
-		(
-			screen.container.querySelector('button[title="Download diagram as PNG"]') as HTMLButtonElement
-		).click();
+		(document.querySelector('button[title="Download diagram as PNG"]') as HTMLButtonElement).click();
 
 		await vi.waitFor(() => {
 			expect(svgToPngBlobMock).toHaveBeenCalledWith(expect.stringContaining('<svg'));
@@ -138,13 +124,9 @@ describeInBrowser('ported streamdown mermaid download controls', () => {
 			screen.container.querySelector('button[title="Download diagram"]') as HTMLButtonElement
 		).click();
 		await vi.waitFor(() => {
-			expect(
-				screen.container.querySelector('button[title="Download diagram as MMD"]')
-			).toBeTruthy();
+			expect(document.querySelector('button[title="Download diagram as MMD"]')).toBeTruthy();
 		});
-		(
-			screen.container.querySelector('button[title="Download diagram as MMD"]') as HTMLButtonElement
-		).click();
+		(document.querySelector('button[title="Download diagram as MMD"]') as HTMLButtonElement).click();
 
 		expect(saveMock).toHaveBeenCalledWith('diagram.mmd', 'graph TD; A-->B', 'text/plain');
 	});

@@ -1,5 +1,5 @@
 import { render } from 'vitest-browser-svelte';
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
 import Streamdown from '../../../../src/lib/Streamdown.svelte';
 import { describeInBrowser, testInBrowser } from '../../../helpers/index.js';
 
@@ -13,7 +13,8 @@ describeInBrowser('ported streamdown footnote rendering', () => {
 				'',
 				'[^1]: First footnote.',
 				'[^2]: Second footnote with **formatting**.'
-			].join('\n')
+			].join('\n'),
+			static: true
 		});
 
 		const refs = [...screen.container.querySelectorAll('sup[data-streamdown-sup] a')];
@@ -24,7 +25,7 @@ describeInBrowser('ported streamdown footnote rendering', () => {
 		expect(section).toBeTruthy();
 		expect(section?.querySelectorAll('li')).toHaveLength(2);
 		expect(section?.textContent).toContain('First footnote.');
-		expect(section?.querySelector('strong')?.textContent).toBe('formatting');
+		expect(section?.querySelector('[data-streamdown-strong]')?.textContent).toBe('formatting');
 		expect(section?.querySelector('a[data-footnote-backref][href="#footnote-ref-1"]')).toBeTruthy();
 	});
 
@@ -45,7 +46,8 @@ describeInBrowser('ported streamdown footnote rendering', () => {
 				'    Second line.',
 				'',
 				'[^streamdown:footnote]: Placeholder that should stay hidden.'
-			].join('\n')
+			].join('\n'),
+			static: true
 		});
 
 		const section = screen.container.querySelector('section[data-footnotes]');
@@ -78,7 +80,9 @@ describeInBrowser('ported streamdown footnote rendering', () => {
 		expect(section?.textContent).toContain('This is the content.');
 	});
 
-	testInBrowser('keeps unresolved streamed footnote references literal until a definition arrives', async () => {
+	testInBrowser(
+		'keeps streamed footnote references literal even after a definition arrives in streaming mode',
+		async () => {
 		const screen = render(Streamdown, {
 			content: 'Footnote reference[^1].',
 			mode: 'streaming'
@@ -92,6 +96,12 @@ describeInBrowser('ported streamdown footnote rendering', () => {
 			mode: 'streaming'
 		});
 
-		expect(screen.container.querySelector('sup[data-streamdown-sup] a[href="#footnote-1"]')).toBeTruthy();
+		await vi.waitFor(() => {
+			expect(screen.container.querySelector('sup[data-streamdown-sup]')).toBeNull();
+			expect(screen.container.textContent).toContain('Footnote reference[^1].');
+			expect(screen.container.querySelector('section[data-footnotes]')?.textContent).toContain(
+				'Defined later.'
+			);
+		});
 	});
 });

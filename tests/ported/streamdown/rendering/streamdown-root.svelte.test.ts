@@ -77,8 +77,8 @@ describeInBrowser('ported streamdown root contract', () => {
 			parseIncompleteMarkdown: false
 		});
 
-		expect(parsed.container.querySelector('strong')).toBeTruthy();
-		expect(raw.container.querySelector('strong')).toBeNull();
+		expect(parsed.container.querySelector('[data-streamdown-strong]')).toBeTruthy();
+		expect(raw.container.querySelector('[data-streamdown-strong]')).toBeNull();
 		expect(raw.container.textContent).toContain('**incomplete bold');
 	});
 

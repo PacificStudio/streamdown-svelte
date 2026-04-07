@@ -398,7 +398,7 @@
 						<MermaidErrorComponent chart={chartSource} {error} {id} retry={retryRender} />
 					{:else}
 						<div class="rounded-md bg-red-50 p-4" data-streamdown-mermaid-error>
-							<p class="font-mono text-sm text-red-700">Mermaid Error: {` ${error}`}</p>
+							<p class="font-mono text-sm text-red-700">Mermaid Error: {error}</p>
 							<details class="mt-2">
 								<summary class="cursor-pointer text-xs text-red-600">Show Code</summary>
 								<pre class="mt-2 overflow-x-auto rounded bg-red-100 p-2 text-xs text-red-800">

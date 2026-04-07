@@ -77,7 +77,7 @@ describeInBrowser('ported streamdown aggregate coverage final closeout', () => {
 			const section = screen.container.querySelector('section[data-footnotes]');
 			expect(section).toBeTruthy();
 			expect(section?.textContent).toContain('Actual footnote content');
-			expect(section?.querySelector('strong')?.textContent).toBe('Bold text');
+			expect(section?.querySelector('[data-streamdown-strong]')?.textContent).toBe('Bold text');
 			expect(section?.querySelectorAll('li')).toHaveLength(2);
 			expect(
 				section?.querySelector('a[data-footnote-backref][href="#footnote-ref-1"]')

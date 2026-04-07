@@ -73,7 +73,7 @@ describeInBrowser('ported streamdown coverage-final regressions', () => {
 			expect(footnotesSection).toBeTruthy();
 			expect(footnotesSection?.textContent).toContain('Actual footnote content');
 			expect(footnotesSection?.textContent).toContain('Bold text');
-			expect(footnotesSection?.querySelector('strong')).toBeTruthy();
+			expect(footnotesSection?.querySelector('[data-streamdown-strong]')).toBeTruthy();
 		}
 	);
 
