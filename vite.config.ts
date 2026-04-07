@@ -9,7 +9,6 @@ import { resolve } from 'node:path';
 import { coverageSourceExclude, coverageSourceInclude } from './config/coverage-suites.mjs';
 
 const isTestMode = process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
-const isPlaywrightParity = process.env.PLAYWRIGHT_PARITY === '1';
 
 // Plugin to copy README.md from root to src folder
 function copyReadmePlugin() {
@@ -56,22 +55,20 @@ function copyReadmePlugin() {
 
 export default defineConfig({
 	logLevel: isTestMode ? 'error' : undefined,
-	optimizeDeps: isPlaywrightParity
-		? undefined
-		: {
-				// Browser-mode Vitest needs these eagerly optimized to avoid mid-run reloads.
-				// Playwright parity boots plain Vite dev servers, where front-loading Shiki
-				// can stall CI startup long enough to trip config.webServer timeouts.
-				include: [
-					'rehype-katex',
-					'remark-math',
-					'shiki/core',
-					'shiki/engine/javascript',
-					'@shikijs/langs/javascript',
-					'@shikijs/themes/github-dark',
-					'@shikijs/themes/github-light'
-				]
-			},
+	optimizeDeps: {
+		// Pre-bundle dynamically imported markdown/code deps up front so browser-mode
+		// Vitest does not trigger a mid-run Vite reload.
+		include: [
+			'rehype-katex',
+			'remark-math',
+			'shiki',
+			'shiki/core',
+			'shiki/engine/javascript',
+			'@shikijs/langs/javascript',
+			'@shikijs/themes/github-dark',
+			'@shikijs/themes/github-light'
+		]
+	},
 	server: {
 		fs: {
 			allow: [resolve('.'), resolve('packages')]

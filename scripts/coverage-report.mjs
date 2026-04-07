@@ -108,6 +108,19 @@ function runCommand(command, args) {
 	}
 }
 
+function cleanupBrowserOrphans() {
+	if (process.platform === 'win32') {
+		return;
+	}
+
+	const workerdBinaryPattern = `${repoRoot}/node_modules/.pnpm/@cloudflare+workerd-linux-64`;
+	spawnSync('pkill', ['-f', workerdBinaryPattern], {
+		cwd: repoRoot,
+		stdio: 'ignore',
+		env: process.env
+	});
+}
+
 function readSummary(path) {
 	if (!existsSync(path)) {
 		throw new Error(`Expected coverage summary at ${relative(repoRoot, path)}`);
@@ -213,12 +226,22 @@ function main() {
 				(pattern) => `--coverage.include=${pattern}`
 			),
 			...coverageSourceExclude.map((pattern) => `--coverage.exclude=${pattern}`),
-			...(suite.projects.includes('client') ? ['--maxWorkers=1'] : []),
+			...(suite.projects.includes('client')
+				? ['--maxWorkers=1', '--sequence.concurrent=false']
+				: []),
 			...suite.projects.map((project) => `--project=${project}`),
 			...testFiles
 		];
 
+		if (suite.projects.includes('client')) {
+			cleanupBrowserOrphans();
+		}
+
 		runCommand('pnpm', vitestArgs);
+
+		if (suite.projects.includes('client')) {
+			cleanupBrowserOrphans();
+		}
 
 		const metrics = readSuiteMetrics(summaryPath);
 		assertThresholds(name, metrics, suite.thresholds);

@@ -23,19 +23,19 @@ export default defineConfig({
 	},
 	webServer: [
 		{
-			command: `PLAYWRIGHT_PARITY=1 FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --config apps/parity-reference/vite.config.ts --host 127.0.0.1 --port ${referencePort}`,
+			command: `FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --config apps/parity-reference/vite.config.ts --host 127.0.0.1 --port ${referencePort}`,
 			url: `http://127.0.0.1:${referencePort}`,
 			reuseExistingServer: !process.env.CI,
 			timeout: 180_000
 		},
 		{
-			command: `PLAYWRIGHT_PARITY=1 FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --config apps/parity-local/vite.config.ts --host 127.0.0.1 --port ${localPort}`,
+			command: `FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --config apps/parity-local/vite.config.ts --host 127.0.0.1 --port ${localPort}`,
 			url: `http://127.0.0.1:${localPort}`,
 			reuseExistingServer: !process.env.CI,
 			timeout: 180_000
 		},
 		{
-			command: `PLAYWRIGHT_PARITY=1 FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --host 127.0.0.1 --port ${appPort}`,
+			command: `FORCE_COLOR=0 NO_COLOR=1 pnpm exec vite --config vite.playwright.config.ts --host 127.0.0.1 --port ${appPort}`,
 			url: `http://127.0.0.1:${appPort}`,
 			reuseExistingServer: !process.env.CI,
 			timeout: 180_000
