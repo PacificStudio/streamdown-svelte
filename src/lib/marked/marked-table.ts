@@ -69,6 +69,7 @@ export interface THeadRow {
 	type: 'tr';
 	tokens: TH[];
 	columnNormalization?: RowColumnNormalization;
+	placeholderColumns?: number;
 }
 
 // Table row containing data cells
@@ -76,6 +77,7 @@ export interface TRow {
 	type: 'tr';
 	tokens: TD[];
 	columnNormalization?: RowColumnNormalization;
+	placeholderColumns?: number;
 }
 
 // Table header section
@@ -124,6 +126,7 @@ type WorkingRow = WorkingCell[];
 interface WorkingRowData {
 	cells: WorkingRow;
 	columnNormalization: RowColumnNormalization;
+	placeholderColumns?: number;
 }
 
 // Default configuration options for the extended tables extension
@@ -214,7 +217,8 @@ export const splitCells = (
 	tableRow: string,
 	count: number | null,
 	prevRow: WorkingRowData | null = null,
-	maxColspan: number | null = null
+	maxColspan: number | null = null,
+	preserveIncompleteTail = false
 ): WorkingRowData => {
 	// Split by pipe, but handle escaped pipes and empty cells
 	const cells = splitRow(tableRow);
@@ -223,7 +227,7 @@ export const splitCells = (
 	if (cells.length > 0 && !cells[0]) cells.shift();
 	if (cells.length > 0 && !cells[cells.length - 1]) cells.pop();
 
-	return processSpans(cells, count, prevRow?.cells || [], maxColspan);
+	return processSpans(cells, count, prevRow?.cells || [], maxColspan, preserveIncompleteTail);
 };
 
 // Process row and column spans in table cells
@@ -231,7 +235,8 @@ const processSpans = (
 	cells: string[],
 	count: number | null,
 	prevRow: WorkingRow = [],
-	maxColspan: number | null = null
+	maxColspan: number | null = null,
+	preserveIncompleteTail = false
 ): WorkingRowData => {
 	let numCols = 0;
 	let i: number, j: number, trimmedCell: string, prevCell: WorkingCell;
@@ -371,14 +376,15 @@ const processSpans = (
 	});
 
 	// Normalize column count
-	return normalizeColumnCount(processedCells, count, numCols);
+	return normalizeColumnCount(processedCells, count, numCols, preserveIncompleteTail);
 };
 
 // Ensures the row has the correct number of columns
 const normalizeColumnCount = (
 	cells: WorkingRow,
 	count: number | null,
-	numCols: number
+	numCols: number,
+	preserveIncompleteTail: boolean
 ): WorkingRowData => {
 	if (count === null || numCols === count) {
 		return {
@@ -398,7 +404,8 @@ const normalizeColumnCount = (
 				mode: 'underflow-preserved',
 				expectedColumns: count,
 				actualColumns: numCols
-			}
+			},
+			placeholderColumns: preserveIncompleteTail ? count - numCols : undefined
 		};
 	}
 
@@ -511,7 +518,14 @@ function processRows(
 	const processedHeaderRows: WorkingRowData[] = [];
 	for (let i = 0; i < headerRows.length; i++) {
 		const prevRow = i > 0 ? processedHeaderRows[i - 1] : null;
-		processedHeaderRows[i] = splitCells(headerRows[i], colCount, prevRow, maxColspan);
+		const padIncompleteTail = i === headerRows.length - 1;
+		processedHeaderRows[i] = splitCells(
+			headerRows[i],
+			colCount,
+			prevRow,
+			maxColspan,
+			padIncompleteTail
+		);
 	}
 	normalizationRows.push(...processedHeaderRows);
 
@@ -520,6 +534,7 @@ function processRows(
 		const theadRows: THeadRow[] = processedHeaderRows.map((row) => ({
 			type: 'tr',
 			columnNormalization: row.columnNormalization,
+			placeholderColumns: row.placeholderColumns,
 			tokens: row.cells.map((cell) => {
 				// Use the cell's position to get the correct alignment
 				const cellAlignment = cell.position !== undefined ? alignment[cell.position] : null;
@@ -542,7 +557,14 @@ function processRows(
 		for (let i = 0; i < bodyRows.length; i++) {
 			const prevRow =
 				i > 0 ? processedBodyRows[i - 1] : processedHeaderRows[processedHeaderRows.length - 1];
-			processedBodyRows[i] = splitCells(bodyRows[i], colCount, prevRow, maxColspan);
+			const padIncompleteTail = i === bodyRows.length - 1;
+			processedBodyRows[i] = splitCells(
+				bodyRows[i],
+				colCount,
+				prevRow,
+				maxColspan,
+				padIncompleteTail
+			);
 		}
 		normalizationRows.push(...processedBodyRows);
 
@@ -561,6 +583,7 @@ function processRows(
 			const tbodyRowTokens: TRow[] = tbodyRows.map((row) => ({
 				type: 'tr',
 				columnNormalization: row.columnNormalization,
+				placeholderColumns: row.placeholderColumns,
 				tokens: row.cells.map((cell) => {
 					// Use the cell's position to get the correct alignment
 					const cellAlignment = cell.position !== undefined ? alignment[cell.position] : null;
@@ -583,6 +606,7 @@ function processRows(
 			const tfootRowTokens: TRow[] = tfootRows.map((row) => ({
 				type: 'tr',
 				columnNormalization: row.columnNormalization,
+				placeholderColumns: row.placeholderColumns,
 				tokens: row.cells.map((cell) => {
 					// Use the cell's position to get the correct alignment
 					const cellAlignment = cell.position !== undefined ? alignment[cell.position] : null;

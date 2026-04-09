@@ -360,6 +360,25 @@ describe('tokenization', () => {
 		expect(firstRow.tokens.map((cell: any) => cell.text)).toEqual(['1', '2']);
 	});
 
+	test('keeps streaming tail rows aligned while the final row is still incomplete', () => {
+		const tokens = lex('| A | B |\n|---|---|\n| Foo');
+		const tableToken = getFirstTokenByType(tokens, 'table');
+		const tableBody = tableToken.tokens.find((t: any) => t.type === 'tbody');
+		const firstRow = tableBody.tokens[0];
+
+		expect(tableToken.columnNormalization).toEqual({
+			mode: 'preserve-content',
+			issues: ['underflow-preserved']
+		});
+		expect(firstRow.columnNormalization).toEqual({
+			mode: 'underflow-preserved',
+			expectedColumns: 2,
+			actualColumns: 1
+		});
+		expect(firstRow.placeholderColumns).toBe(1);
+		expect(firstRow.tokens.map((cell: any) => cell.text)).toEqual(['Foo']);
+	});
+
 	test('preserves full colspans when a cell only partially fits the header width', () => {
 		const tokens = lex('| A | B | C |\n|---|---|---|\n| left | wide |||');
 		const tableToken = getFirstTokenByType(tokens, 'table');
