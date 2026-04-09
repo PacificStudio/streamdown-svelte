@@ -2,7 +2,6 @@ import { expect } from 'vitest';
 import {
 	describeInNode,
 	getFirstTokenByType,
-	getTokensByType,
 	loadFixtureText,
 	parseMarkdownTokens,
 	testInNode
@@ -28,9 +27,15 @@ interface ParagraphToken {
 	tokens?: InlineToken[];
 }
 
+interface TextContainerToken {
+	type: 'text';
+	text?: string;
+	tokens?: InlineToken[];
+}
+
 interface ListItemToken {
 	text?: string;
-	tokens?: Array<ParagraphToken | ListToken>;
+	tokens?: Array<ParagraphToken | TextContainerToken | ListToken>;
 }
 
 interface ListToken {
@@ -66,9 +71,11 @@ interface TableToken {
 	tokens: TableSectionToken[];
 }
 
-function getListItemContainer(item: ListItemToken): ParagraphToken | undefined {
+type ListContainerToken = ParagraphToken | TextContainerToken;
+
+function getListItemContainer(item: ListItemToken): ListContainerToken | undefined {
 	return item.tokens?.find(
-		(token): token is ParagraphToken => token.type === 'paragraph' || token.type === 'text'
+		(token): token is ListContainerToken => token.type === 'paragraph' || token.type === 'text'
 	);
 }
 
@@ -121,7 +128,9 @@ describeInNode('ported streamdown complex CJK mixed markdown fixture 09', () => 
 			const blockquote = getFirstTokenByType(tokens, 'blockquote') as
 				| { tokens?: ParagraphToken[] }
 				| undefined;
-			const quoteParagraphs = getTokensByType(blockquote?.tokens ?? [], 'paragraph');
+			const quoteParagraphs = (blockquote?.tokens ?? []).filter(
+				(token): token is ParagraphToken => token.type === 'paragraph'
+			);
 			expect(quoteParagraphs).toHaveLength(2);
 			expect(
 				(quoteParagraphs[0]?.tokens ?? [])
