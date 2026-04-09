@@ -25,6 +25,12 @@ interface InlineContainerToken extends InlineTokenBase {
 
 type InlineToken = CodespanToken | InlineContainerToken | InlineTokenBase;
 
+interface BlockToken {
+	type: string;
+	text?: string;
+	tokens?: unknown[];
+}
+
 interface ListItemToken {
 	text?: string;
 	tokens?: Array<InlineToken | ListToken>;
@@ -93,6 +99,20 @@ describeInNode('ported streamdown CJK commentary fixture', () => {
 			expect(fourthNestedList?.tokens).toHaveLength(7);
 			expect(fourthNestedList?.tokens?.[0]?.text).toContain('xxxxx.xxxx()');
 			expect(JSON.stringify(tokens)).toContain('中英文混合方式');
+		}
+	);
+
+	testInNode(
+		'keeps the trailing commentary as a top-level paragraph after the ordered list',
+		async () => {
+			const markdown = await loadFixtureText('cjk-commentary.md');
+			const tokens = parseMarkdownTokens(markdown) as BlockToken[];
+
+			expect(tokens.map((token) => token.type)).toEqual(['paragraph', 'list', 'paragraph']);
+
+			const trailingParagraph = tokens[2];
+			expect(trailingParagraph?.type).toBe('paragraph');
+			expect(trailingParagraph?.text).toContain('注释采用中英文混合方式');
 		}
 	);
 });
