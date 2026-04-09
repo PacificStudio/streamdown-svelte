@@ -31,8 +31,35 @@ type SecurityRenderOptions = {
 	urlTransform?: UrlTransform;
 };
 
-const HTML_BLOCK_START_PATTERN = /^[ \t]*<[\w!/?-]/;
-const HTML_LINE_INDENT_PATTERN = /(^|\n)[ \t]{4,}(?=<[\w!/?-])/g;
+const HTML_BLOCK_ELEMENT_START_PATTERN = /^[ \t]{0,3}<([A-Za-z][\w:-]*)(?=[\s>/])/;
+const HTML_INDENTED_TAG_LINE_PATTERN = /^[ \t]{4,}(?=<[\w!/?-])/;
+const HTML_TAG_PATTERN = /<\/?([A-Za-z][\w:-]*)(?=[\s/>])[^>]*>/g;
+const HTML_VOID_ELEMENTS = new Set([
+	'area',
+	'base',
+	'br',
+	'col',
+	'embed',
+	'hr',
+	'img',
+	'input',
+	'link',
+	'meta',
+	'param',
+	'source',
+	'track',
+	'wbr'
+]);
+const HTML_LITERAL_CONTENT_TAGS = new Set([
+	'code',
+	'plaintext',
+	'pre',
+	'script',
+	'style',
+	'textarea',
+	'title',
+	'xmp'
+]);
 
 const defaultSanitizeSchema = {
 	...defaultSchema,
@@ -218,7 +245,9 @@ const createMarkdownSecurityProcessor = ({
 					? WILDCARD_PREFIX
 					: [...hardenAllowedImagePrefixes],
 			allowedLinkPrefixes:
-				hardenAllowedLinkPrefixes === WILDCARD_PREFIX ? WILDCARD_PREFIX : [...hardenAllowedLinkPrefixes],
+				hardenAllowedLinkPrefixes === WILDCARD_PREFIX
+					? WILDCARD_PREFIX
+					: [...hardenAllowedLinkPrefixes],
 			allowedProtocols: WILDCARD_PREFIX,
 			defaultOrigin: hardenDefaultOrigin,
 			allowDataImages: true
@@ -285,11 +314,104 @@ export function normalizeHtmlIndentation(content: string): string {
 		return content;
 	}
 
-	if (!HTML_BLOCK_START_PATTERN.test(content)) {
+	if (!content.includes('<')) {
 		return content;
 	}
 
-	return content.replace(HTML_LINE_INDENT_PATTERN, '$1');
+	const lineBreak = content.includes('\r\n') ? '\r\n' : '\n';
+	const lines = content.split(/\r?\n/);
+	let changed = false;
+
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+		const blockEndIndex = findHtmlBlockEnd(lines, lineIndex);
+
+		if (blockEndIndex == null) {
+			continue;
+		}
+
+		for (
+			let nestedLineIndex = lineIndex + 1;
+			nestedLineIndex <= blockEndIndex;
+			nestedLineIndex += 1
+		) {
+			const line = lines[nestedLineIndex];
+
+			if (!line || !HTML_INDENTED_TAG_LINE_PATTERN.test(line)) {
+				continue;
+			}
+
+			lines[nestedLineIndex] = line.replace(HTML_INDENTED_TAG_LINE_PATTERN, '');
+			changed = true;
+		}
+
+		lineIndex = blockEndIndex;
+	}
+
+	return changed ? lines.join(lineBreak) : content;
+}
+
+function findHtmlBlockEnd(lines: string[], startIndex: number): number | null {
+	const startLine = lines[startIndex];
+	const startTagMatch = startLine?.match(HTML_BLOCK_ELEMENT_START_PATTERN);
+
+	if (!startTagMatch) {
+		return null;
+	}
+
+	const rootTagName = startTagMatch[1].toLowerCase();
+
+	if (HTML_LITERAL_CONTENT_TAGS.has(rootTagName)) {
+		return null;
+	}
+
+	const tagStack = collectOpenHtmlTags(startLine);
+
+	if (tagStack.length === 0) {
+		return startIndex;
+	}
+
+	for (let lineIndex = startIndex + 1; lineIndex < lines.length; lineIndex += 1) {
+		updateHtmlTagStack(tagStack, lines[lineIndex] ?? '');
+
+		if (tagStack.length === 0) {
+			return lineIndex;
+		}
+	}
+
+	return null;
+}
+
+function collectOpenHtmlTags(line: string): string[] {
+	const tagStack: string[] = [];
+	updateHtmlTagStack(tagStack, line);
+	return tagStack;
+}
+
+function updateHtmlTagStack(tagStack: string[], line: string): void {
+	for (const match of line.matchAll(HTML_TAG_PATTERN)) {
+		const rawTag = match[0];
+		const tagName = match[1]?.toLowerCase();
+
+		if (!tagName) {
+			continue;
+		}
+
+		if (rawTag.startsWith('</')) {
+			const lastMatchingIndex = tagStack.lastIndexOf(tagName);
+
+			if (lastMatchingIndex !== -1) {
+				tagStack.length = lastMatchingIndex;
+			}
+
+			continue;
+		}
+
+		if (HTML_VOID_ELEMENTS.has(tagName) || rawTag.trimEnd().endsWith('/>')) {
+			continue;
+		}
+
+		tagStack.push(tagName);
+	}
 }
 
 export function renderMarkdownFragment(

@@ -17,6 +17,50 @@ describeInBrowser('ported streamdown security normalize HTML indentation', () =>
 	});
 
 	testInBrowser(
+		'normalizes balanced HTML blocks without rewriting unrelated indented lines',
+		() => {
+			expect(
+				normalizeHtmlIndentation(
+					['<div>', '    <span>Hello</span>', '</div>', '', '    <span>Literal code</span>'].join(
+						'\n'
+					)
+				)
+			).toBe(
+				['<div>', '<span>Hello</span>', '</div>', '', '    <span>Literal code</span>'].join('\n')
+			);
+		}
+	);
+
+	testInBrowser(
+		'normalizes later HTML blocks in mixed Markdown without touching indented HTML-like text',
+		() => {
+			expect(
+				normalizeHtmlIndentation(
+					[
+						'Intro paragraph.',
+						'',
+						'    <span>Literal before block</span>',
+						'',
+						'<section>',
+						'    <div>Nested HTML</div>',
+						'</section>'
+					].join('\n')
+				)
+			).toBe(
+				[
+					'Intro paragraph.',
+					'',
+					'    <span>Literal before block</span>',
+					'',
+					'<section>',
+					'<div>Nested HTML</div>',
+					'</section>'
+				].join('\n')
+			);
+		}
+	);
+
+	testInBrowser(
 		'renders indented HTML blocks as HTML when the compatibility prop is enabled',
 		() => {
 			const screen = render(Streamdown, {
@@ -40,6 +84,35 @@ describeInBrowser('ported streamdown security normalize HTML indentation', () =>
 			expect(headings).toContain('Title One');
 			expect(headings).toContain('Title Two');
 			expect(screen.container.querySelectorAll('code')).toHaveLength(0);
+		}
+	);
+
+	testInBrowser(
+		'renders mixed Markdown and HTML without promoting later indented literals into HTML',
+		() => {
+			const screen = render(Streamdown, {
+				content: [
+					'Before paragraph.',
+					'',
+					'<div class="wrapper">',
+					'    <span class="inner">HTML content</span>',
+					'</div>',
+					'',
+					'    <span class="literal">Literal code</span>',
+					'',
+					'After paragraph.'
+				].join('\n'),
+				static: true,
+				normalizeHtmlIndentation: true
+			});
+
+			const literalCode = screen.container.querySelector('pre code')?.textContent ?? '';
+
+			expect(screen.container.textContent).toContain('HTML content');
+			expect(literalCode).toContain('<span class="literal">Literal code</span>');
+			expect(literalCode).not.toContain('HTML content');
+			expect(screen.container.textContent).toContain('Before paragraph.');
+			expect(screen.container.textContent).toContain('After paragraph.');
 		}
 	);
 
