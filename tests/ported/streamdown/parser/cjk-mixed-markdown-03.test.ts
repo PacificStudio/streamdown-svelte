@@ -79,6 +79,10 @@ interface TableToken {
 	tokens?: TableSectionToken[];
 }
 
+function asInlineTokens(tokens?: { type: string }[]): InlineToken[] {
+	return (tokens ?? []) as InlineToken[];
+}
+
 describeInNode('ported streamdown complex CJK mixed markdown fixture 03', () => {
 	testInNode(
 		'keeps mixed inline tokens and nested structures stable across the fixture',
@@ -98,14 +102,17 @@ describeInNode('ported streamdown complex CJK mixed markdown fixture 03', () => 
 			]);
 
 			const headings = getTokensByType(tokens, 'heading');
+			const headingInlineTokens = asInlineTokens(headings[0]?.tokens);
 			expect(headings).toHaveLength(2);
-			expect(headings[0]?.tokens?.map((token) => token.type)).toEqual(['text', 'codespan', 'text']);
-			expect(headings[0]?.tokens?.[1]?.text).toBe('Streamdown');
+			expect(headingInlineTokens.map((token) => token.type)).toEqual(['text', 'codespan', 'text']);
+			expect((headingInlineTokens[1] as CodespanToken | undefined)?.text).toBe('Streamdown');
 			expect(headings[1]?.text).toBe('复盘清单');
 
 			const paragraphs = getTokensByType(tokens, 'paragraph');
+			const introInlineTokens = asInlineTokens(paragraphs[0]?.tokens);
+			const outroInlineTokens = asInlineTokens(paragraphs[1]?.tokens);
 			expect(paragraphs).toHaveLength(2);
-			expect(paragraphs[0]?.tokens?.map((token) => token.type)).toEqual([
+			expect(introInlineTokens.map((token) => token.type)).toEqual([
 				'text',
 				'codespan',
 				'text',
@@ -123,14 +130,16 @@ describeInNode('ported streamdown complex CJK mixed markdown fixture 03', () => 
 				'text'
 			]);
 			expect(
-				(paragraphs[0]?.tokens ?? [])
+				introInlineTokens
 					.filter((token): token is CodespanToken => token.type === 'codespan')
 					.map((token) => token.text)
 			).toEqual(['README.md', 'src/routes/playground/+page.svelte', 'pnpm test:unit']);
-			const introLink = getFirstTokenByType((paragraphs[0]?.tokens ?? []) as InlineToken[], 'link');
+			const introLink = getFirstTokenByType(introInlineTokens, 'link');
 			expect(introLink?.text).toBe('https://streamdown.app/docs/start-here');
 			expect(introLink?.href).toBe('https://streamdown.app/docs/start-here');
-			expect(paragraphs[0]?.tokens?.at(-1)?.text).toContain('，以及 emoji 😀 挤在一起时');
+			expect((introInlineTokens.at(-1) as InlineTokenBase | undefined)?.text).toContain(
+				'，以及 emoji 😀 挤在一起时'
+			);
 
 			const orderedList = getFirstTokenByType(tokens, 'list') as ListToken | undefined;
 			expect(orderedList?.ordered).toBe(true);
@@ -242,7 +251,7 @@ describeInNode('ported streamdown complex CJK mixed markdown fixture 03', () => 
 			]);
 			expect(tbody?.tokens?.[2]?.tokens?.[2]?.tokens?.[2]?.text).toBe('；不要吞掉句号。');
 
-			expect(paragraphs[1]?.tokens?.map((token) => token.type)).toEqual([
+			expect(outroInlineTokens.map((token) => token.type)).toEqual([
 				'text',
 				'codespan',
 				'text',
@@ -251,13 +260,13 @@ describeInNode('ported streamdown complex CJK mixed markdown fixture 03', () => 
 				'link',
 				'text'
 			]);
-			expect((paragraphs[1]?.tokens?.[3] as LinkToken | undefined)?.href).toBe(
+			expect((outroInlineTokens[3] as LinkToken | undefined)?.href).toBe(
 				'https://example.com/internal?lang=zh-CN'
 			);
-			expect((paragraphs[1]?.tokens?.[5] as LinkToken | undefined)?.text).toBe(
+			expect((outroInlineTokens[5] as LinkToken | undefined)?.text).toBe(
 				'https://example.com/guide?id=ase-66'
 			);
-			expect(paragraphs[1]?.tokens?.at(-1)?.text).toContain(
+			expect((outroInlineTokens.at(-1) as InlineTokenBase | undefined)?.text).toContain(
 				'中文引号“”、顿号、冒号，都应该保持原样。'
 			);
 		}
