@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.0.4
+
+### Fixes
+
+- Preserve mixed CJK markdown content more reliably around list continuations, streaming tables, and table normalization.
+- Tighten HTML indentation normalization so security hardening keeps intended content without over-normalizing nested markup.
+
+### Validation
+
+- Expand parser and rendering regression coverage for complex CJK mixed-markdown fixtures, table normalization, and HTML indentation safety.
+
 ## 3.0.0
 
 ### ⚠️ Breaking Changes
