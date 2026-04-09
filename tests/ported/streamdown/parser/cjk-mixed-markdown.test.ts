@@ -69,6 +69,10 @@ interface TableToken {
 	tokens: TableSectionToken[];
 }
 
+function findInlineToken(tokens: InlineToken[], type: string): InlineToken | undefined {
+	return tokens.find((token) => token.type === type);
+}
+
 describeInNode('ported streamdown complex CJK mixed-markdown fixture', () => {
 	testInNode(
 		'parses headings, mixed inline formatting, nested lists, code, tables, and CJK link boundaries',
@@ -91,22 +95,13 @@ describeInNode('ported streamdown complex CJK mixed-markdown fixture', () => {
 			expect(heading?.text).toContain('复杂中文混排 Markdown 回归样例 01');
 
 			const intro = getFirstTokenByType(tokens, 'paragraph') as ParagraphToken | undefined;
+			const introTokens = intro?.tokens ?? [];
 			expect(intro?.text).toContain('这些中英文边界、全角标点与 emoji 😀 都不应该吞字');
-			expect(getFirstTokenByType((intro?.tokens ?? []) as InlineToken[], 'strong')?.text).toBe(
-				'Streamdown'
-			);
-			expect(getFirstTokenByType((intro?.tokens ?? []) as InlineToken[], 'em')?.text).toBe(
-				'parser IR'
-			);
-			expect(getFirstTokenByType((intro?.tokens ?? []) as InlineToken[], 'del')?.text).toBe(
-				'legacy renderer'
-			);
-			expect(getFirstTokenByType((intro?.tokens ?? []) as InlineToken[], 'codespan')?.text).toBe(
-				'src/lib/markdown.ts'
-			);
-			expect(getFirstTokenByType((intro?.tokens ?? []) as InlineToken[], 'link')?.href).toBe(
-				'https://example.com/release/ase-64'
-			);
+			expect(findInlineToken(introTokens, 'strong')?.text).toBe('Streamdown');
+			expect(findInlineToken(introTokens, 'em')?.text).toBe('parser IR');
+			expect(findInlineToken(introTokens, 'del')?.text).toBe('legacy renderer');
+			expect(findInlineToken(introTokens, 'codespan')?.text).toBe('src/lib/markdown.ts');
+			expect(findInlineToken(introTokens, 'link')?.href).toBe('https://example.com/release/ase-64');
 			expect(intro?.text).toContain('https://example.com；这些');
 
 			const quote = getFirstTokenByType(tokens, 'blockquote') as BlockquoteToken | undefined;
@@ -114,13 +109,10 @@ describeInNode('ported streamdown complex CJK mixed-markdown fixture', () => {
 				(quote?.tokens ?? []) as ParagraphToken[],
 				'paragraph'
 			) as ParagraphToken | undefined;
+			const quoteTokens = quoteParagraph?.tokens ?? [];
 			expect(quoteParagraph?.text).toContain('不要把中文句号“。”或冒号“：”误算进 URL');
-			expect(
-				getFirstTokenByType((quoteParagraph?.tokens ?? []) as InlineToken[], 'codespan')?.text
-			).toBe('pnpm test');
-			expect(
-				getFirstTokenByType((quoteParagraph?.tokens ?? []) as InlineToken[], 'link')?.href
-			).toBe('https://example.com/ci/ase-64');
+			expect(findInlineToken(quoteTokens, 'codespan')?.text).toBe('pnpm test');
+			expect(findInlineToken(quoteTokens, 'link')?.href).toBe('https://example.com/ci/ase-64');
 
 			const orderedList = getFirstTokenByType(tokens, 'list') as ListToken | undefined;
 			expect(orderedList?.ordered).toBe(true);
@@ -175,13 +167,12 @@ describeInNode('ported streamdown complex CJK mixed-markdown fixture', () => {
 			expect(table?.tokens?.[1]?.tokens?.[1]?.tokens?.[1]?.text).toBe('https://example.com/spec');
 
 			const outro = tokens.at(-1) as ParagraphToken | undefined;
+			const outroTokens = outro?.tokens ?? [];
 			expect(outro?.text).toContain(
 				'English 单词贴着中文全角逗号、顿号、括号（例如 parser、renderer）出现'
 			);
-			expect(getFirstTokenByType((outro?.tokens ?? []) as InlineToken[], 'codespan')?.text).toBe(
-				'codespan'
-			);
-			expect(getFirstTokenByType((outro?.tokens ?? []) as InlineToken[], 'link')?.href).toBe(
+			expect(findInlineToken(outroTokens, 'codespan')?.text).toBe('codespan');
+			expect(findInlineToken(outroTokens, 'link')?.href).toBe(
 				'https://example.com/spec/detail'
 			);
 		}
