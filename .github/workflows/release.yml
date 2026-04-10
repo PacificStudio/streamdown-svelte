@@ -145,37 +145,48 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true && github.ref == 'refs/heads/master' }}
         shell: bash
         run: |
-          mapfile -t tarballs < <(
+          mapfile -t release_entries < <(
             node --input-type=module -e '
               import { readFileSync } from "node:fs";
               const manifest = JSON.parse(readFileSync("artifacts/release/release-packages.json", "utf8"));
               for (const entry of manifest.packages ?? []) {
-                process.stdout.write(`artifacts/release/${entry.tarball.fileName}\n`);
+                process.stdout.write(`${entry.package.name}\t${entry.package.version}\tartifacts/release/${entry.tarball.fileName}\n`);
               }
             '
           )
 
-          if [ "${#tarballs[@]}" -eq 0 ]; then
+          if [ "${#release_entries[@]}" -eq 0 ]; then
             echo "No release tarballs found in artifacts/release/release-packages.json" >&2
             exit 1
           fi
 
-          for tarball in "${tarballs[@]}"; do
-            echo "Publishing ${tarball}"
+          for release_entry in "${release_entries[@]}"; do
+            IFS=$'\t' read -r package_name package_version tarball <<<"${release_entry}"
+
+            if npm view "${package_name}@${package_version}" version >/dev/null 2>&1; then
+              echo "Skipping ${package_name}@${package_version}: version already published"
+              continue
+            fi
+
+            echo "Publishing ${package_name}@${package_version} from ${tarball}"
             npm publish "${tarball}"
           done
 
       - name: Tag published release commit
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true && github.ref == 'refs/heads/master' }}
         run: |
-          VERSION="$(node --input-type=module <<'EOF'
-          import { readFileSync } from 'node:fs';
-          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-          process.stdout.write(`v${pkg.version}`);
-          EOF
-          )"
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
-            echo "Tag $VERSION already exists" >&2
+          VERSION="$(node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const pkg = JSON.parse(readFileSync("package.json", "utf8"));
+            process.stdout.write(`v${pkg.version}`);
+          ')"
+          if git show-ref --tags --verify --quiet "refs/tags/$VERSION"; then
+            EXISTING_SHA="$(git rev-list -n 1 "$VERSION")"
+            if [ "$EXISTING_SHA" = "$GITHUB_SHA" ]; then
+              echo "Tag $VERSION already points to $GITHUB_SHA; skipping"
+              exit 0
+            fi
+            echo "Tag $VERSION already exists at $EXISTING_SHA" >&2
             exit 1
           fi
           git tag "$VERSION" "$GITHUB_SHA"
