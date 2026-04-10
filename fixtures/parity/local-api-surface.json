@@ -5,7 +5,7 @@
 		"commit": null,
 		"package": {
 			"name": "streamdown-svelte",
-			"version": "3.0.4",
+			"version": "3.0.5",
 			"entryFile": "src/lib/index.ts",
 			"exports": [
 				{
@@ -688,7 +688,7 @@
 		"plugins": [
 			{
 				"packageName": "@streamdown-svelte/cjk",
-				"packageVersion": "1.0.3",
+				"packageVersion": "1.0.4",
 				"exports": [
 					{
 						"subpath": ".",
@@ -724,7 +724,7 @@
 			},
 			{
 				"packageName": "@streamdown-svelte/code",
-				"packageVersion": "1.1.1",
+				"packageVersion": "1.1.2",
 				"exports": [
 					{
 						"subpath": ".",
@@ -790,7 +790,7 @@
 			},
 			{
 				"packageName": "@streamdown-svelte/math",
-				"packageVersion": "1.0.2",
+				"packageVersion": "1.0.3",
 				"exports": [
 					{
 						"subpath": ".",
@@ -832,7 +832,7 @@
 			},
 			{
 				"packageName": "@streamdown-svelte/mermaid",
-				"packageVersion": "1.0.2",
+				"packageVersion": "1.0.3",
 				"exports": [
 					{
 						"subpath": ".",

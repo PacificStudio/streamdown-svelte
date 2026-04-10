@@ -168,8 +168,13 @@ jobs:
               continue
             fi
 
+            publish_args=("${tarball}")
+            if [[ "${package_name}" == @* ]]; then
+              publish_args+=(--access public)
+            fi
+
             echo "Publishing ${package_name}@${package_version} from ${tarball}"
-            npm publish "${tarball}"
+            npm publish "${publish_args[@]}"
           done
 
       - name: Tag published release commit
