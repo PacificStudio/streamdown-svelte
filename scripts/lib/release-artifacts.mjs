@@ -17,6 +17,7 @@ import { tmpdir } from 'node:os';
 import { basename, join, relative, resolve, sep } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import { getPublishablePackages } from './publishable-packages.mjs';
 
 export const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
 const packageJsonPath = join(repoRoot, 'package.json');
@@ -88,6 +89,7 @@ function clearReleaseArtifactOutputs(outputDirectory) {
 			entry === 'build-metadata.json' ||
 			entry === 'artifact-metadata.json' ||
 			entry === 'provenance-metadata.json' ||
+			entry === 'release-packages.json' ||
 			entry === 'publish-with-provenance.json' ||
 			entry === 'post-publish-verify.json'
 		) {
@@ -325,6 +327,150 @@ function writeSha256File(outputDirectory, artifactMetadata) {
 	return outputPath;
 }
 
+function readWorkspacePackageJson(pkg) {
+	return readJson(join(pkg.dir, 'package.json'));
+}
+
+function createPackArgs(pkg) {
+	return pkg.isRoot
+		? ['pack', '--pack-destination', pkg.packDestination]
+		: ['--filter', pkg.packageName, 'pack', '--pack-destination', pkg.packDestination];
+}
+
+function getWorkspaceDependencyNames(packageJson, workspacePackageNames) {
+	const dependencyNames = new Set();
+
+	for (const dependencyField of [packageJson.dependencies, packageJson.optionalDependencies]) {
+		for (const dependencyName of Object.keys(dependencyField ?? {})) {
+			if (workspacePackageNames.has(dependencyName)) {
+				dependencyNames.add(dependencyName);
+			}
+		}
+	}
+
+	return [...dependencyNames].sort((left, right) => left.localeCompare(right));
+}
+
+function sortPackagesForPublish(packages) {
+	const packagesByName = new Map(packages.map((pkg) => [pkg.packageName, pkg]));
+	const packageNames = new Set(packagesByName.keys());
+	const visited = new Set();
+	const visiting = new Set();
+	const ordered = [];
+
+	const visit = (pkg) => {
+		if (visited.has(pkg.packageName)) {
+			return;
+		}
+
+		if (visiting.has(pkg.packageName)) {
+			throw new Error(`Detected a circular publish dependency involving ${pkg.packageName}`);
+		}
+
+		visiting.add(pkg.packageName);
+
+		for (const dependencyName of getWorkspaceDependencyNames(pkg.packageJson, packageNames)) {
+			visit(packagesByName.get(dependencyName));
+		}
+
+		visiting.delete(pkg.packageName);
+		visited.add(pkg.packageName);
+		ordered.push(pkg);
+	};
+
+	for (const pkg of [...packages].sort((left, right) => left.relativeDir.localeCompare(right.relativeDir))) {
+		visit(pkg);
+	}
+
+	return ordered;
+}
+
+async function packReleasePackages(outputDirectory) {
+	const releasePackages = sortPackagesForPublish(
+		getPublishablePackages().map((pkg) => ({
+			...pkg,
+			packageJson: readWorkspacePackageJson(pkg),
+			packDestination: createPackDestination()
+		}))
+	);
+
+	try {
+		const packedArtifacts = [];
+
+		for (const pkg of releasePackages) {
+			runCommand('pnpm', createPackArgs(pkg), 'pnpm pack');
+
+			const packedTarball = findTarball(pkg.packDestination);
+			const copiedTarballPath = join(outputDirectory, basename(packedTarball));
+			copyFileSync(packedTarball, copiedTarballPath);
+
+			const artifactMetadata = await createArtifactMetadata(pkg.packageJson, copiedTarballPath);
+			const sha256Path = writeSha256File(outputDirectory, artifactMetadata);
+
+			packedArtifacts.push({
+				pkg,
+				copiedTarballPath,
+				artifactMetadata,
+				sha256Path
+			});
+		}
+
+		return packedArtifacts;
+	} finally {
+		for (const pkg of releasePackages) {
+			rmSync(pkg.packDestination, {
+				force: true,
+				recursive: true
+			});
+		}
+	}
+}
+
+function createReleasePackagesManifest(packedArtifacts) {
+	return {
+		schemaVersion: 1,
+		generatedAt: new Date().toISOString(),
+		packages: packedArtifacts.map(({ pkg, artifactMetadata, sha256Path }) => ({
+			package: {
+				name: pkg.packageJson.name,
+				version: pkg.packageJson.version
+			},
+			relativeDir: pkg.relativeDir,
+			publishOrder: pkg.packageName,
+			tarball: artifactMetadata.tarball,
+			sha256File: basename(sha256Path),
+			primary: pkg.isRoot
+		}))
+	};
+}
+
+function getPrimaryReleasePackage(manifest) {
+	const primaryPackages = manifest.packages.filter((entry) => entry.primary === true);
+
+	if (primaryPackages.length !== 1) {
+		throw new Error(
+			`Expected exactly one primary release package, found ${primaryPackages.length}`
+		);
+	}
+
+	return primaryPackages[0];
+}
+
+function verifyReleasePackageArtifacts(outputDirectory, releasePackage) {
+	const tarballPath = join(outputDirectory, releasePackage.tarball.fileName);
+	const sha256Path = join(outputDirectory, releasePackage.sha256File);
+
+	if (!existsSync(tarballPath)) {
+		throw new Error(`Missing release tarball: ${tarballPath}`);
+	}
+
+	if (!existsSync(sha256Path)) {
+		throw new Error(`Missing release sha256 file: ${sha256Path}`);
+	}
+
+	return { tarballPath, sha256Path };
+}
+
 export function parseReleaseMetadataCommand(argv, cwd = process.cwd()) {
 	const normalizedArgv = argv[0] === '--' ? argv.slice(1) : argv;
 
@@ -351,7 +497,7 @@ export function parseReleaseMetadataCommand(argv, cwd = process.cwd()) {
 }
 
 export async function writeReleaseArtifactMetadata({ outputDirectory, env = process.env }) {
-	const packageJson = readRootPackageJson();
+	const rootPackageJson = readRootPackageJson();
 	const resolvedOutputDirectory = parseRequiredNonEmptyString(outputDirectory, 'outputDirectory');
 
 	mkdirSync(resolvedOutputDirectory, {
@@ -359,84 +505,75 @@ export async function writeReleaseArtifactMetadata({ outputDirectory, env = proc
 	});
 	clearReleaseArtifactOutputs(resolvedOutputDirectory);
 
-	const packDestination = createPackDestination();
+	const packedArtifacts = await packReleasePackages(resolvedOutputDirectory);
+	const releasePackagesManifest = createReleasePackagesManifest(packedArtifacts);
+	const primaryReleasePackage = getPrimaryReleasePackage(releasePackagesManifest);
+	const primaryArtifact = packedArtifacts.find(
+		({ pkg }) => pkg.packageJson.name === primaryReleasePackage.package.name
+	);
 
-	try {
-		runCommand('pnpm', ['pack', '--pack-destination', packDestination], 'pnpm pack');
-
-		const packedTarball = findTarball(packDestination);
-		const copiedTarballPath = join(resolvedOutputDirectory, basename(packedTarball));
-
-		copyFileSync(packedTarball, copiedTarballPath);
-
-		const buildMetadata = createBuildMetadata(packageJson, env);
-		const artifactMetadata = await createArtifactMetadata(packageJson, copiedTarballPath);
-		const provenanceMetadata = createProvenanceMetadata(
-			buildMetadata,
-			artifactMetadata,
-			env,
-			resolvedOutputDirectory
-		);
-
-		const buildMetadataPath = join(resolvedOutputDirectory, 'build-metadata.json');
-		const artifactMetadataPath = join(resolvedOutputDirectory, 'artifact-metadata.json');
-		const provenanceMetadataPath = join(resolvedOutputDirectory, 'provenance-metadata.json');
-		const sha256Path = writeSha256File(resolvedOutputDirectory, artifactMetadata);
-
-		writeJson(buildMetadataPath, buildMetadata);
-		writeJson(artifactMetadataPath, artifactMetadata);
-		writeJson(provenanceMetadataPath, provenanceMetadata);
-
-		return {
-			outputDirectory: resolvedOutputDirectory,
-			files: {
-				tarball: copiedTarballPath,
-				buildMetadata: buildMetadataPath,
-				artifactMetadata: artifactMetadataPath,
-				provenanceMetadata: provenanceMetadataPath,
-				sha256: sha256Path
-			},
-			summary: {
-				packageName: packageJson.name,
-				packageVersion: packageJson.version,
-				commitSha: buildMetadata.source.commitSha,
-				tarball: toPortableCommandPath(copiedTarballPath),
-				sha256: artifactMetadata.tarball.sha256,
-				runUrl: buildMetadata.source.runUrl
-			}
-		};
-	} finally {
-		rmSync(packDestination, {
-			force: true,
-			recursive: true
-		});
+	if (!primaryArtifact) {
+		throw new Error(`Missing packed artifact for primary package ${primaryReleasePackage.package.name}`);
 	}
+
+	const buildMetadata = createBuildMetadata(rootPackageJson, env);
+	const artifactMetadata = primaryArtifact.artifactMetadata;
+	const provenanceMetadata = createProvenanceMetadata(
+		buildMetadata,
+		artifactMetadata,
+		env,
+		resolvedOutputDirectory
+	);
+
+	const buildMetadataPath = join(resolvedOutputDirectory, 'build-metadata.json');
+	const artifactMetadataPath = join(resolvedOutputDirectory, 'artifact-metadata.json');
+	const provenanceMetadataPath = join(resolvedOutputDirectory, 'provenance-metadata.json');
+	const releasePackagesPath = join(resolvedOutputDirectory, 'release-packages.json');
+
+	writeJson(buildMetadataPath, buildMetadata);
+	writeJson(artifactMetadataPath, artifactMetadata);
+	writeJson(provenanceMetadataPath, provenanceMetadata);
+	writeJson(releasePackagesPath, releasePackagesManifest);
+
+	return {
+		outputDirectory: resolvedOutputDirectory,
+		files: {
+			tarballs: packedArtifacts.map(({ copiedTarballPath }) => copiedTarballPath),
+			buildMetadata: buildMetadataPath,
+			artifactMetadata: artifactMetadataPath,
+			provenanceMetadata: provenanceMetadataPath,
+			releasePackages: releasePackagesPath,
+			sha256: packedArtifacts.map(({ sha256Path }) => sha256Path)
+		},
+		summary: {
+			packageName: buildMetadata.package.name,
+			packageVersion: buildMetadata.package.version,
+			commitSha: buildMetadata.source.commitSha,
+			tarball: toPortableCommandPath(primaryArtifact.copiedTarballPath),
+			sha256: artifactMetadata.tarball.sha256,
+			runUrl: buildMetadata.source.runUrl,
+			packages: releasePackagesManifest.packages.map((entry) => ({
+				name: entry.package.name,
+				version: entry.package.version,
+				tarball: toPortableCommandPath(join(resolvedOutputDirectory, entry.tarball.fileName))
+			}))
+		}
+	};
 }
 
 export async function verifyReleaseArtifactMetadata(outputDirectory, env = process.env) {
 	const resolvedOutputDirectory = parseRequiredNonEmptyString(outputDirectory, 'outputDirectory');
-	const packageJson = readRootPackageJson();
-	const tarballFiles = readdirSync(resolvedOutputDirectory).filter((entry) =>
-		entry.endsWith('.tgz')
-	);
-
-	if (tarballFiles.length !== 1) {
-		throw new Error(
-			`Expected exactly one tarball in ${resolvedOutputDirectory}, found ${tarballFiles.length}: ${tarballFiles.join(', ')}`
-		);
-	}
-
-	const tarballPath = join(resolvedOutputDirectory, tarballFiles[0]);
+	const rootPackageJson = readRootPackageJson();
 	const buildMetadataPath = join(resolvedOutputDirectory, 'build-metadata.json');
 	const artifactMetadataPath = join(resolvedOutputDirectory, 'artifact-metadata.json');
 	const provenanceMetadataPath = join(resolvedOutputDirectory, 'provenance-metadata.json');
-	const sha256Path = join(resolvedOutputDirectory, `${tarballFiles[0]}.sha256`);
+	const releasePackagesPath = join(resolvedOutputDirectory, 'release-packages.json');
 
 	for (const path of [
 		buildMetadataPath,
 		artifactMetadataPath,
 		provenanceMetadataPath,
-		sha256Path
+		releasePackagesPath
 	]) {
 		if (!existsSync(path)) {
 			throw new Error(`Missing required release metadata file: ${path}`);
@@ -446,15 +583,73 @@ export async function verifyReleaseArtifactMetadata(outputDirectory, env = proce
 	const buildMetadata = readJson(buildMetadataPath);
 	const artifactMetadata = readJson(artifactMetadataPath);
 	const provenanceMetadata = readJson(provenanceMetadataPath);
-	const sha256File = readFileSync(sha256Path, 'utf8').trim();
-	const computedHashes = await computeHashes(tarballPath);
+	const releasePackagesManifest = readJson(releasePackagesPath);
 	const expectedCommitSha = readGitCommitSha(env);
 
-	if (buildMetadata.package?.name !== packageJson.name) {
+	if (!Array.isArray(releasePackagesManifest.packages) || releasePackagesManifest.packages.length === 0) {
+		throw new Error('release-packages.json must include a non-empty packages array');
+	}
+
+	const primaryReleasePackage = getPrimaryReleasePackage(releasePackagesManifest);
+	const verifiedPackages = [];
+	const requiredFiles = [
+		'build-metadata.json',
+		'artifact-metadata.json',
+		'provenance-metadata.json',
+		'release-packages.json'
+	];
+
+	for (const releasePackage of releasePackagesManifest.packages) {
+		const { tarballPath, sha256Path } = verifyReleasePackageArtifacts(
+			resolvedOutputDirectory,
+			releasePackage
+		);
+		const computedHashes = await computeHashes(tarballPath);
+		const sha256File = readFileSync(sha256Path, 'utf8').trim();
+
+		if (releasePackage.tarball.sizeBytes !== statSync(tarballPath).size) {
+			throw new Error(
+				`release-packages.json tarball.sizeBytes mismatch for ${releasePackage.package.name}: ${releasePackage.tarball.sizeBytes}`
+			);
+		}
+
+		if (releasePackage.tarball.sha256 !== computedHashes.sha256) {
+			throw new Error(
+				`release-packages.json tarball.sha256 mismatch for ${releasePackage.package.name}`
+			);
+		}
+
+		if (releasePackage.tarball.sha512 !== computedHashes.sha512) {
+			throw new Error(
+				`release-packages.json tarball.sha512 mismatch for ${releasePackage.package.name}`
+			);
+		}
+
+		if (releasePackage.tarball.integrity !== computedHashes.integrity) {
+			throw new Error(
+				`release-packages.json tarball.integrity mismatch for ${releasePackage.package.name}`
+			);
+		}
+
+		if (sha256File !== `${computedHashes.sha256}  ${releasePackage.tarball.fileName}`) {
+			throw new Error(`${basename(sha256Path)} does not match the generated tarball sha256 digest`);
+		}
+
+		requiredFiles.push(releasePackage.sha256File);
+		verifiedPackages.push({
+			name: releasePackage.package.name,
+			version: releasePackage.package.version,
+			tarball: releasePackage.tarball.fileName,
+			sha256: computedHashes.sha256,
+			primary: releasePackage.primary === true
+		});
+	}
+
+	if (buildMetadata.package?.name !== rootPackageJson.name) {
 		throw new Error(`build-metadata.json package.name mismatch: ${buildMetadata.package?.name}`);
 	}
 
-	if (buildMetadata.package?.version !== packageJson.version) {
+	if (buildMetadata.package?.version !== rootPackageJson.version) {
 		throw new Error(
 			`build-metadata.json package.version mismatch: ${buildMetadata.package?.version}`
 		);
@@ -466,64 +661,65 @@ export async function verifyReleaseArtifactMetadata(outputDirectory, env = proce
 		);
 	}
 
-	if (artifactMetadata.package?.name !== packageJson.name) {
+	if (artifactMetadata.package?.name !== primaryReleasePackage.package.name) {
 		throw new Error(
 			`artifact-metadata.json package.name mismatch: ${artifactMetadata.package?.name}`
 		);
 	}
 
-	if (artifactMetadata.package?.version !== packageJson.version) {
+	if (artifactMetadata.package?.version !== primaryReleasePackage.package.version) {
 		throw new Error(
 			`artifact-metadata.json package.version mismatch: ${artifactMetadata.package?.version}`
 		);
 	}
 
-	if (artifactMetadata.tarball?.fileName !== basename(tarballPath)) {
+	if (artifactMetadata.tarball?.fileName !== primaryReleasePackage.tarball.fileName) {
 		throw new Error(
 			`artifact-metadata.json tarball.fileName mismatch: ${artifactMetadata.tarball?.fileName}`
 		);
 	}
 
-	if (artifactMetadata.tarball?.sizeBytes !== statSync(tarballPath).size) {
+	const primaryTarballPath = join(resolvedOutputDirectory, primaryReleasePackage.tarball.fileName);
+	const primaryHashes = await computeHashes(primaryTarballPath);
+
+	if (artifactMetadata.tarball?.sizeBytes !== statSync(primaryTarballPath).size) {
 		throw new Error(
 			`artifact-metadata.json tarball.sizeBytes mismatch: ${artifactMetadata.tarball?.sizeBytes}`
 		);
 	}
 
-	if (artifactMetadata.tarball?.sha256 !== computedHashes.sha256) {
+	if (artifactMetadata.tarball?.sha256 !== primaryHashes.sha256) {
 		throw new Error('artifact-metadata.json tarball.sha256 does not match the generated tarball');
 	}
 
-	if (artifactMetadata.tarball?.sha512 !== computedHashes.sha512) {
+	if (artifactMetadata.tarball?.sha512 !== primaryHashes.sha512) {
 		throw new Error('artifact-metadata.json tarball.sha512 does not match the generated tarball');
 	}
 
-	if (artifactMetadata.tarball?.integrity !== computedHashes.integrity) {
+	if (artifactMetadata.tarball?.integrity !== primaryHashes.integrity) {
 		throw new Error(
 			'artifact-metadata.json tarball.integrity does not match the generated tarball'
 		);
 	}
 
-	if (sha256File !== `${computedHashes.sha256}  ${basename(tarballPath)}`) {
-		throw new Error(`${basename(sha256Path)} does not match the generated tarball sha256 digest`);
-	}
-
-	if (provenanceMetadata.subject?.name !== basename(tarballPath)) {
+	if (provenanceMetadata.subject?.name !== primaryReleasePackage.tarball.fileName) {
 		throw new Error(
 			`provenance-metadata.json subject.name mismatch: ${provenanceMetadata.subject?.name}`
 		);
 	}
 
-	if (provenanceMetadata.subject?.sha256 !== computedHashes.sha256) {
+	if (provenanceMetadata.subject?.sha256 !== primaryHashes.sha256) {
 		throw new Error('provenance-metadata.json subject.sha256 does not match the generated tarball');
 	}
 
 	return {
 		outputDirectory: resolvedOutputDirectory,
-		packageName: packageJson.name,
-		packageVersion: packageJson.version,
+		packageName: rootPackageJson.name,
+		packageVersion: rootPackageJson.version,
 		commitSha: expectedCommitSha,
-		tarball: basename(tarballPath),
-		sha256: computedHashes.sha256
+		tarball: primaryReleasePackage.tarball.fileName,
+		sha256: primaryHashes.sha256,
+		packages: verifiedPackages,
+		requiredFiles
 	};
 }

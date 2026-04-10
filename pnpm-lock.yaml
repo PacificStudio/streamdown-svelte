@@ -23,6 +23,9 @@ importers:
       '@streamdown-svelte/plugin-core':
         specifier: workspace:*
         version: link:packages/streamdown-plugin-core
+      '@streamdown-svelte/remend':
+        specifier: workspace:*
+        version: link:packages/remend
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -65,9 +68,6 @@ importers:
       remark-rehype:
         specifier: ^11.1.2
         version: 11.1.2
-      remend:
-        specifier: workspace:*
-        version: link:packages/remend
       shiki:
         specifier: ^3.13.0
         version: 3.13.0

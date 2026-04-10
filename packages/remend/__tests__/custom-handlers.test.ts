@@ -7,7 +7,7 @@ import remend, {
 	isWordChar,
 	parseIncompleteMarkdown,
 	type RemendHandler
-} from 'remend';
+} from '@streamdown-svelte/remend';
 import { describeInNode, testInNode } from '../../../tests/helpers/index.js';
 
 const JOKE_MARKER_PATTERN = /<<<JOKE>>>([^<]*)$/;

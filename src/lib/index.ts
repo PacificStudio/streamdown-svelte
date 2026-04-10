@@ -91,4 +91,4 @@ export {
 	tableDataToTSV,
 	type TableData
 } from './utils/table.js';
-export type { LinkMode, RemendHandler, RemendOptions } from 'remend';
+export type { LinkMode, RemendHandler, RemendOptions } from '@streamdown-svelte/remend';

@@ -713,7 +713,7 @@ describe('API surface parity contract', () => {
 
 	test('keeps the root remend subpath aligned with the standalone remend package contract', async () => {
 		const [standaloneRemend, rootRemend] = await Promise.all([
-			import('remend'),
+			import('@streamdown-svelte/remend'),
 			import('../../src/lib/remend.js')
 		]);
 

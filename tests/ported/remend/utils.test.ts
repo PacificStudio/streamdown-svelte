@@ -3,7 +3,7 @@ import {
 	findMatchingClosingBracket,
 	findMatchingOpeningBracket,
 	isWordChar
-} from 'remend/utils';
+} from '@streamdown-svelte/remend/utils';
 import { describeInNode, testInNode } from '../../helpers/index.js';
 
 describeInNode('ported remend utils surface', () => {

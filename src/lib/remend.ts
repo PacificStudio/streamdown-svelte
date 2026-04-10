@@ -6,5 +6,5 @@ export {
 	isWithinMathBlock,
 	isWordChar,
 	parseIncompleteMarkdown
-} from 'remend';
-export type { LinkMode, Plugin, RemendHandler, RemendOptions } from 'remend';
+} from '@streamdown-svelte/remend';
+export type { LinkMode, Plugin, RemendHandler, RemendOptions } from '@streamdown-svelte/remend';

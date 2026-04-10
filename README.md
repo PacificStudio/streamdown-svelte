@@ -425,7 +425,7 @@ Subpath exports:
 - `streamdown-svelte/code`
 - `streamdown-svelte/math`
 - `streamdown-svelte/mermaid`
-- `streamdown-svelte/remend` (delegates to the standalone `remend` package contract)
+- `streamdown-svelte/remend` (delegates to the standalone `@streamdown-svelte/remend` package contract)
 
 ## Development
 

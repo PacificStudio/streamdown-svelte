@@ -1,5 +1,5 @@
 import type { MarkdownBlockCacheScope, MarkdownBlockParseResult } from '../markdown-parse-cache.js';
-import type { RemendOptions } from 'remend';
+import type { RemendOptions } from '@streamdown-svelte/remend';
 import type { Footnote, FootnoteRef } from '../marked/marked-footnotes.js';
 import type { Extension, FootnoteState, StreamdownToken } from '../marked/index.js';
 import { filterMarkdownTokens, type MarkdownFilteringOptions } from '../markdown.js';

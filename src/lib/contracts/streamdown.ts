@@ -10,7 +10,7 @@ import type { AllowedTags } from '../security/types.js';
 import { carets } from '../streaming.js';
 import type { PluginConfig, ThemeInput } from '../plugins.js';
 import type { AllowElement, UrlTransform } from '../markdown.js';
-import type { RemendOptions } from 'remend';
+import type { RemendOptions } from '@streamdown-svelte/remend';
 import type {
 	AlertToken,
 	CitationToken,

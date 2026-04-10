@@ -207,7 +207,7 @@
 			{
 				"name": "LinkMode",
 				"kind": "type",
-				"source": "remend",
+				"source": "@streamdown-svelte/remend",
 				"importedName": "LinkMode"
 			},
 			{
@@ -273,13 +273,13 @@
 			{
 				"name": "RemendHandler",
 				"kind": "type",
-				"source": "remend",
+				"source": "@streamdown-svelte/remend",
 				"importedName": "RemendHandler"
 			},
 			{
 				"name": "RemendOptions",
 				"kind": "type",
-				"source": "remend",
+				"source": "@streamdown-svelte/remend",
 				"importedName": "RemendOptions"
 			},
 			{

@@ -19,13 +19,7 @@ async function main() {
 		console.log(
 			JSON.stringify(
 				{
-					...verificationResult,
-					requiredFiles: [
-						'build-metadata.json',
-						'artifact-metadata.json',
-						'provenance-metadata.json',
-						`${verificationResult.tarball}.sha256`
-					]
+					...verificationResult
 				},
 				null,
 				2

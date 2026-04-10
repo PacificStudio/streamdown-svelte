@@ -1,4 +1,4 @@
-export { IncompleteMarkdownParser, type Plugin } from 'remend';
+export { IncompleteMarkdownParser, type Plugin } from '@streamdown-svelte/remend';
 export {
 	createStreamdownIncompleteMarkdownParser,
 	parseStreamdownIncompleteMarkdown as parseIncompleteMarkdown,

@@ -5,7 +5,7 @@ Streaming-friendly incomplete Markdown repair extracted from the `streamdown-sve
 ## Installation
 
 ```bash
-pnpm add remend
+pnpm add @streamdown-svelte/remend
 ```
 
 ## Usage
@@ -16,8 +16,8 @@ import remend, {
   isWordChar,
   parseIncompleteMarkdown,
   type RemendHandler
-} from 'remend';
-import { findMatchingOpeningBracket } from 'remend/utils';
+} from '@streamdown-svelte/remend';
+import { findMatchingOpeningBracket } from '@streamdown-svelte/remend/utils';
 
 const repaired = remend('Hello **world');
 const parsed = parseIncompleteMarkdown('Hello **world');

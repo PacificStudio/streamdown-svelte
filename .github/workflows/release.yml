@@ -141,9 +141,29 @@ jobs:
           name: release-metadata-${{ github.sha }}
           path: artifacts/release
 
-      - name: Publish package to npm
+      - name: Publish package artifacts to npm
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true && github.ref == 'refs/heads/master' }}
-        run: npm publish artifacts/release/*.tgz
+        shell: bash
+        run: |
+          mapfile -t tarballs < <(
+            node --input-type=module <<'EOF'
+            import { readFileSync } from 'node:fs';
+            const manifest = JSON.parse(readFileSync('artifacts/release/release-packages.json', 'utf8'));
+            for (const entry of manifest.packages ?? []) {
+              process.stdout.write(`artifacts/release/${entry.tarball.fileName}\n`);
+            }
+            EOF
+          )
+
+          if [ "${#tarballs[@]}" -eq 0 ]; then
+            echo "No release tarballs found in artifacts/release/release-packages.json" >&2
+            exit 1
+          fi
+
+          for tarball in "${tarballs[@]}"; do
+            echo "Publishing ${tarball}"
+            npm publish "${tarball}"
+          done
 
       - name: Tag published release commit
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true && github.ref == 'refs/heads/master' }}

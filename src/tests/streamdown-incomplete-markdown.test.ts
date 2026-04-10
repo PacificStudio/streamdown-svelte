@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import remend from 'remend';
+import remend from '@streamdown-svelte/remend';
 import {
 	createStreamdownIncompleteMarkdownParser,
 	repairIncompleteMarkdown

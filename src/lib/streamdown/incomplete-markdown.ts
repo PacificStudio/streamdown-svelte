@@ -1,4 +1,4 @@
-import remend from 'remend';
+import remend from '@streamdown-svelte/remend';
 import {
 	IncompleteMarkdownParser,
 	type Plugin,
