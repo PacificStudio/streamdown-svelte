@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
 function parseOptionalNonEmptyString(value) {
@@ -34,6 +34,20 @@ function parseBooleanString(value, label) {
 	}
 
 	throw new Error(`${label} must be true or false`);
+}
+
+function parsePositiveInteger(value, label, defaultValue) {
+	if (value == null) {
+		return defaultValue;
+	}
+
+	const parsed = Number.parseInt(value, 10);
+
+	if (!Number.isInteger(parsed) || parsed < 1) {
+		throw new Error(`${label} must be a positive integer`);
+	}
+
+	return parsed;
 }
 
 function readJson(path) {
@@ -79,21 +93,20 @@ function computeHashes(path) {
 }
 
 function loadReleaseMetadataBundle(metadataDirectory) {
-	const buildMetadataPath = join(metadataDirectory, 'build-metadata.json');
 	const artifactMetadataPath = join(metadataDirectory, 'artifact-metadata.json');
 	const provenanceMetadataPath = join(metadataDirectory, 'provenance-metadata.json');
-	const buildMetadata = readJson(buildMetadataPath);
+	const releasePackagesPath = join(metadataDirectory, 'release-packages.json');
+	const buildMetadata = readJson(join(metadataDirectory, 'build-metadata.json'));
 	const artifactMetadata = readJson(artifactMetadataPath);
 	const provenanceMetadata = readJson(provenanceMetadataPath);
-	const tarballPath = join(metadataDirectory, artifactMetadata.tarball.fileName);
+	const releasePackagesManifest = readJson(releasePackagesPath);
 
 	return {
-		buildMetadataPath,
 		provenanceMetadataPath,
 		buildMetadata,
 		artifactMetadata,
 		provenanceMetadata,
-		tarballPath
+		releasePackagesManifest
 	};
 }
 
@@ -170,6 +183,12 @@ function parseCommand(argv) {
 			},
 			'bundle-path': {
 				type: 'string'
+			},
+			'registry-max-attempts': {
+				type: 'string'
+			},
+			'registry-retry-delay-ms': {
+				type: 'string'
 			}
 		},
 		allowPositionals: true
@@ -208,7 +227,17 @@ function parseCommand(argv) {
 		),
 		skipReason: parseOptionalNonEmptyString(values['skip-reason']),
 		attestationUrl: parseOptionalNonEmptyString(values['attestation-url']),
-		bundlePath: parseOptionalNonEmptyString(values['bundle-path'])
+		bundlePath: parseOptionalNonEmptyString(values['bundle-path']),
+		registryMaxAttempts: parsePositiveInteger(
+			values['registry-max-attempts'],
+			'registry-max-attempts',
+			10
+		),
+		registryRetryDelayMs: parsePositiveInteger(
+			values['registry-retry-delay-ms'],
+			'registry-retry-delay-ms',
+			5000
+		)
 	};
 }
 
@@ -282,7 +311,130 @@ function buildFailedVerificationCheck(expected, error, actual = null) {
 	};
 }
 
-function writeVerifyEvidence(options) {
+async function sleep(ms) {
+	await new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
+
+async function readRegistryMetadataWithRetry(packageSpec, options) {
+	let lastError = null;
+
+	for (let attempt = 1; attempt <= options.registryMaxAttempts; attempt += 1) {
+		try {
+			return {
+				attempt,
+				metadata: JSON.parse(
+					runCommand(
+						'npm',
+						['view', packageSpec, 'version', 'dist.integrity', 'dist.tarball', '--json'],
+						'npm view'
+					)
+				)
+			};
+		} catch (error) {
+			lastError = error;
+
+			if (attempt === options.registryMaxAttempts) {
+				break;
+			}
+
+			console.warn(
+				`npm view ${packageSpec} failed on attempt ${attempt}/${options.registryMaxAttempts}; retrying in ${options.registryRetryDelayMs}ms`
+			);
+			await sleep(options.registryRetryDelayMs);
+		}
+	}
+
+	throw lastError;
+}
+
+async function verifyRegistryPackage(releasePackage, options, downloadDirectory) {
+	const packageSpec = `${releasePackage.package.name}@${releasePackage.package.version}`;
+
+	try {
+		const { attempt, metadata } = await readRegistryMetadataWithRetry(packageSpec, options);
+		const registryTarballUrl = parseOptionalNonEmptyString(metadata['dist.tarball']) ?? null;
+		const checks = {
+			version: buildVerificationCheck(releasePackage.package.version, metadata.version),
+			integrity: buildVerificationCheck(
+				releasePackage.tarball.integrity,
+				metadata['dist.integrity'] ?? null
+			),
+			sha256: buildFailedVerificationCheck(
+				releasePackage.tarball.sha256,
+				'registry tarball was not downloaded'
+			),
+			sha512: buildFailedVerificationCheck(
+				releasePackage.tarball.sha512,
+				'registry tarball was not downloaded'
+			)
+		};
+
+		if (registryTarballUrl) {
+			try {
+				const downloadedTarballPath = join(
+					downloadDirectory,
+					`${releasePackage.package.name.replace(/^@/, '').replaceAll('/', '-')}-${releasePackage.package.version}.tgz`
+				);
+
+				runCommand(
+					'curl',
+					['-LsSf', registryTarballUrl, '--output', downloadedTarballPath],
+					'curl registry tarball'
+				);
+
+				const registryHashes = computeHashes(downloadedTarballPath);
+				checks.sha256 = buildVerificationCheck(
+					releasePackage.tarball.sha256,
+					registryHashes.sha256
+				);
+				checks.sha512 = buildVerificationCheck(
+					releasePackage.tarball.sha512,
+					registryHashes.sha512
+				);
+			} catch (error) {
+				const errorMessage = formatErrorMessage(error);
+				checks.sha256 = buildFailedVerificationCheck(releasePackage.tarball.sha256, errorMessage);
+				checks.sha512 = buildFailedVerificationCheck(releasePackage.tarball.sha512, errorMessage);
+			}
+		} else {
+			const errorMessage = 'registry tarball url was not available from npm view';
+			checks.sha256 = buildFailedVerificationCheck(releasePackage.tarball.sha256, errorMessage);
+			checks.sha512 = buildFailedVerificationCheck(releasePackage.tarball.sha512, errorMessage);
+		}
+
+		return {
+			package: releasePackage.package,
+			primary: releasePackage.primary === true,
+			packageSpec,
+			attempts: attempt,
+			tarballUrl: registryTarballUrl,
+			checks,
+			passed: Object.values(checks).every((check) => check.passed)
+		};
+	} catch (error) {
+		const errorMessage = formatErrorMessage(error);
+		const checks = {
+			version: buildFailedVerificationCheck(releasePackage.package.version, errorMessage),
+			integrity: buildFailedVerificationCheck(releasePackage.tarball.integrity, errorMessage),
+			sha256: buildFailedVerificationCheck(releasePackage.tarball.sha256, errorMessage),
+			sha512: buildFailedVerificationCheck(releasePackage.tarball.sha512, errorMessage)
+		};
+
+		return {
+			package: releasePackage.package,
+			primary: releasePackage.primary === true,
+			packageSpec,
+			attempts: options.registryMaxAttempts,
+			tarballUrl: null,
+			checks,
+			passed: false
+		};
+	}
+}
+
+async function writeVerifyEvidence(options) {
 	const metadata = loadReleaseMetadataBundle(options.metadataDirectory);
 	const sharedEvidence = createSharedEvidence(metadata);
 	const skipReason = options.publishPerformed
@@ -308,120 +460,21 @@ function writeVerifyEvidence(options) {
 		return;
 	}
 
-	const packageSpec = `${sharedEvidence.package.name}@${sharedEvidence.package.version}`;
 	const downloadDirectory = mkdtempSync(join(tmpdir(), 'svelte-streamdown-release-verify-'));
-	const downloadedTarballPath = join(downloadDirectory, basename(metadata.tarballPath));
 
 	try {
-		let registryMetadata;
+		const packageResults = [];
 
-		try {
-			registryMetadata = JSON.parse(
-				runCommand(
-					'npm',
-					['view', packageSpec, 'version', 'dist.integrity', 'dist.tarball', '--json'],
-					'npm view'
-				)
-			);
-		} catch (error) {
-			const errorMessage = formatErrorMessage(error);
-			const checks = {
-				version: buildFailedVerificationCheck(sharedEvidence.package.version, errorMessage),
-				integrity: buildFailedVerificationCheck(
-					metadata.artifactMetadata.tarball.integrity,
-					errorMessage
-				),
-				sha256: buildFailedVerificationCheck(
-					metadata.artifactMetadata.tarball.sha256,
-					errorMessage
-				),
-				sha512: buildFailedVerificationCheck(
-					metadata.artifactMetadata.tarball.sha512,
-					errorMessage
-				),
-				tagCommit: buildFailedVerificationCheck(sharedEvidence.source.commitSha, errorMessage)
-			};
-
-			writeJson(options.outputPath, {
-				schemaVersion: 1,
-				generatedAt: new Date().toISOString(),
-				job: 'post-publish-verify',
-				result: 'failed',
-				requested: options.publishRequested,
-				allowed: options.publishAllowed,
-				skipReason: null,
-				...sharedEvidence,
-				registry: {
-					packageSpec,
-					tarballUrl: null
-				},
-				checks
-			});
-
-			process.exitCode = 1;
-			return;
+		for (const releasePackage of metadata.releasePackagesManifest.packages ?? []) {
+			packageResults.push(await verifyRegistryPackage(releasePackage, options, downloadDirectory));
 		}
 
-		const registryTarballUrl = parseOptionalNonEmptyString(registryMetadata['dist.tarball']) ?? null;
 		const checks = {
-			version: buildVerificationCheck(sharedEvidence.package.version, registryMetadata.version),
-			integrity: buildVerificationCheck(
-				metadata.artifactMetadata.tarball.integrity,
-				registryMetadata['dist.integrity'] ?? null
-			),
-			sha256: buildFailedVerificationCheck(
-				metadata.artifactMetadata.tarball.sha256,
-				'registry tarball was not downloaded'
-			),
-			sha512: buildFailedVerificationCheck(
-				metadata.artifactMetadata.tarball.sha512,
-				'registry tarball was not downloaded'
-			),
 			tagCommit: buildFailedVerificationCheck(
 				sharedEvidence.source.commitSha,
 				'git tag was not verified'
 			)
 		};
-
-		if (registryTarballUrl) {
-			try {
-				runCommand(
-					'curl',
-					['-LsSf', registryTarballUrl, '--output', downloadedTarballPath],
-					'curl registry tarball'
-				);
-
-				const registryHashes = computeHashes(downloadedTarballPath);
-				checks.sha256 = buildVerificationCheck(
-					metadata.artifactMetadata.tarball.sha256,
-					registryHashes.sha256
-				);
-				checks.sha512 = buildVerificationCheck(
-					metadata.artifactMetadata.tarball.sha512,
-					registryHashes.sha512
-				);
-			} catch (error) {
-				const errorMessage = formatErrorMessage(error);
-				checks.sha256 = buildFailedVerificationCheck(
-					metadata.artifactMetadata.tarball.sha256,
-					errorMessage
-				);
-				checks.sha512 = buildFailedVerificationCheck(
-					metadata.artifactMetadata.tarball.sha512,
-					errorMessage
-				);
-			}
-		} else {
-			const errorMessage = 'registry tarball url was not available from npm view';
-			checks.sha256 = buildFailedVerificationCheck(
-				metadata.artifactMetadata.tarball.sha256,
-				errorMessage
-			);
-			checks.sha512 = buildFailedVerificationCheck(
-				metadata.artifactMetadata.tarball.sha512,
-				errorMessage
-			);
-		}
 
 		try {
 			const tagCommit = runCommand(
@@ -437,7 +490,9 @@ function writeVerifyEvidence(options) {
 			);
 		}
 
-		const passed = Object.values(checks).every((check) => check.passed);
+		const passed =
+			packageResults.every((packageResult) => packageResult.passed) &&
+			Object.values(checks).every((check) => check.passed);
 
 		writeJson(options.outputPath, {
 			schemaVersion: 1,
@@ -449,8 +504,18 @@ function writeVerifyEvidence(options) {
 			skipReason: null,
 			...sharedEvidence,
 			registry: {
-				packageSpec,
-				tarballUrl: registryTarballUrl
+				retry: {
+					maxAttempts: options.registryMaxAttempts,
+					retryDelayMs: options.registryRetryDelayMs
+				},
+				packages: packageResults.map((packageResult) => ({
+					package: packageResult.package,
+					primary: packageResult.primary,
+					packageSpec: packageResult.packageSpec,
+					attempts: packageResult.attempts,
+					tarballUrl: packageResult.tarballUrl,
+					checks: packageResult.checks
+				}))
 			},
 			checks
 		});
@@ -471,5 +536,5 @@ const command = parseCommand(process.argv.slice(2));
 if (command.command === 'publish') {
 	writePublishEvidence(command);
 } else {
-	writeVerifyEvidence(command);
+	await writeVerifyEvidence(command);
 }

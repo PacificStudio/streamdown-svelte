@@ -253,12 +253,16 @@ jobs:
           PUBLISH_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true }}
           PUBLISH_ALLOWED: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
           PUBLISH_PERFORMED: ${{ github.event_name == 'workflow_dispatch' && inputs.publish == true && github.ref == 'refs/heads/master' }}
+          REGISTRY_MAX_ATTEMPTS: '10'
+          REGISTRY_RETRY_DELAY_MS: '5000'
         run: |
           node scripts/release-workflow-evidence.mjs verify \
             --metadata-dir artifacts/release \
             --publish-requested "$PUBLISH_REQUESTED" \
             --publish-allowed "$PUBLISH_ALLOWED" \
-            --publish-performed "$PUBLISH_PERFORMED"
+            --publish-performed "$PUBLISH_PERFORMED" \
+            --registry-max-attempts "$REGISTRY_MAX_ATTEMPTS" \
+            --registry-retry-delay-ms "$REGISTRY_RETRY_DELAY_MS"
 
       - name: Upload final release evidence bundle
         uses: actions/upload-artifact@v4
